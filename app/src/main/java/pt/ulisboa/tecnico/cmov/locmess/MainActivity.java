@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
+        this.setTitle("Login");
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

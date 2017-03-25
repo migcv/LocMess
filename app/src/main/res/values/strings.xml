@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">LocMess</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_signup">SignupActivity</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -14,5 +15,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_signup">SignupActivity</string>
+
 </resources>

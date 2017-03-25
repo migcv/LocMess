@@ -10,7 +10,9 @@ android:fitsSystemWindows="true">
     android:layout_height="wrap_content"
     android:paddingTop="56dp"
     android:paddingLeft="24dp"
-    android:paddingRight="24dp">
+    android:paddingRight="24dp"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <ImageView android:src="@drawable/logo"
         android:layout_width="wrap_content"
@@ -28,7 +30,7 @@ android:fitsSystemWindows="true">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"/>
     </android.support.design.widget.TextInputLayout>
 
     <!-- Password Label -->
@@ -56,7 +58,7 @@ android:fitsSystemWindows="true">
     <TextView android:id="@+id/link_signup"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:paddingBottom="56dp"
         android:text="No account yet? Create one"
         android:gravity="center"
         android:textSize="16dip"/>

@@ -29,6 +29,9 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.setTitle("Privet");
+
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
 
