@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
-                this.finish();
+                Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
+                startActivityForResult(intent, RESULT_OK);
             }
         }
     }
