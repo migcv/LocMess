@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">LocMess</string>
     <string name="title_activity_login">Sign in</string>
-    <string name="title_activity_signup">SignupActivity</string>
+    <string name="title_activity_signup">Signup</string>
     <string name="title_activity_posts">Posts</string>
     <string name="action_settings">Settings</string>
 
@@ -18,17 +18,10 @@
         completions."
     </string>
 
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="login">Login</string>
+    <string name="no_account_yet_create_one">No account yet? Create one</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
 </resources>
