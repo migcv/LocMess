@@ -15,18 +15,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListAdapter;
 import pl.openrnd.multilevellistview.MultiLevelListView;
+import pl.openrnd.multilevellistview.OnItemClickListener;
 
 public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MultiLevelListView mListView;
-    private boolean mAlwaysExpandend;
+    private boolean alwaysExpandend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +55,12 @@ public class PostsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         mListView = (MultiLevelListView) findViewById(R.id.listView);
         ListAdapter listAdapter = new ListAdapter();
 
         mListView.setAdapter(listAdapter);
+        mListView.setOnItemClickListener(mOnItemClickListener);
 
         listAdapter.setDataItems(DataProvider.getInitialItems());
 
@@ -117,6 +121,28 @@ public class PostsActivity extends AppCompatActivity
     }
 
 
+    private OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
+
+        private void showItemDescription(Object object, ItemInfo itemInfo) {
+            StringBuilder builder = new StringBuilder("\"");
+            builder.append(((BaseItem) object).getTitle());
+            builder.append("\" clicked!\n");
+            builder.append(getItemInfoDsc(itemInfo));
+
+            Toast.makeText(PostsActivity.this, builder.toString(), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+            showItemDescription(item, itemInfo);
+        }
+
+        @Override
+        public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+            showItemDescription(item, itemInfo);
+        }
+    };
+
     private class ListAdapter extends MultiLevelListAdapter {
 
         private class ViewHolder {
@@ -154,10 +180,11 @@ public class PostsActivity extends AppCompatActivity
             viewHolder.nameView.setText(((BaseItem) object).getTitle());
             viewHolder.infoView.setText(getItemInfoDsc(itemInfo));
 
-            if (itemInfo.isExpandable() && !mAlwaysExpandend) {
+            if (itemInfo.isExpandable() && !alwaysExpandend) {
                 viewHolder.arrowView.setVisibility(View.VISIBLE);
+
                 viewHolder.arrowView.setImageResource(itemInfo.isExpanded() ?
-                        R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_up_black_24dp);
+                        R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
             } else {
                 viewHolder.arrowView.setVisibility(View.GONE);
             }

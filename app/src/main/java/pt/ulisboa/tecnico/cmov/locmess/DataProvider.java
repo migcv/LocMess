@@ -42,8 +42,8 @@ public class DataProvider {
             throw new IllegalArgumentException("GroupItem required");
         }
 
-        GroupItem groupItem = (GroupItem) baseItem;
-        if (groupItem.getLevel() >= MAX_LEVELS) {
+        GroupItem groupItem = (GroupItem)baseItem;
+        if(groupItem.getLevel() >= MAX_LEVELS){
             return null;
         }
 
@@ -56,7 +56,7 @@ public class DataProvider {
             BaseItem item;
             if (i % 2 == 0 && nextLevel != MAX_LEVELS) {
                 item = new GroupItem("Group " + Integer.toString(++groupNr));
-                ((GroupItem) item).setLevel(nextLevel);
+                ((GroupItem)item).setLevel(nextLevel);
             } else {
                 item = new Item("Item " + Integer.toString(++itemNr));
             }
