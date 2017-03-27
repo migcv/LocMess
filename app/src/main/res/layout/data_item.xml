@@ -24,7 +24,7 @@
         android:layout_marginLeft="@dimen/offset_default"
         android:layout_marginRight="@dimen/offset_default">
         <TextView
-            android:singleLine="true"
+            android:maxLines="1"
             android:id="@+id/dataItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             android:textColor="@android:color/black" />
 
         <TextView
-            android:singleLine="true"
+            android:maxLines="1"
             android:id="@+id/dataItemInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -32,7 +32,7 @@ public class PostsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -141,7 +141,7 @@ public class PostsActivity extends AppCompatActivity
             ViewHolder viewHolder;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = LayoutInflater.from(PostsActivity.this).inflate(R.layout.data_item, null);
+                convertView = LayoutInflater.from(PostsActivity.this).inflate(R.layout.content_posts, null);
                 viewHolder.infoView = (TextView) convertView.findViewById(R.id.dataItemInfo);
                 viewHolder.nameView = (TextView) convertView.findViewById(R.id.dataItemName);
                 viewHolder.arrowView = (ImageView) convertView.findViewById(R.id.dataItemArrow);

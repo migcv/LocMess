@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/28c61a7adfa8b90bea5b23ce08d43c929594462f/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="6003d64df88a6ce5e961fa2bad7f1b9b97689ac1">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_3c5f75bfadc1737f6f6a472237dd92be6c1e410f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/8eb457ba2ea833300af3f7620c6eea06896e8f5d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="152de8da301561dcb0946471697a420d8f7a68c5">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_1f636dcb5bcc8909c45f65c394089a3a86abd642.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/880d01e64810b4f431af6f638c29f94f3891f15c/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="cb454b52545859ed2f24a6c01366805b0fa04b22">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_c1c3fa49abcbbaf025e41cec314d149db2de7c9a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/dcd253d8e3cef400ce5797b98b08da37608f0ff2/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="810f41e5b7fd99f196ebeabe865ba2c54e7e76dc">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_57febe38ea37c0543d7f8662ced6020d4f389c41.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/6.1.0/63735f48b82bcd24cdd33821342428252eb1ca5a/butterknife-6.1.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="63735f48b82bcd24cdd33821342428252eb1ca5a">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/butterknife-6.1.0_8b63d652b109611bfda73563209cd768bf314f3f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/3924c9dc662f92d8dfa32932bc1c118eb382c509/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="67eb33110dbacb46a48175b08ae0c96761d2c17d">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_fdc026f3d899c605e323f6a7de11daf1ad5e3dd5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/ff9d050faca639aff09275f1dc3607e22d68e8a9/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c7626a9aa507bbbdc16188bc9a9f9bf3370c1ddd">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_ffa3daeae15ab4c64456d4f94107f42e1996ce0f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/8e597a480eeb97074bc3f6d76779273e64dcfbee/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="bdcc2a9572f18b8c90a3a157cab6cdfc97c6c736">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_213bc8898629723cabb51d7ea305e2e123722e73.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/035aac0406616d32c35f513e5e2695eefab9352f/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="19696dc358ac668e341f28c41e3387d61ccdb81d">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_882f8473e76c35c2f565f49456a9b76e78f26a0a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/35a3b43a0ca294e172f0a4ebb5dcd65f1afd444d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ee394a892dd21c03a528139c1e8d4e0e1264ac84">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_0b37dc08ff834f46ac1a4845f401bc83748ae2d8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/10396df88989ddd8da2c8ad3afb2d0da6252d96d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="702d339bc0a81d21354cd7e2cf2b67225fa4a16c">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_07f9250e87a64284d53fd6ea5c0e62935983fe60.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/12063fa63c1452a9c0d740838eae19cb5abbfa76/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="8fe8a8f77d651982ce5e18f6187dc4daf914ac57">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_574fd6e7b64c3d0be644fbcc6319ff025d50c8e6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/711be9dc34999f2fdafa1b7f128a0ea8e75729c5/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ea6a989b83d19b1b461281e0475a6cd6514897f8">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_445e6ef612698b8cfeec416e74fe8a65acf7f1b3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/e316a794f6408fb180147cdb81af6376cd97e0b8/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_7974ab530a923f5e83fcb6b6dfc2e1bdd54aa508.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/9d79f842b010c7cd11299fd9aa312d15a870be70/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e51c2f662bb72419632af5192553c37e33890a99">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_f217e5be6c3b4376afe7f92a63dc4c8c787e1677.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/a3290122c2cb74120b9f69418301f0c05b72fdc6/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e820b7be8c035dd522da4bc822e8a76c8e27921a">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_5d7cdfaaabc0ffdb835b50f957d00ff114640f42.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/Library/Android/sdk/extras/m2repository/com/android/support/constraint/constraint-layout-solver/1.0.2/constraint-layout-solver-1.0.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/constraint-layout-solver-1.0.2_0c398b2bd41b2c894b330710c67d02d82c8b46d9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/b010bc54c5d9194a8659be3fc643367b4f69c7a2/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0354781c82c975b4a1035141ce3dad8cc4f2fb9a">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_4cff07f2ea5eed31bc445772b1883c2972388d29.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/ab9665e9a4d6cb7a20658ab7e9d70d00d79f22c7/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_5fd03b9838c2bea405de5f530991f99be6709a9d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/.android/build-cache/525a395ee39f2ae649af1308d4ec2e9c8abc46d3/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="fa0446a14ed5dd3725047d6399ffea771a564b30">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/classes_61c6b55f8916a1166c9f0f2df06dd5255a3906e3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/dharuqueshil/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/25.2.0/support-annotations-25.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="4a5a82a027706397fff621b22fd6fa796e91d7c5">
+        <dex dex="/Users/dharuqueshil/LocMess/app/build/intermediates/pre-dexed/debug/support-annotations-25.2.0_ef028ec1e64505939d84961073760b8db69828f2.jar" />
+    </item>
+
+</items>

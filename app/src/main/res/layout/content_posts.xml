@@ -8,11 +8,10 @@
     <pl.openrnd.multilevellistview.MultiLevelListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:alwaysExtended="false"
         app:nestType="multiple">
-    <include layout="@layout/data_item" />
-        />
+        <include layout="@layout/data_item" />
 
     </pl.openrnd.multilevellistview.MultiLevelListView>
 

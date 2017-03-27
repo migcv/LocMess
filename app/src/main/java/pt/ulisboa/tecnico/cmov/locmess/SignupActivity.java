@@ -31,7 +31,7 @@ public class SignupActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.setTitle("Privet");
+        this.setTitle("Sign Up");
 
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
