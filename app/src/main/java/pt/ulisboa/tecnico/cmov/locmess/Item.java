@@ -6,7 +6,7 @@ package pt.ulisboa.tecnico.cmov.locmess;
 
 public class Item extends BaseItem {
 
-    public Item(String title) {
-        super(title);
+    public Item(String name) {
+        super(name);
     }
 }

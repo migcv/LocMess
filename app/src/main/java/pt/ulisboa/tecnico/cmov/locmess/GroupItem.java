@@ -8,8 +8,8 @@ public class GroupItem extends BaseItem {
 
     private int mLevel;
 
-    public GroupItem(String title) {
-        super(title);
+    public GroupItem(String name) {
+        super(name);
         mLevel = 0;
     }
 

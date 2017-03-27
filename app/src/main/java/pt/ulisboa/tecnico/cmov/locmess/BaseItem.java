@@ -6,20 +6,13 @@ package pt.ulisboa.tecnico.cmov.locmess;
 
 public class BaseItem {
 
-    private String title;
-    private String content;
-    private String contact;
-    private String tags;
+    private String mName;
 
-    public BaseItem(String title) {
-        this.title = title;
+    public BaseItem(String name) {
+        mName = name;
     }
 
-
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return mName;
     }
-
-
-
 }

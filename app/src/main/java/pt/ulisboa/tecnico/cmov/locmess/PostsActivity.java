@@ -28,7 +28,7 @@ public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MultiLevelListView mListView;
-    private boolean alwaysExpandend;
+    private boolean mAlwaysExpandend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +125,7 @@ public class PostsActivity extends AppCompatActivity
 
         private void showItemDescription(Object object, ItemInfo itemInfo) {
             StringBuilder builder = new StringBuilder("\"");
-            builder.append(((BaseItem) object).getTitle());
+            builder.append(((BaseItem) object).getName());
             builder.append("\" clicked!\n");
             builder.append(getItemInfoDsc(itemInfo));
 
@@ -167,7 +167,7 @@ public class PostsActivity extends AppCompatActivity
             ViewHolder viewHolder;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = LayoutInflater.from(PostsActivity.this).inflate(R.layout.content_posts, null);
+                convertView = LayoutInflater.from(PostsActivity.this).inflate(R.layout.data_item, null);
                 viewHolder.infoView = (TextView) convertView.findViewById(R.id.dataItemInfo);
                 viewHolder.nameView = (TextView) convertView.findViewById(R.id.dataItemName);
                 viewHolder.arrowView = (ImageView) convertView.findViewById(R.id.dataItemArrow);
@@ -177,12 +177,11 @@ public class PostsActivity extends AppCompatActivity
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.nameView.setText(((BaseItem) object).getTitle());
+            viewHolder.nameView.setText(((BaseItem) object).getName());
             viewHolder.infoView.setText(getItemInfoDsc(itemInfo));
 
-            if (itemInfo.isExpandable() && !alwaysExpandend) {
+            if (itemInfo.isExpandable() && !mAlwaysExpandend) {
                 viewHolder.arrowView.setVisibility(View.VISIBLE);
-
                 viewHolder.arrowView.setImageResource(itemInfo.isExpanded() ?
                         R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
             } else {
