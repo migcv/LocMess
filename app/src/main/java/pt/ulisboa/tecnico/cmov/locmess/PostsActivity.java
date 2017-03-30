@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,8 @@ import pl.openrnd.multilevellistview.OnItemClickListener;
 public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int REQUEST_CREATE_POST = 0;
+
     private MultiLevelListView mListView;
     private boolean mAlwaysExpandend;
 
@@ -41,8 +44,10 @@ public class PostsActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent intent = new Intent(getApplicationContext(), CreatePostActivity.class);
+                startActivityForResult(intent, REQUEST_CREATE_POST);
             }
         });
 

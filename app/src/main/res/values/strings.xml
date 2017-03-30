@@ -24,4 +24,29 @@
     <string name="no_account_yet_create_one">No account yet? Create one</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
+
+    <!-- Strings related to Create Post -->
+    <string name="title_activity_create_post">New Post</string>
+    <string name="tittle">Tittle</string>
+    <string name="content">Content</string>
+    <string name="contact">Contact</string>
+    <string name="time">Time</string>
+    <string name="next">Next</string>
+
+    <!-- Strings related to Create Post -->
+    <string name="title_activity_location_option">Post Location</string>
+    <string name="location">Location</string>
+    <string name="wifi">Wifi</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="wifi_direct">Wifi-Direct</string>
+
+    <!-- Strings related to Create Post -->
+    <string name="title_activity_restrition_option">Post Retrition</string>
+    <string name="everyone">Everyone</string>
+    <string name="white_list">White List</string>
+    <string name="black_list">Black List</string>
+    <string name="post_summary">Post Summary</string>
+    <string name="post">Post</string>
+    <string name="cancel">Cancel</string>
+
 </resources>
