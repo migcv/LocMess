@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -12,6 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import java.io.DataOutputStream;
+import java.net.Socket;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -30,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CreateConnection cc = new CreateConnection();
+        cc.execute();
+
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
@@ -109,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+        Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
+        startActivityForResult(intent, RESULT_OK);
     }
 
     public void onLoginFailed() {
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         String username = _usernameText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if (username.isEmpty() || username.length() < 4 ) {
+        if (username.isEmpty() || username.length() < 4) {
             _usernameText.setError("enter a valid email address");
             valid = false;
         } else {
@@ -140,7 +149,10 @@ public class MainActivity extends AppCompatActivity {
 
         return valid;
     }
+
+
 }
+
 
 
 
