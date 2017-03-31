@@ -5,6 +5,8 @@
     <string name="title_activity_posts">Posts</string>
     <string name="action_settings">Settings</string>
 
+    <string name="mapbox_access_token">pk.eyJ1IjoibWlnY3YiLCJhIjoiY2oweTJhM2hjMDEzNTJxbmQ0N3Q3dzIyZiJ9.oPn6_-4mwPZVMZzZqBcf1Q</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
