@@ -4,10 +4,16 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -36,9 +42,12 @@ import com.mapbox.services.android.telemetry.location.LocationEngine;
 
 import java.util.ArrayList;
 
+import static android.R.attr.action;
+
 public class LocationOptionActivity extends AppCompatActivity {
 
     private int radius = 250;
+    private String ssid = "";
 
     private MapView mapView;
     private MapboxMap map;
@@ -117,6 +126,15 @@ public class LocationOptionActivity extends AppCompatActivity {
         findViewById(R.id.radioButton_wifi).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                WifiInfo wifiInfo;
+
+                wifiInfo = wifiManager.getConnectionInfo();
+                if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+                    ssid = wifiInfo.getSSID();
+                }
+                ((TextView)findViewById(R.id.text_wifi)).setText("" + ssid);
                 setLayoutsGone();
                 findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
             }
