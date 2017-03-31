@@ -23,6 +23,7 @@
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="24dp"
             android:layout_weight="1">
 
             <RadioButton
@@ -60,21 +61,44 @@
             android:id="@+id/layout_location"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="15.73"
             android:orientation="vertical"
             android:visibility="visible">
 
             <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="203dp"
+                android:layout_height="332dp"
                 mapbox:mapbox_cameraTargetLat="38.7378954"
                 mapbox:mapbox_cameraTargetLng="-9.1378972"
                 mapbox:mapbox_cameraZoom="15"
                 mapbox:mapbox_myLocation="true"
                 mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10"
                 mapbox:mapbox_uiAttribution="false"
-                mapbox:mapbox_uiLogo="false" />
+                mapbox:mapbox_uiLogo="false">
+
+            </com.mapbox.mapboxsdk.maps.MapView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <SeekBar
+                    android:id="@+id/seekBar_radius"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:progress="50" />
+
+                <TextView
+                    android:id="@+id/text_radius"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="250m" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout

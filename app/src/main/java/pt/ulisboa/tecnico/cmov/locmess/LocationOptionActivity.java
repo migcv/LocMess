@@ -17,6 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -34,6 +37,8 @@ import com.mapbox.services.android.telemetry.location.LocationEngine;
 import java.util.ArrayList;
 
 public class LocationOptionActivity extends AppCompatActivity {
+
+    private int radius = 250;
 
     private MapView mapView;
     private MapboxMap map;
@@ -87,16 +92,17 @@ public class LocationOptionActivity extends AppCompatActivity {
                     @Override
                     public void onMapClick(@NonNull LatLng point) {
 
-                        // When the user clicks on the map, we want to animate the marker to that
-                        // location.
                         ValueAnimator markerAnimator = ObjectAnimator.ofObject(marker, "position",
                                 new LatLngEvaluator(), marker.getPosition(), point);
                         markerAnimator.setDuration(250);
                         markerAnimator.start();
+
+                        map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(point, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
+                        map.removePolygon(map.getPolygons().get(0));
                     }
                 });
                 LatLng location = new LatLng(38.7378954, -9.1378972);
-                mapboxMap.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(location, 250.0)).fillColor(Color.parseColor("#4285F4")).alpha((float)0.4));
+                mapboxMap.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(location, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float)0.4));
                 map = mapboxMap;
             }
         });
@@ -130,6 +136,24 @@ public class LocationOptionActivity extends AppCompatActivity {
             }
         });
 
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar_radius);
+        final TextView textRadius = (TextView) findViewById(R.id.text_radius);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+                radius = 500 * progress / 100;
+                map.getPolygons().get(0).setPoints(polygonCircleForCoordinate(marker.getPosition(), radius));
+                textRadius.setText("" + radius + "m");
+            }
+
+        });
     }
 
     @Override
