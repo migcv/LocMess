@@ -3,8 +3,6 @@ package pt.ulisboa.tecnico.cmov.locmess;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,24 +12,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import pl.openrnd.multilevellistview.ItemInfo;
-import pl.openrnd.multilevellistview.MultiLevelListAdapter;
-import pl.openrnd.multilevellistview.MultiLevelListView;
-import pl.openrnd.multilevellistview.OnItemClickListener;
 
 public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CREATE_POST = 0;
-
-    private MultiLevelListView mListView;
-    private boolean mAlwaysExpandend;
+    ExpandableListView expandableListView;
+    ExpandableListAdapter expandableListAdapter;
+    ArrayList<String> expandableListTitle = new ArrayList<String>();
+    HashMap<Integer, List<String>> expandableList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +56,14 @@ public class PostsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        expandableList = ExpandableListDataPump.getData();
 
-        mListView = (MultiLevelListView) findViewById(R.id.listView);
-        ListAdapter listAdapter = new ListAdapter();
-
-        mListView.setAdapter(listAdapter);
-        mListView.setOnItemClickListener(mOnItemClickListener);
-
-        listAdapter.setDataItems(DataProvider.getInitialItems());
-
+        for(int i = 0; i < expandableList.size(); i++) {
+            expandableListTitle.add(expandableList.get(i).get(0));
+        }
+        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        expandableListView.setAdapter(expandableListAdapter);
     }
 
     @Override
@@ -125,93 +120,6 @@ public class PostsActivity extends AppCompatActivity
         return true;
     }
 
-
-    private OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
-
-        private void showItemDescription(Object object, ItemInfo itemInfo) {
-            StringBuilder builder = new StringBuilder("\"");
-            builder.append(((BaseItem) object).getName());
-            builder.append("\" clicked!\n");
-            builder.append(getItemInfoDsc(itemInfo));
-
-            Toast.makeText(PostsActivity.this, builder.toString(), Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
-            showItemDescription(item, itemInfo);
-        }
-
-        @Override
-        public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
-            showItemDescription(item, itemInfo);
-        }
-    };
-
-    private class ListAdapter extends MultiLevelListAdapter {
-
-        private class ViewHolder {
-            TextView nameView;
-            TextView infoView;
-            ImageView arrowView;
-            LevelBeamView levelBeamView;
-        }
-
-        @Override
-        public List<?> getSubObjects(Object object) {
-            return DataProvider.getSubItems((BaseItem) object);
-        }
-
-        @Override
-        public boolean isExpandable(Object object) {
-            return DataProvider.isExpandable((BaseItem) object);
-        }
-
-        @Override
-        public View getViewForObject(Object object, View convertView, ItemInfo itemInfo) {
-            ViewHolder viewHolder;
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = LayoutInflater.from(PostsActivity.this).inflate(R.layout.data_item, null);
-                viewHolder.infoView = (TextView) convertView.findViewById(R.id.dataItemInfo);
-                viewHolder.nameView = (TextView) convertView.findViewById(R.id.dataItemName);
-                viewHolder.arrowView = (ImageView) convertView.findViewById(R.id.dataItemArrow);
-                viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            viewHolder.nameView.setText(((BaseItem) object).getName());
-            viewHolder.infoView.setText(getItemInfoDsc(itemInfo));
-
-            if (itemInfo.isExpandable() && !mAlwaysExpandend) {
-                viewHolder.arrowView.setVisibility(View.VISIBLE);
-                viewHolder.arrowView.setImageResource(itemInfo.isExpanded() ?
-                        R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
-            } else {
-                viewHolder.arrowView.setVisibility(View.GONE);
-            }
-
-            viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
-
-            return convertView;
-        }
-    }
-
-    private String getItemInfoDsc(ItemInfo itemInfo) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(String.format("level[%d], idx in level[%d/%d]",
-                itemInfo.getLevel() + 1, /*Indexing starts from 0*/
-                itemInfo.getIdxInLevel() + 1 /*Indexing starts from 0*/,
-                itemInfo.getLevelSize()));
-
-        if (itemInfo.isExpandable()) {
-            builder.append(String.format(", expanded[%b]", itemInfo.isExpanded()));
-        }
-        return builder.toString();
-    }
 }
 
 
