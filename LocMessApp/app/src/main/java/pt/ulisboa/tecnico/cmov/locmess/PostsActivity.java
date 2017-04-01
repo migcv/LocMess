@@ -24,10 +24,6 @@ public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CREATE_POST = 0;
-    ExpandableListView expandableListView;
-    ExpandableListAdapter expandableListAdapter;
-    ArrayList<String> expandableListTitle = new ArrayList<String>();
-    HashMap<Integer, List<String>> expandableList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +52,14 @@ public class PostsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        expandableList = ExpandableListDataPump.getData();
+        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
 
+        ArrayList<String> expandableListTitle = new ArrayList<String>();
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
         expandableListView.setAdapter(expandableListAdapter);
     }
 
