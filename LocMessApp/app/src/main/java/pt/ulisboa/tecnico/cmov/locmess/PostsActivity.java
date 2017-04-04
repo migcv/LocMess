@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +52,7 @@ public class PostsActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(PostsActivity.this);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
@@ -102,7 +104,10 @@ public class PostsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
+            Log.d("DEBUG", "TESTE 0");
+            Intent intent = new Intent(PostsActivity.this, ProfileActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_posts) {
 
         } else if (id == R.id.nav_myposts) {
@@ -116,7 +121,6 @@ public class PostsActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }
 
 

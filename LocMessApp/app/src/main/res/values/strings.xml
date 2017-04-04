@@ -51,4 +51,7 @@
     <string name="post">Post</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Strings related to Profile -->
+    <string name="title_activity_profile">Profile</string>
+
 </resources>

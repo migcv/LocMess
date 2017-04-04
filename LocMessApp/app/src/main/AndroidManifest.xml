@@ -49,6 +49,11 @@
             android:label="@string/title_activity_restrition_option"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="@string/title_activity_location_option" />
+        <activity
+            android:name=".ProfileActivity"
+            android:label="Profile User"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:title="Profile User" />
     </application>
 
 </manifest>
