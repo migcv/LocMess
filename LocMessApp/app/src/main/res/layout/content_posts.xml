@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/expandableListView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginTop="30dp"
-    android:id="@+id/expandableListView"
-    android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+    android:layout_marginTop="50dp"
     android:divider="@android:color/darker_gray"
-    android:dividerHeight="0.5dp"/>
+    android:dividerHeight="0.5dp"
+    android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft" />
