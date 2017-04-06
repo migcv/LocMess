@@ -32,6 +32,8 @@ dependencies {
     compile group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
+    compile "com.android.support:support-core-utils:25.2.0"
+    compile 'com.google.android.gms:play-services-places:10.2.1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:10.2.1'

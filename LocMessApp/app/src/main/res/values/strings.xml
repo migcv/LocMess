@@ -35,18 +35,18 @@
     <string name="time">Time</string>
     <string name="next">Next</string>
 
-    <!-- Strings related to Create Post -->
+    <!-- Strings related to Create Post - Location -->
     <string name="title_activity_location_option">Post Location</string>
     <string name="location">Location</string>
-    <string name="wifi">Wifi</string>
-    <string name="bluetooth">Bluetooth</string>
+    <string name="location_search_hint">Insert Location</string>
     <string name="wifi_direct">Wifi-Direct</string>
 
-    <!-- Strings related to Create Post -->
-    <string name="title_activity_restrition_option">Post Retrition</string>
+    <!-- Strings related to Create Post - Restrition -->
+    <string name="title_activity_restrition_option">Post Restrition</string>
     <string name="everyone">Everyone</string>
     <string name="white_list">White List</string>
     <string name="black_list">Black List</string>
+    <string name="search_group">Insert Group</string>
     <string name="post_summary">Post Summary</string>
     <string name="post">Post</string>
     <string name="cancel">Cancel</string>

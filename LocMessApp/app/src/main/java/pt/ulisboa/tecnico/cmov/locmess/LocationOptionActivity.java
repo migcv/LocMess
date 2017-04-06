@@ -4,16 +4,9 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -21,18 +14,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationSource;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -42,17 +36,17 @@ import com.mapbox.services.android.telemetry.location.LocationEngine;
 
 import java.util.ArrayList;
 
-import static android.R.attr.action;
-
 public class LocationOptionActivity extends AppCompatActivity {
 
     private int radius = 250;
-    private String ssid = "";
+    private LatLng userLocation = new LatLng(38.7378954, -9.1378972);
 
     private MapView mapView;
     private MapboxMap map;
     private Marker marker ;
     private LocationEngine locationEngine;
+
+    private static final String URL = "http://maps.googleapis.com/maps/api/geocode/xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +81,11 @@ public class LocationOptionActivity extends AppCompatActivity {
             }
         });
 
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
+
         locationEngine = LocationSource.getLocationEngine(this);
         locationEngine.activate();
 
@@ -95,12 +94,10 @@ public class LocationOptionActivity extends AppCompatActivity {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
-                marker = mapboxMap.addMarker(new MarkerViewOptions()
-                        .position(new LatLng(38.7378954, -9.1378972)));
+                marker = mapboxMap.addMarker(new MarkerViewOptions().position(userLocation));
                 mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng point) {
-
                         ValueAnimator markerAnimator = ObjectAnimator.ofObject(marker, "position",
                                 new LatLngEvaluator(), marker.getPosition(), point);
                         markerAnimator.setDuration(250);
@@ -110,7 +107,7 @@ public class LocationOptionActivity extends AppCompatActivity {
                         map.removePolygon(map.getPolygons().get(0));
                     }
                 });
-                LatLng location = new LatLng(38.7378954, -9.1378972);
+                LatLng location = userLocation;
                 mapboxMap.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(location, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float)0.4));
                 map = mapboxMap;
             }
@@ -121,29 +118,6 @@ public class LocationOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 setLayoutsGone();
                 findViewById(R.id.layout_location).setVisibility(View.VISIBLE);
-            }
-        });
-        findViewById(R.id.radioButton_wifi).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wifiInfo;
-
-                wifiInfo = wifiManager.getConnectionInfo();
-                if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
-                    ssid = wifiInfo.getSSID();
-                }
-                ((TextView)findViewById(R.id.text_wifi)).setText("" + ssid);
-                setLayoutsGone();
-                findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
-            }
-        });
-        findViewById(R.id.radioButton_bluetooth).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setLayoutsGone();
-                findViewById(R.id.layout_bluetooth).setVisibility(View.VISIBLE);
             }
         });
         findViewById(R.id.radioButton_wifi_direct).setOnClickListener(new View.OnClickListener() {
@@ -172,6 +146,24 @@ public class LocationOptionActivity extends AppCompatActivity {
             }
 
         });
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: obter informações sobre o local selecionado.
+                Log.i("LOCATION", "Place: " + place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Solucionar o erro.
+                Log.i("LOCATION", "Ocorreu um erro: " + status);
+            }
+        });
+
     }
 
     @Override
@@ -218,7 +210,6 @@ public class LocationOptionActivity extends AppCompatActivity {
 
     // Include method in your activity
     private static class LatLngEvaluator implements TypeEvaluator<LatLng> {
-
         private LatLng latLng = new LatLng();
         @Override
         public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
@@ -253,8 +244,6 @@ public class LocationOptionActivity extends AppCompatActivity {
 
     private void setLayoutsGone(){
         findViewById(R.id.layout_location).setVisibility(View.GONE);
-        findViewById(R.id.layout_wifi).setVisibility(View.GONE);
-        findViewById(R.id.layout_bluetooth).setVisibility(View.GONE);
         findViewById(R.id.layout_wifi_direct).setVisibility(View.GONE);
     }
 

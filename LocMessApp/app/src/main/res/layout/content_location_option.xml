@@ -13,14 +13,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true">
 
         <RadioGroup
+            android:paddingTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="24dp"
@@ -35,20 +34,6 @@
                 android:text="@string/location" />
 
             <RadioButton
-                android:id="@+id/radioButton_wifi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/wifi" />
-
-            <RadioButton
-                android:id="@+id/radioButton_bluetooth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/bluetooth" />
-
-            <RadioButton
                 android:id="@+id/radioButton_wifi_direct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,10 +45,16 @@
         <LinearLayout
             android:id="@+id/layout_location"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="15.73"
             android:orientation="vertical"
             android:visibility="visible">
+
+            <fragment
+                android:id="@+id/place_autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
             <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapView"
@@ -92,6 +83,7 @@
                     android:progress="50" />
 
                 <TextView
+                    android:paddingRight="10dp"
                     android:id="@+id/text_radius"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -99,38 +91,6 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_wifi"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/text_wifi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="WIFI_SSID"
-                android:textAlignment="center" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_bluetooth"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="BLUETOOTH"
-                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
