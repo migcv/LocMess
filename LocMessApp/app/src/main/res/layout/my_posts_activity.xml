@@ -9,7 +9,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/profile_content"
+        layout="@layout/app_bar_my_posts"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -19,5 +19,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/activity_posts_drawer" />
+
 
 </android.support.v4.widget.DrawerLayout>
