@@ -14,20 +14,27 @@ public class ExpandableListDataPump {
     private static int count = 0;
 
     public static HashMap<Integer, List<String>> getData() {
-        setData("Macaco", "Eu gosto de macacos", "211234561a");
-        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
-        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
-        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
-        setData("Macaco", "Eu gosto de macacos", "211234561a");
-        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
-        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
-        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
-        setData("Macaco", "Eu gosto de macacos", "211234561a");
-        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
-        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
-        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
+        if(expandableListDetail.size() == 0) {
+            populate();
+            return expandableListDetail;
+        }
+        else
+            return expandableListDetail;
+    }
 
-        return expandableListDetail;
+    public static void populate(){
+        setData("Macaco", "Eu gosto de macacos", "211234561a");
+        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
+        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
+        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
+        setData("Macaco", "Eu gosto de macacos", "211234561a");
+        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
+        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
+        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
+        setData("Macaco", "Eu gosto de macacos", "211234561a");
+        setData("Macaco1", "Eu gosto de macacos1", "211234561b");
+        setData("Macaco2", "Eu gosto de macacos2", "211234561c");
+        setData("Macaco3", "Eu gosto de macacos3", "211234561d");
     }
 
     public static void setData(String title, String content, String contact){
