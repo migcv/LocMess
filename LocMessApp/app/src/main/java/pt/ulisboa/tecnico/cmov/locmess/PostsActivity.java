@@ -111,6 +111,8 @@ public class PostsActivity extends AppCompatActivity
         } else if (id == R.id.nav_posts) {
 
         } else if (id == R.id.nav_myposts) {
+            Intent intent = new Intent(PostsActivity.this, MyPostsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
 

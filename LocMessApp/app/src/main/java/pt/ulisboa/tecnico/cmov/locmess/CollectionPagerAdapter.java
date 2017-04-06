@@ -3,36 +3,40 @@ package pt.ulisboa.tecnico.cmov.locmess;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Rafael Barreira on 03/04/2017.
  */
 
-// Since this is an object collection, use a FragmentStatePagerAdapter,
-// and NOT a FragmentPagerAdapter.
-public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
-    public CollectionPagerAdapter(FragmentManager fm) {
-        super(fm);
+class CollectionPagerAdapter extends FragmentPagerAdapter {
+    private final List<Fragment> mFragmentList = new ArrayList<>();
+    private final List<String> mFragmentTitleList = new ArrayList<>();
+
+    public CollectionPagerAdapter(FragmentManager manager) {
+        super(manager);
     }
 
     @Override
-    public Fragment getItem(int i) {
-        Fragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        // Our object is just an integer :-P
-        args.putInt(ProfileFragment.ARG_OBJECT, i + 1);
-        fragment.setArguments(args);
-        return fragment;
+    public Fragment getItem(int position) {
+        return mFragmentList.get(position);
     }
 
     @Override
     public int getCount() {
-        return 100;
+        return mFragmentList.size();
+    }
+
+    public void addFragment(Fragment fragment, String title) {
+        mFragmentList.add(fragment);
+        mFragmentTitleList.add(title);
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "OBJECT " + (position + 1);
+        return mFragmentTitleList.get(position);
     }
 }
