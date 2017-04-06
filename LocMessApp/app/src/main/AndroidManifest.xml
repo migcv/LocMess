@@ -49,13 +49,17 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:title="@string/title_activity_location_option" />
         <activity
-            android:name=".ProfileActivity"
-            android:label="Profile User"
+        android:name=".ProfileActivity"
+        android:label="Profile User"
+        android:theme="@style/AppTheme.NoActionBar"
+        android:title="Profile User" />
+        <activity
+            android:name=".MyPostsActivity"
+            android:label="My Posts"
             android:theme="@style/AppTheme.NoActionBar"
-            android:title="Profile User" />
+            android:title="My Posts" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyByIqMmc8ovTFNQsiTS_reKsoZBw29RJuk"/>
     </application>
-
 </manifest>
