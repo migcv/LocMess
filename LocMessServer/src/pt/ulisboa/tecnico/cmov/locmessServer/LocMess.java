@@ -1,14 +1,15 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class LocMess {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	private static final int port = 6666;
 
+	public static void main(String[] args){
 		try {
 			ServerSocket ss = new ServerSocket(6666);
 			Socket s = ss.accept();// establishes connection
@@ -17,8 +18,9 @@ public class LocMess {
 			String str = dis.readUTF();
 			System.out.println("message= " + str);
 			ss.close();
-		} catch (Exception e) {
-			System.out.println(e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

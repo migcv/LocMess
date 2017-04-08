@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        CreateConnection cc = new CreateConnection();
+        CreateConnection cc = new CreateConnection(this);
         cc.execute();
 
         setContentView(R.layout.activity_main);
