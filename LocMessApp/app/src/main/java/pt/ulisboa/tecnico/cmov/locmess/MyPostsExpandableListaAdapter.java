@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -7,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,6 +27,7 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
     private Context context;
     private ArrayList<String> expandableListTitle;
     private HashMap<Integer, List<String>> expandableListDetail;
+    private PopupWindow popupMessage;
 
     public MyPostsExpandableListaAdapter(Context context, ArrayList<String> expandableListTitle,
                                        HashMap<Integer, List<String>> expandableListDetail) {
@@ -94,6 +100,26 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 Log.d("DEBUG", "OLAAAAAA");
+                final Dialog dialog = new Dialog(context);
+
+                dialog.setContentView(R.layout.delete_popup);
+
+                dialog.findViewById(R.id.delete).setOnClickListener( new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.d("DEBUG", "DELETE");
+                    }
+                }
+                );
+                dialog.findViewById(R.id.cancel).setOnClickListener( new View.OnClickListener() {
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                }
+                );
+
+
+
+                dialog.show();
             }
         };
         holder.button.setOnClickListener(clickL);

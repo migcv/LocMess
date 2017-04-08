@@ -124,6 +124,8 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
             startActivity(intent);
 
         } else if (id == R.id.nav_myposts) {
+            Intent intent = new Intent(ProfileActivity.this, MyPostsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
 
