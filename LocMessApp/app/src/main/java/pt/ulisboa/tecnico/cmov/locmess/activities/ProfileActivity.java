@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import pt.ulisboa.tecnico.cmov.locmess.CollectionPagerAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileFragment;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileIntererstsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.R;
