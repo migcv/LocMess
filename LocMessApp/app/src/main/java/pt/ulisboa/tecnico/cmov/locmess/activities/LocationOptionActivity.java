@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.RestritionOptionActivity;
+import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 
 public class LocationOptionActivity extends AppCompatActivity {
 
@@ -48,6 +50,9 @@ public class LocationOptionActivity extends AppCompatActivity {
     private MapboxMap map;
     private Marker marker ;
     private LocationEngine locationEngine;
+
+    private RadioButton radioButtonLocation;
+    private RadioButton radioButtonWifDirect;
 
     private static final String URL = "http://maps.googleapis.com/maps/api/geocode/xml";
 
@@ -77,8 +82,16 @@ public class LocationOptionActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+
+                if(radioButtonLocation.isChecked()) {
+                    NewPost.delivaryMode = NewPost.LOCATION;
+                    NewPost.location = marker.getPosition();
+                    NewPost.radius = radius;
+                }
+                else if(radioButtonWifDirect.isChecked()) {
+                    NewPost.delivaryMode = NewPost.WIFI_DIRECT;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), RestritionOptionActivity.class);
                 startActivity(intent);
             }
@@ -116,14 +129,16 @@ public class LocationOptionActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.radioButton_location).setOnClickListener(new View.OnClickListener() {
+        radioButtonLocation = (RadioButton) findViewById(R.id.radioButton_location);
+        radioButtonLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setLayoutsGone();
                 findViewById(R.id.layout_location).setVisibility(View.VISIBLE);
             }
         });
-        findViewById(R.id.radioButton_wifi_direct).setOnClickListener(new View.OnClickListener() {
+        radioButtonWifDirect = (RadioButton) findViewById(R.id.radioButton_wifi_direct);
+        radioButtonWifDirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setLayoutsGone();

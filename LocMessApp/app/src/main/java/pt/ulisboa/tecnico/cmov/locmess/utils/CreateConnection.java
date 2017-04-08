@@ -78,15 +78,16 @@ public class CreateConnection extends AsyncTask<String, Void, Void> {
             Log.d("INITIATE CONNECTION", "MANDEIIIIIIIIIIIIIIIII!");
             s.close();*/
 
-            Log.d("INITIATE CONNECTION", "CHEGUEIIIIIIIIIIIIIII!");
+            Log.d("CONNECTION", "Initiating connection!");
             Socket s = new Socket(ip, port);
             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
             dout.writeUTF("Hello Server");
             dout.flush();
             dout.close();
-            Log.d("INITIATE CONNECTION", "MANDEIIIIIIIIIIIIIIIII!");
+            Log.d("CONNECTION", "Connection successful!");
             s.close();
         } catch (Exception e) {
+            Log.d("CONNECTION", "Error connecting to server!");
             e.printStackTrace();
         }
         return null;

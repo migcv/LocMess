@@ -9,18 +9,30 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Locale;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 
 public class CreatePostActivity extends AppCompatActivity {
 
-    EditText datetime = null;
+    private EditText datetime = null;
+
+    private int hourPost;
+    private int minutePost;
+    private int dayPost;
+    private int monthPost;
+    private int yearPost;
+
+    private boolean error = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +59,60 @@ public class CreatePostActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+                error = false;
+                if(((EditText)findViewById(R.id.input_tittle)).getText().toString().isEmpty()) {
+                    ((EditText)findViewById(R.id.input_tittle)).setError("Tittle needed!");
+                    error = true;
+                }
+                if(((EditText)findViewById(R.id.input_content)).getText().toString().isEmpty()) {
+                    ((EditText)findViewById(R.id.input_content)).setError("Content needed!");
+                    error = true;
+                }
+                if(((EditText)findViewById(R.id.input_contact)).getText().toString().isEmpty()) {
+                    ((EditText)findViewById(R.id.input_contact)).setError("Contact needed!");
+                    error = true;
+                }
+                if(!Patterns.EMAIL_ADDRESS.matcher(((EditText)findViewById(R.id.input_contact)).getText().toString()).matches() &&
+                        !Patterns.PHONE.matcher(((EditText)findViewById(R.id.input_contact)).getText().toString()).matches()) {
+                    ((EditText)findViewById(R.id.input_contact)).setError("Contact not valid!");
+                    error = true;
+                }
+                SimpleDateFormat dateF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(yearPost, monthPost, dayPost, hourPost, minutePost);
+                try {
+                    if(new SimpleDateFormat("EEE, d MMM yyyy HH:mm").parse(dateF.format(calendar)).before(Calendar.getInstance().getTime())) {
+                        ((EditText)findViewById(R.id.input_time)).setError("Time not valid!");
+                        error = true;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if(!error) {
+                    NewPost.tittle = ((EditText) findViewById(R.id.input_tittle)).getText().toString();
+                    NewPost.content = ((EditText) findViewById(R.id.input_content)).getText().toString();
+                    NewPost.contact = ((EditText) findViewById(R.id.input_contact)).getText().toString();
 
-                Intent intent = new Intent(getApplicationContext(), LocationOptionActivity.class);
-                startActivity(intent);
+                    NewPost.day = dayPost;
+                    NewPost.month = monthPost;
+                    NewPost.year = yearPost;
+                    NewPost.hour = hourPost;
+                    NewPost.minute = minutePost;
+
+                    Intent intent = new Intent(getApplicationContext(), LocationOptionActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
         datetime = (EditText) findViewById(R.id.input_time);
         datetime.setKeyListener(null);
+        Calendar myCalendar = Calendar.getInstance();
+        dayPost = myCalendar.get(Calendar.DAY_OF_MONTH);
+        monthPost = myCalendar.get(Calendar.MONTH);
+        yearPost = myCalendar.get(Calendar.YEAR);
+        hourPost = myCalendar.get(Calendar.HOUR_OF_DAY);
+        minutePost = myCalendar.get(Calendar.MINUTE);
         SimpleDateFormat dateF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", Locale.getDefault());
         String date = dateF.format(Calendar.getInstance().getTime());
         datetime.setText(date);
@@ -66,42 +122,45 @@ public class CreatePostActivity extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
                     pickTime();
+                    datetime.setError(null);
                 }
             }
         });
-
         datetime.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 pickTime();
+                datetime.setError(null);
             }
         });
     }
 
     private void pickTime() {
         Calendar myCalendar = Calendar.getInstance();
-        int day = myCalendar.get(Calendar.DAY_OF_MONTH);
-        int month = myCalendar.get(Calendar.MONTH);
-        int year = myCalendar.get(Calendar.YEAR);
-        int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
-        int minute = myCalendar.get(Calendar.MINUTE);
+        dayPost = myCalendar.get(Calendar.DAY_OF_MONTH);
+        monthPost = myCalendar.get(Calendar.MONTH);
+        yearPost = myCalendar.get(Calendar.YEAR);
+        hourPost = myCalendar.get(Calendar.HOUR_OF_DAY);
+        minutePost = myCalendar.get(Calendar.MINUTE);
 
         final TimePickerDialog timePickerDialog = new TimePickerDialog(CreatePostActivity.this,
                 new TimePickerDialog.OnTimeSetListener() {
 
                     @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        hourPost = hourOfDay;
+                        minutePost = minute;
                         datetime.setText(datetime.getText() + String.format(" %02d:%02d", hourOfDay, minute));
                     }
-                }, hour, minute, true);
+                }, hourPost, minutePost, true);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(CreatePostActivity.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        // TODO Auto-generated method stub
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        yearPost = year;
+                        monthPost = monthOfYear;
+                        dayPost = dayOfMonth;
                         SimpleDateFormat dateF = new SimpleDateFormat("EEE, d MMM yyyy");
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
@@ -109,8 +168,9 @@ public class CreatePostActivity extends AppCompatActivity {
                         datetime.setText(date);
                         timePickerDialog.show();
                     }
-                }, year, month, day);
+                }, yearPost, monthPost, dayPost);
         datePickerDialog.show();
+
     }
 
 }
