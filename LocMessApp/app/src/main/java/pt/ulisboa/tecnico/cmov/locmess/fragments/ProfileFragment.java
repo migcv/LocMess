@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.cmov.locmess.R;
+
+
 /**
  * Created by Rafael Barreira on 03/04/2017.
  */
