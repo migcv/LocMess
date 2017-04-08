@@ -1,37 +1,45 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import pt.ulisboa.tecnico.cmov.locmess.CollectionPagerAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileFragment;
+import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileIntererstsFragment;
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
 /**
- * Created by Rafael Barreira on 06/04/2017.
+ * Created by Rafael Barreira on 03/04/2017.
  */
 
-public class MyPostsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+public class ProfileActivity extends FragmentActivity  implements NavigationView.OnNavigationItemSelectedListener {
+    CollectionPagerAdapter mCollectionPagerAdapter;
+    ViewPager mViewPager;
+    TabLayout tabLayout;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_posts);
+        setContentView(R.layout.profile_activity_view);
+
+
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        setupViewPager(mViewPager);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setOnTabSelectedListener(onTabSelectedListener(mViewPager));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
-        setSupportActionBar(toolbar);
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -39,17 +47,37 @@ public class MyPostsActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(MyPostsActivity.this);
+        navigationView.setNavigationItemSelectedListener(ProfileActivity.this);
 
-        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
+    }
 
-        ArrayList<String> expandableListTitle = new ArrayList<String>();
-        for(int i = 0; i < expandableList.size(); i++) {
-            expandableListTitle.add(expandableList.get(i).get(0));
-        }
-        ExpandableListAdapter expandableListAdapter = new MyPostsExpandableListaAdapter(this, expandableListTitle, expandableList);
-        expandableListView.setAdapter(expandableListAdapter);
+    private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager viewPager) {
+
+        return new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        };
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        CollectionPagerAdapter adapter = new CollectionPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new ProfileFragment(), "About");
+        adapter.addFragment(new ProfileIntererstsFragment(), "Interests");
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        onTabSelectedListener(viewPager);
     }
 
     @Override
@@ -91,14 +119,15 @@ public class MyPostsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MyPostsActivity.this, ProfileActivity.class);
-            startActivity(intent);
+            Log.d("DEBUG", "TESTE 0");
 
         } else if (id == R.id.nav_posts) {
-            Intent intent = new Intent(MyPostsActivity.this, PostsActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, PostsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_myposts) {
+            Intent intent = new Intent(ProfileActivity.this, MyPostsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
 
@@ -110,4 +139,3 @@ public class MyPostsActivity extends AppCompatActivity
         return true;
     }
 }
-

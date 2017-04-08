@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,36 +25,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignupActivity"
+            android:name=".activities.SignupActivity"
             android:label="@string/title_activity_signup"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".PostsActivity"
+            android:name=".activities.PostsActivity"
             android:label="@string/title_activity_posts"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="Posts" />
         <activity
-            android:name=".CreatePostActivity"
+            android:name=".activities.CreatePostActivity"
             android:label="@string/title_activity_create_post"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="@string/title_activity_create_post" />
         <activity
-            android:name=".LocationOptionActivity"
+            android:name=".activities.LocationOptionActivity"
             android:label="@string/title_activity_location_option"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="@string/title_activity_location_option" />
         <activity
-            android:name=".RestritionOptionActivity"
+            android:name=".activities.RestritionOptionActivity"
             android:label="@string/title_activity_restrition_option"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="@string/title_activity_location_option" />
         <activity
-        android:name=".ProfileActivity"
+        android:name=".activities.ProfileActivity"
         android:label="Profile User"
         android:theme="@style/AppTheme.NoActionBar"
         android:title="Profile User" />
         <activity
-            android:name=".MyPostsActivity"
+            android:name=".activities.MyPostsActivity"
             android:label="My Posts"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="My Posts" />

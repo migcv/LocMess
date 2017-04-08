@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -14,8 +14,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.util.Date;
 import java.util.Locale;
+
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
 public class CreatePostActivity extends AppCompatActivity {
 

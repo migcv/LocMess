@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 /**
  * Created by dharuqueshil on 31/03/2017.
@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 

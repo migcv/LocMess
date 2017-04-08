@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
@@ -35,6 +35,9 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 
 import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.RestritionOptionActivity;
 
 public class LocationOptionActivity extends AppCompatActivity {
 

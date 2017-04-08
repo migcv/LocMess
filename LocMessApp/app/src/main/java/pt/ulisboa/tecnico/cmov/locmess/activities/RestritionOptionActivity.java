@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,6 +13,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 
 public class RestritionOptionActivity extends AppCompatActivity {
 

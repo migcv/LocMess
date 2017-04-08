@@ -1,6 +1,5 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -14,11 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import java.io.DataOutputStream;
-import java.net.Socket;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import pt.ulisboa.tecnico.cmov.locmess.utils.CreateConnection;
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
 
 public class MainActivity extends AppCompatActivity {

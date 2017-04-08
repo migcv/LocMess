@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 import android.content.Context;
 
@@ -8,6 +8,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
+
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
 /**
  * Created by dharuqueshil on 06/04/2017.

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="pt.ulisboa.tecnico.cmov.locmess.SignupActivity">
+    tools:context="pt.ulisboa.tecnico.cmov.locmess.activities.SignupActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

@@ -1,10 +1,7 @@
-package pt.ulisboa.tecnico.cmov.locmess;
+package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,17 +12,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.utils.ExpandableListDataPump;
+import pt.ulisboa.tecnico.cmov.locmess.utils.MyPostsExpandableListaAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.R;
 
-public class PostsActivity extends AppCompatActivity
+/**
+ * Created by Rafael Barreira on 06/04/2017.
+ */
+
+public class MyPostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private static final int REQUEST_CREATE_POST = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +35,6 @@ public class PostsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-                Intent intent = new Intent(getApplicationContext(), CreatePostActivity.class);
-                startActivityForResult(intent, REQUEST_CREATE_POST);
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -52,7 +43,7 @@ public class PostsActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(PostsActivity.this);
+        navigationView.setNavigationItemSelectedListener(MyPostsActivity.this);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
@@ -61,7 +52,7 @@ public class PostsActivity extends AppCompatActivity
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        ExpandableListAdapter expandableListAdapter = new MyPostsExpandableListaAdapter(this, expandableListTitle, expandableList);
         expandableListView.setAdapter(expandableListAdapter);
     }
 
@@ -104,15 +95,14 @@ public class PostsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            Log.d("DEBUG", "TESTE 0");
-            Intent intent = new Intent(PostsActivity.this, ProfileActivity.class);
+            Intent intent = new Intent(MyPostsActivity.this, ProfileActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_posts) {
+            Intent intent = new Intent(MyPostsActivity.this, PostsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_myposts) {
-            Intent intent = new Intent(PostsActivity.this, MyPostsActivity.class);
-            startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
 
@@ -124,5 +114,4 @@ public class PostsActivity extends AppCompatActivity
         return true;
     }
 }
-
 
