@@ -44,8 +44,6 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
 
-
-
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,11 +93,12 @@ public class SignupActivity extends AppCompatActivity {
                             Socket s = SocketHandler.getSocket();
                             Log.d("CONNECTION", "Connection successful!");
                             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-                            dout.writeUTF("SignUp%|%" + name + "%|%" + password + "%|% " + email);
+                            dout.writeUTF("SignUp;:;" + name + ";:;" + password + ";:; " + email);
                             dout.flush();
                             //dout.close();
                             DataInputStream dis = new DataInputStream(s.getInputStream());
                             str = dis.readUTF();
+                            Log.d("SIGNUP", str);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

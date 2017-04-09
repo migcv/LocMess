@@ -22,18 +22,28 @@ public class LocMess {
 			s = ss.accept();// establishes connection
 			System.out.println("ACEITEI ALGUEM!");
 
+			// SIGNUP
+			User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
+			LocMess.getUsers().put("qwerty", u);
+			LocMess.getPosts().put(u, null);
+			LocMess.getUserRestrictions().put(u, null);
+			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
+
 			while (true) {
 				DataInputStream dis = new DataInputStream(s.getInputStream());
 				String str = dis.readUTF();
 				String[] res = parser(str);
 
 				System.out.println("message= " + str);
+				System.out.println("RES[0]: "+ res[0]);
+				System.out.println("RES[1]: "+ res[1]);
+				System.out.println("RES[2]: "+ res[2]);
 
 				if (res[0].equals("Login")) {
 					new Login(res[1], res[2]);
 				}
-				if(res[0].equals("Restrictions")){
-					
+				if (res[0].equals("Restrictions")) {
+
 				}
 				if (res[0].equals("SignUp")) {
 					new SignUp(res[1], res[2], res[3]);
@@ -57,7 +67,7 @@ public class LocMess {
 	}
 
 	public static String[] parser(String revc) {
-		return revc.split("%|%");
+		return revc.split(";:;");
 	}
 
 	public static Socket getSocket() {

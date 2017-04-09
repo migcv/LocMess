@@ -104,11 +104,12 @@ public class MainActivity extends AppCompatActivity {
                             Socket s = SocketHandler.getSocket();
                             Log.d("CONNECTION", "Connection successful!");
                             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-                            dout.writeUTF("Login%|%" + username + "%|%" + password);
+                            dout.writeUTF("Login;:;" + username + ";:;" + password);
                             dout.flush();
                             //dout.close();
                             DataInputStream dis = new DataInputStream(s.getInputStream());
                             str = dis.readUTF();
+                            Log.d("SIGNIN", str);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

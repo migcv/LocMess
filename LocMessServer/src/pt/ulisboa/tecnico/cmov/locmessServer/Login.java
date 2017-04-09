@@ -9,6 +9,9 @@ public class Login {
 	public Login(String username, String password) {
 		Socket s = LocMess.getSocket();
 		DataOutputStream dataOutputStream;
+		
+		System.out.println("USERNAME: " + username);
+		System.out.println("PASSWORD: " + password);
 		if (LocMess.getUsers().isEmpty()) {
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -19,7 +22,9 @@ public class Login {
 				e.printStackTrace();
 			}
 		}
+		
 		else if (LocMess.getUsers().get(username).getPassword().equals(password)) {
+			
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF("OK");
