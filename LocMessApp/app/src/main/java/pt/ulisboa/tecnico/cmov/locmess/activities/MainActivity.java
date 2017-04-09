@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -13,10 +14,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pt.ulisboa.tecnico.cmov.locmess.utils.CreateConnection;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -24,20 +31,25 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
-    @InjectView(R.id.input_username) EditText _usernameText;
-    @InjectView(R.id.input_password) EditText _passwordText;
-    @InjectView(R.id.btn_login) Button _loginButton;
-    @InjectView(R.id.link_signup) TextView _signupLink;
+    @InjectView(R.id.input_username)
+    EditText _usernameText;
+    @InjectView(R.id.input_password)
+    EditText _passwordText;
+    @InjectView(R.id.btn_login)
+    Button _loginButton;
+    @InjectView(R.id.link_signup)
+    TextView _signupLink;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
+
         CreateConnection cc = new CreateConnection(this);
         cc.execute();
 
-        setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
 
         this.setTitle("Login");
 
@@ -77,16 +89,40 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.show();
 
 
-        String username = _usernameText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String username = _usernameText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        String str = "";
+                        try {
+                            Socket s = SocketHandler.getSocket();
+                            Log.d("CONNECTION", "Connection successful!");
+                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                            dout.writeUTF("Login%|%" + username + "%|%" + password);
+                            dout.flush();
+                            //dout.close();
+                            DataInputStream dis = new DataInputStream(s.getInputStream());
+                            str = dis.readUTF();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (str.equals("OK")) {
+                            Log.d("LOGIN", "Success");
+                            onLoginSuccess();
+                        } else {
+                            Log.d("LOGIN", "Failed");
+                            onLoginFailed();
+                        }
+
                         // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
+                        //onLoginSuccess();
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
@@ -147,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
 
         return valid;
     }
-
 
 }
 

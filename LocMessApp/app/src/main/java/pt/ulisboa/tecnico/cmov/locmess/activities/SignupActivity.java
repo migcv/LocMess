@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -12,9 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -36,6 +43,8 @@ public class SignupActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
+
+
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,19 +78,43 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String name = _nameText.getText().toString();
+        final String email = _emailText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        String str = "";
+                        try {
+                            Socket s = SocketHandler.getSocket();
+                            Log.d("CONNECTION", "Connection successful!");
+                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                            dout.writeUTF("SignUp%|%" + name + "%|%" + password + "%|% " + email);
+                            dout.flush();
+                            //dout.close();
+                            DataInputStream dis = new DataInputStream(s.getInputStream());
+                            str = dis.readUTF();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if(str.contains(":Username")){
+                            onSignupFailedUsername();
+                        }
+                        else if(str.contains("Email")){
+                            onSignupFailedEmail();
+                        }
+                        else if(str.contains("OK")){
+                            onSignupSuccess();
+                        }
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
+                        //
                         progressDialog.dismiss();
                     }
                 }, 3000);
@@ -98,6 +131,17 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
+
+        _signupButton.setEnabled(true);
+    }
+
+    public void onSignupFailedUsername() {
+        Toast.makeText(getBaseContext(), "Sign up failed, Username already exists", Toast.LENGTH_LONG).show();
+
+        _signupButton.setEnabled(true);
+    }
+    public void onSignupFailedEmail() {
+        Toast.makeText(getBaseContext(), "Sign up failed, Email already exists", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }
