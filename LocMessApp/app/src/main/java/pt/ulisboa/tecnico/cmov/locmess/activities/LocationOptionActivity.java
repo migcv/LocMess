@@ -84,12 +84,12 @@ public class LocationOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if(radioButtonLocation.isChecked()) {
-                    NewPost.delivaryMode = NewPost.LOCATION;
+                    NewPost.deliveryMode = NewPost.LOCATION;
                     NewPost.location = marker.getPosition();
                     NewPost.radius = radius;
                 }
                 else if(radioButtonWifDirect.isChecked()) {
-                    NewPost.delivaryMode = NewPost.WIFI_DIRECT;
+                    NewPost.deliveryMode = NewPost.WIFI_DIRECT;
                 }
 
                 Intent intent = new Intent(getApplicationContext(), RestritionOptionActivity.class);

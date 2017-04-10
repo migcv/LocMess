@@ -11,7 +11,7 @@ public class Posts {
 	private String coordinates;
 	private String radius;
 	private Integer id = 0;
-	
+
 	public Posts(String title, String content, String contact, String date, String time, String deliveryMode) {
 		this.title = title;
 		this.content = content;
@@ -35,7 +35,8 @@ public class Posts {
 		this.id++;
 	}
 
-	public Posts() {}
+	public Posts() {
+	}
 
 	public void addPostsWIFI(String username, String title, String content, String contact, String date, String time,
 			String deliveryMode) {

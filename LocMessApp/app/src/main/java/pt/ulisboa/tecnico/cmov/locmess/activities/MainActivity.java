@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (str.equals("OK")) {
                             Log.d("LOGIN", "Success");
+                            SocketHandler.setUsername(username);
                             onLoginSuccess();
                         } else {
                             Log.d("LOGIN", "Failed");

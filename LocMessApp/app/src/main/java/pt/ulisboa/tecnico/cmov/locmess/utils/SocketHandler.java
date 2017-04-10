@@ -8,12 +8,21 @@ import java.net.Socket;
 
 public class SocketHandler {
     private static Socket socket;
+    private static String username;
 
-    public static synchronized Socket getSocket(){
+    public static synchronized Socket getSocket() {
         return socket;
     }
 
-    public static synchronized void setSocket(Socket socket){
+    public static synchronized void setSocket(Socket socket) {
         SocketHandler.socket = socket;
+    }
+
+    public static synchronized String getUsername() {
+        return username;
+    }
+
+    public static synchronized void setUsername(String username) {
+        SocketHandler.username = username;
     }
 }

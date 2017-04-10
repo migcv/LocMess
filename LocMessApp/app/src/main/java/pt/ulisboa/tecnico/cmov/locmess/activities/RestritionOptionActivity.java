@@ -3,10 +3,12 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,11 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 public class RestritionOptionActivity extends AppCompatActivity {
 
@@ -75,8 +82,16 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 ((TextView)postDialog.findViewById(R.id.text_contact)).setText(NewPost.contact);
                 ((TextView)postDialog.findViewById(R.id.text_date)).setText(String.format(" %02d:%02d", NewPost.hour, NewPost.minute) + " "
                                     + NewPost.day + "/" + NewPost.month + "/" + NewPost.year);
-                ((TextView)postDialog.findViewById(R.id.text_delivery_mode)).setText(NewPost.delivaryMode);
-                ((TextView)postDialog.findViewById(R.id.text_location)).setText(String.format(" %.4f, %.4f %d", NewPost.location.getLatitude(), NewPost.location.getLongitude(), NewPost.radius));
+                ((TextView)postDialog.findViewById(R.id.text_delivery_mode)).setText(NewPost.deliveryMode);
+
+                if(NewPost.deliveryMode.equals("GPS")) {
+                    ((TextView) postDialog.findViewById(R.id.text_location)).setText(String.format(" %.4f, %.4f %d", NewPost.location.getLatitude(), NewPost.location.getLongitude(), NewPost.radius));
+                }
+                else{
+                    postDialog.findViewById(R.id.location).setVisibility(View.GONE);
+                    postDialog.findViewById(R.id.text_location).setVisibility(View.GONE);
+                }
+
                 ((TextView)postDialog.findViewById(R.id.text_restriction_policy)).setText(NewPost.restrictionPolicy);
                 if(NewPost.restrictionList.isEmpty()) {
                     postDialog.findViewById(R.id.layout_restrictions).setVisibility(View.GONE);
@@ -89,8 +104,28 @@ public class RestritionOptionActivity extends AppCompatActivity {
                     }
                 }
 
+                final String toSend;
+                if(NewPost.deliveryMode.equals("GPS")){
+                    toSend = "NewPosts;:;" + SocketHandler.getUsername() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode + ";:;" + String.format("%.4f, %.4f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius;
+                }else {
+                    toSend = "NewPosts;:;" + SocketHandler.getUsername() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode;
+                }
+
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
+                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                            StrictMode.setThreadPolicy(policy);
+                            try {
+                                Socket s = SocketHandler.getSocket();
+                                Log.d("CONNECTION", "Connection successful!");
+                                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                                dout.writeUTF(toSend);
+                                dout.flush();
+                                //dout.close();
+                                Log.d("NEW POST", toSend);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             Intent activity = new Intent(getApplicationContext(), PostsActivity.class);
                             startActivity(activity);
                         }

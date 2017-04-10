@@ -10,7 +10,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 public class NewPost {
 
-    public static final String LOCATION = "LOCATION";
+    public static final String LOCATION = "GPS";
     public static final String WIFI_DIRECT = "WIFI_DIRECT";
 
     public static final String EVERYONE = "EVERYONE";
@@ -27,7 +27,7 @@ public class NewPost {
     public static int month;
     public static int year;
 
-    public static String delivaryMode;
+    public static String deliveryMode;
     public static LatLng location;
     public static int radius;
 
