@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.locmessServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class SignUp {
@@ -33,11 +32,10 @@ public class SignUp {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else{
+		} else {
 			Session ss = new Session();
 			String token = ss.addUserToSession(username);
-			System.out.println("TOKEN" + token);
+			System.out.println("TOKEN: " + token);
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF("OK;:;" + token);
@@ -52,7 +50,6 @@ public class SignUp {
 			}
 		}
 
-		
 	}
 
 }

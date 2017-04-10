@@ -6,6 +6,7 @@ import java.util.Random;
 public class Session {
 	private Hashtable<String, String> userSessions = new Hashtable<String, String>();
 
+
 	public Hashtable<String, String> getUserSessions() {
 		return userSessions;
 	}
@@ -27,6 +28,9 @@ public class Session {
 
 	public String addUserToSession(String username) {
 		String token = createToken();
+		while (userInSession(token)) {
+			token = createToken();
+		}
 		userSessions.put(token, username);
 		return token;
 	}
@@ -36,11 +40,9 @@ public class Session {
 	}
 
 	public User getUserFromSession(String token) {
-
 		if (token == null) {
 			return null;
 		}
-
 		if (userSessions.containsKey(token)) {
 			User u = LocMess.getUsers().get(userSessions.get(token));
 			return u;

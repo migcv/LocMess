@@ -26,6 +26,7 @@ public class Login {
 		else if (LocMess.getUsers().get(username).getPassword().equals(password)) {
 			Session ss = new Session();
 			String token = ss.addUserToSession(username);
+			System.out.println("TOKEN: " + token);
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF("OK;:;" + token);

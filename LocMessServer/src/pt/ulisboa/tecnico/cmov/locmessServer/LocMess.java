@@ -10,11 +10,12 @@ import java.util.HashMap;
 public class LocMess {
 
 	private static final int port = 6666;
-	static Socket s;
-	static HashMap<String, User> users = new HashMap<>();
-	static HashMap<User, Posts> posts = new HashMap<>();
-	static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
-	static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
+	private static Socket s;
+	private static HashMap<String, User> users = new HashMap<>();
+	private static HashMap<User, Posts> posts = new HashMap<>();
+	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
+	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
+	private static Session session = new Session();
 
 	public static void main(String[] args) {
 		try {
@@ -35,47 +36,21 @@ public class LocMess {
 				String[] res = parser(str);
 
 				System.out.println("message= " + str);
-				
 
 				if (res[0].equals("Login")) {
-					System.out.println("RES[0]: "+ res[0]);
-					System.out.println("RES[1]: "+ res[1]);
-					System.out.println("RES[2]: "+ res[2]);
 					new Login(res[1], res[2]);
 				}
 				if (res[0].equals("Restrictions")) {
 
 				}
 				if (res[0].equals("SignUp")) {
-					System.out.println("RES[0]: "+ res[0]);
-					System.out.println("RES[1]: "+ res[1]);
-					System.out.println("RES[2]: "+ res[2]);
-					System.out.println("RES[2]: "+ res[3]);
 					new SignUp(res[1], res[2], res[3]);
 				}
 				if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
-					System.out.println("RES[0]: "+ res[0]);
-					System.out.println("RES[1]: "+ res[1]);
-					System.out.println("RES[2]: "+ res[2]);
-					System.out.println("RES[3]: "+ res[3]);
-					System.out.println("RES[4]: "+ res[4]);
-					System.out.println("RES[5]: "+ res[5]);
-					System.out.println("RES[6]: "+ res[6]);
-					System.out.println("RES[7]: "+ res[7]);
 					Posts p = new Posts();
 					p.addPostsWIFI(res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
 				}
 				if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
-					System.out.println("RES[0]: "+ res[0]);
-					System.out.println("RES[1]: "+ res[1]);
-					System.out.println("RES[2]: "+ res[2]);
-					System.out.println("RES[3]: "+ res[3]);
-					System.out.println("RES[4]: "+ res[4]);
-					System.out.println("RES[5]: "+ res[5]);
-					System.out.println("RES[6]: "+ res[6]);
-					System.out.println("RES[7]: "+ res[7]);
-					System.out.println("RES[8]: "+ res[8]);
-					System.out.println("RES[9]: "+ res[9]);
 					Posts p = new Posts();
 					p.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 				}
@@ -111,6 +86,10 @@ public class LocMess {
 
 	public static HashMap<String, ArrayList<String>> getGlobalRestrictions() {
 		return globalRestrictions;
+	}
+
+	public static Session getSession() {
+		return session;
 	}
 
 }

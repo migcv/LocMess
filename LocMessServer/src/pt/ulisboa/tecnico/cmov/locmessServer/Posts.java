@@ -38,19 +38,21 @@ public class Posts {
 	public Posts() {
 	}
 
-	public void addPostsWIFI(String username, String title, String content, String contact, String date, String time,
+	public void addPostsWIFI(String token, String title, String content, String contact, String date, String time,
 			String deliveryMode) {
 
+		Session ss = LocMess.getSession();
+		User u = ss.getUserFromSession(token);
 		Posts p = new Posts(title, content, contact, date, time, deliveryMode);
-		User u = LocMess.getUsers().get(username);
 		LocMess.getPosts().put(u, p);
 	}
 
-	public void addPostsGPS(String username, String title, String content, String contact, String date, String time,
+	public void addPostsGPS(String token, String title, String content, String contact, String date, String time,
 			String deliveryMode, String coordinates, String radius) {
 
+		Session ss = LocMess.getSession();
+		User u = ss.getUserFromSession(token);
 		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius);
-		User u = LocMess.getUsers().get(username);
 		LocMess.getPosts().put(u, p);
 	}
 
