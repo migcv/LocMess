@@ -24,10 +24,11 @@ public class Login {
 		}
 		
 		else if (LocMess.getUsers().get(username).getPassword().equals(password)) {
-			
+			Session ss = new Session();
+			String token = ss.addUserToSession(username);
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF("OK");
+				dataOutputStream.writeUTF("OK;:;" + token);
 				dataOutputStream.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

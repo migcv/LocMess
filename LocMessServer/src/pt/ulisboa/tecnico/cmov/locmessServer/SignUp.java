@@ -35,9 +35,12 @@ public class SignUp {
 			}
 		}
 		else{
+			Session ss = new Session();
+			String token = ss.addUserToSession(username);
+			System.out.println("TOKEN" + token);
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF("OK");
+				dataOutputStream.writeUTF("OK;:;" + token);
 				dataOutputStream.flush();
 				User u = new User(username, password, email);
 				LocMess.getUsers().put(username, u);

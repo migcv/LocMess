@@ -114,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        if (str.equals("OK")) {
+                        if (str.startsWith("OK;:;")) {
                             Log.d("LOGIN", "Success");
-                            SocketHandler.setUsername(username);
+                            String[] aux = str.split(";:;");
+                            Log.d("TOKEN", aux[1]);
+                            SocketHandler.setToken(aux[1]);
                             onLoginSuccess();
                         } else {
                             Log.d("LOGIN", "Failed");

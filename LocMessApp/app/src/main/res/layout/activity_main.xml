@@ -31,7 +31,7 @@ android:fitsSystemWindows="true">
         <EditText android:id="@+id/input_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username"
+            android:hint="@string/token"
             android:inputType="textPersonName"/>
     </android.support.design.widget.TextInputLayout>
 

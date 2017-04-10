@@ -108,8 +108,9 @@ public class SignupActivity extends AppCompatActivity {
                         else if(str.contains("Email")){
                             onSignupFailedEmail();
                         }
-                        else if(str.contains("OK")){
-                            SocketHandler.setUsername(name);
+                        else if(str.contains("OK;:;")){
+                            String[] aux = str.split(";:;");
+                            SocketHandler.setToken(aux[1]);
                             onSignupSuccess();
                         }
                         // On complete call either onSignupSuccess or onSignupFailed

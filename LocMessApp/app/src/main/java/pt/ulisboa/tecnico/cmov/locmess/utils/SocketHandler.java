@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class SocketHandler {
     private static Socket socket;
-    private static String username;
+    private static String token;
 
     public static synchronized Socket getSocket() {
         return socket;
@@ -18,11 +18,11 @@ public class SocketHandler {
         SocketHandler.socket = socket;
     }
 
-    public static synchronized String getUsername() {
-        return username;
+    public static synchronized String getToken() {
+        return token;
     }
 
-    public static synchronized void setUsername(String username) {
-        SocketHandler.username = username;
+    public static synchronized void setToken(String token) {
+        SocketHandler.token = token;
     }
 }
