@@ -64,7 +64,8 @@ public class ProfileIntererstsFragment extends Fragment {
             dout.flush();
             DataInputStream dis = new DataInputStream(s.getInputStream());
             str = dis.readUTF();
-            String[] aux1 = str.split("[,\\;\\:]");
+            String[] aux1 = str.split(":");
+            restrictionsApp.put(aux1[0], new ArrayList<String>());
             for(int i = 0; i< aux1.length;i++){
                 Log.d("MYRESTRICTIONS", aux1[i]);
             }

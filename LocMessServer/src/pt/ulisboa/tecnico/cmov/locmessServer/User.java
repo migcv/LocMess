@@ -66,12 +66,11 @@ public class User {
 		} else {
 			String str = "";
 			for (String key : res.keySet()) {
-				str = str.concat(";");
 				str = str.concat(key);
 				str = str.concat(":");
 				for (int i = 0; i < res.get(key).size(); i++) {
 					str = str.concat(res.get(key).get(i));
-					str = str.concat(",");
+					str = str.concat(":");
 				}
 			}
 			try {

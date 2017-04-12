@@ -21,7 +21,7 @@ import javax.net.ssl.TrustManager;
 
 public class CreateConnection extends AsyncTask<String, Void, Void> {
 
-    private static final String ip = "10.22.107.32";
+    private static final String ip = "192.168.1.5";
     private static final int port = 6666;
     private static SSLSocketFactory sslSocketFactory;
     public Context c;
