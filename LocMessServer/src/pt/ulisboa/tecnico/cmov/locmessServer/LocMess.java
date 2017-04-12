@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 public class LocMess {
 
@@ -15,6 +16,7 @@ public class LocMess {
 	private static HashMap<User, Posts> posts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
+	private static Hashtable<String, String> userSessions = new Hashtable<String, String>();
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
@@ -27,7 +29,16 @@ public class LocMess {
 			User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
 			LocMess.getUsers().put("qwerty", u);
 			LocMess.getPosts().put(u, null);
-			LocMess.getUserRestrictions().put(u, null);
+
+			// Create user restrictions
+			HashMap<String, ArrayList<String>> aux = new HashMap<>();
+			ArrayList<String> aux1 = new ArrayList<>();
+			aux1.add("Macaco");
+			aux1.add("Gorila");
+			aux1.add("Chimpanze");
+			aux.put("Animals", aux1);
+
+			LocMess.getUserRestrictions().put(u, aux);
 			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
 
 			while (true) {
@@ -40,8 +51,13 @@ public class LocMess {
 				if (res[0].equals("Login")) {
 					new Login(res[1], res[2]);
 				}
+				if (res[0].equals("MYRestrictions")) {
+					User u1 = session.getUserFromSession(res[1]);
+					LocMess.getUsers().get(u1.getUsername()).sendRestrictions(u1.getUsername());
+				}
 				if (res[0].equals("Restrictions")) {
-
+					User ux = session.getUserFromSession(res[1]);
+					LocMess.getUsers().get(ux.getUsername()).addRestriction(res[1], res[2]);
 				}
 				if (res[0].equals("SignUp")) {
 					new SignUp(res[1], res[2], res[3]);
@@ -90,6 +106,10 @@ public class LocMess {
 
 	public static Session getSession() {
 		return session;
+	}
+
+	public static Hashtable<String, String> getUserSessions() {
+		return userSessions;
 	}
 
 }

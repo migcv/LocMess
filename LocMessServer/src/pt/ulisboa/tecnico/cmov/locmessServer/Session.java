@@ -4,12 +4,6 @@ import java.util.Hashtable;
 import java.util.Random;
 
 public class Session {
-	private Hashtable<String, String> userSessions = new Hashtable<String, String>();
-
-
-	public Hashtable<String, String> getUserSessions() {
-		return userSessions;
-	}
 
 	public String createToken() {
 		Random r = new Random();
@@ -20,7 +14,7 @@ public class Session {
 
 	public boolean userInSession(String userToken) {
 
-		if (userSessions.containsKey(userToken)) {
+		if (LocMess.getUserSessions().containsKey(userToken)) {
 			return true;
 		}
 		return false;
@@ -31,20 +25,20 @@ public class Session {
 		while (userInSession(token)) {
 			token = createToken();
 		}
-		userSessions.put(token, username);
+		LocMess.getUserSessions().put(token, username);
 		return token;
 	}
 
 	public void removeUserFromSession(String token) {
-		userSessions.remove(token);
+		LocMess.getUserSessions().remove(token);
 	}
 
 	public User getUserFromSession(String token) {
 		if (token == null) {
 			return null;
 		}
-		if (userSessions.containsKey(token)) {
-			User u = LocMess.getUsers().get(userSessions.get(token));
+		if (LocMess.getUserSessions().containsKey(token)) {
+			User u = LocMess.getUsers().get(LocMess.getUserSessions().get(token));
 			return u;
 		}
 		return null;
