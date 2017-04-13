@@ -30,28 +30,14 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 public class ProfileIntererstsFragment extends Fragment {
 
     HashMap<String, ArrayList<String>> restrictionsApp = new HashMap<>();
-    HashMap<String, ArrayList<String>> restrinctionsUser = new HashMap<>();
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.profile_fragment2_view, container, false);
 
-
-        restrictionsApp.put("Profession", new ArrayList<String>());
-        restrictionsApp.get("Profession").add("Estudante");
-        restrictionsApp.get("Profession").add("Pedreiro");
-        restrictionsApp.put("Music", new ArrayList<String>());
-        restrictionsApp.get("Music").add("Rock");
-        restrictionsApp.get("Music").add("Pop");
-        restrictionsApp.put("Monkeys", new ArrayList<String>());
-        restrictionsApp.get("Monkeys").add("Adriano");
-        restrictionsApp.get("Monkeys").add("Kong");
-
-        v = populateView(v);
-
         populateRestrictions();
 
+        v = populateView(v);
         return v;
     }
 
@@ -64,10 +50,19 @@ public class ProfileIntererstsFragment extends Fragment {
             dout.flush();
             DataInputStream dis = new DataInputStream(s.getInputStream());
             str = dis.readUTF();
-            String[] aux1 = str.split(":");
-            restrictionsApp.put(aux1[0], new ArrayList<String>());
+            if(str.equals("WRONG")){
+                return;
+            }
+            String[] aux1 = str.split(";:;");
+
             for(int i = 0; i< aux1.length;i++){
-                Log.d("MYRESTRICTIONS", aux1[i]);
+                String[] aux2 = aux1[i].split(",");
+                if(!(restrictionsApp.containsKey(aux2[0]))){
+                    restrictionsApp.put(aux2[0], new ArrayList<String>());
+                    restrictionsApp.get(aux2[0]).add(aux2[1]);
+                }else if(restrictionsApp.containsKey(aux2[0]) &&!(restrictionsApp.get(aux2[0]).contains(aux2[1]))){
+                    restrictionsApp.get(aux2[0]).add(aux2[1]);
+                }
             }
 
         } catch (IOException e) {
@@ -87,14 +82,12 @@ public class ProfileIntererstsFragment extends Fragment {
             tv.setText(key);
             tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
             ll.addView(tv);
-            Log.d("DEBUG", "Add TV");
 
             for (String s : list) {
                 LinearLayout ll1 = new LinearLayout(this.getContext());
                 ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                 params.height = params.MATCH_PARENT;
                 params.width = params.MATCH_PARENT;
-                Log.d("DEBUG", "match parent");
 
                 if (params instanceof ViewGroup.MarginLayoutParams) {
                     ((ViewGroup.MarginLayoutParams) params).topMargin = 5;
@@ -105,13 +98,11 @@ public class ProfileIntererstsFragment extends Fragment {
 
                 ll1.setLayoutParams(params);
                 ll1.setOrientation(LinearLayout.HORIZONTAL);
-                Log.d("DEBUG", "params");
                 CheckBox cb = new CheckBox(this.getContext());
                 cb.setText(s);
 
                 ll1.addView(cb);
                 ll.addView(ll1);
-                Log.d("DEBUG", "add views");
             }
         }
 

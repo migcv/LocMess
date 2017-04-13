@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class User {
 
@@ -64,18 +65,17 @@ public class User {
 				e.printStackTrace();
 			}
 		} else {
-			String str = "";
-			for (String key : res.keySet()) {
-				str = str.concat(key);
-				str = str.concat(":");
-				for (int i = 0; i < res.get(key).size(); i++) {
-					str = str.concat(res.get(key).get(i));
-					str = str.concat(":");
+			Set<String> keySet = res.keySet();
+			String response = "";
+			for(String key : keySet) {
+				for(String restriction : res.get(key)) {
+					response += key + "," + restriction + ";:;";
 				}
 			}
+			System.out.println("SEND RESTRICTIONS: " + response);
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF(str);
+				dataOutputStream.writeUTF(response);
 				dataOutputStream.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

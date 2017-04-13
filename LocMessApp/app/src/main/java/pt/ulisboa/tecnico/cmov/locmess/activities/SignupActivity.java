@@ -111,6 +111,7 @@ public class SignupActivity extends AppCompatActivity {
                         else if(str.contains("OK;:;")){
                             String[] aux = str.split(";:;");
                             SocketHandler.setToken(aux[1]);
+                            SocketHandler.setUsername(name);
                             onSignupSuccess();
                         }
                         // On complete call either onSignupSuccess or onSignupFailed

@@ -40,8 +40,16 @@ public class LocMess {
 			aux1.add("Chimpanze");
 			aux.put("Animals", aux1);
 
+			
+			ArrayList<String> aux2 = new ArrayList<>();
+			aux2.add("Estudante");
+			aux2.add("Pedreiro");
+			aux2.add("Desempregado");
+			aux.put("Jobs", aux2);
+			
 			LocMess.getUserRestrictions().put(u, aux);
 			LocMess.getGlobalRestrictions().put("Animals", aux1);
+			LocMess.getGlobalRestrictions().put("Jobs", aux2);
 			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
 
 			while (true) {
@@ -123,7 +131,7 @@ public class LocMess {
 		String response = "";
 		for(String key : keySet) {
 			for(String restriction : globalRestrictions.get(key)) {
-				response += restriction + ";:;";
+				response += restriction + " (" + key + ")" + ";:;";
 			}
 		}
 		System.out.println("GetAllRestrictions-RESPONSE: " + response);

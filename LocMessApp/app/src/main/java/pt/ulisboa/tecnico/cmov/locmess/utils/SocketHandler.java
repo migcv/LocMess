@@ -9,6 +9,7 @@ import java.net.Socket;
 public class SocketHandler {
     private static Socket socket;
     private static String token;
+    private static String username;
 
     public static synchronized Socket getSocket() {
         return socket;
@@ -25,4 +26,8 @@ public class SocketHandler {
     public static synchronized void setToken(String token) {
         SocketHandler.token = token;
     }
+
+    public static synchronized String getUsername() { return username; }
+
+    public static synchronized void setUsername(String username) { SocketHandler.username = username; }
 }

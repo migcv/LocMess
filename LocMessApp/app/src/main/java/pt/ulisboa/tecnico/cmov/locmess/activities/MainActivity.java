@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                                 String[] aux = str.split(";:;");
                                 Log.d("TOKEN", aux[1]);
                                 SocketHandler.setToken(aux[1]);
+                                SocketHandler.setUsername(username);
                                 onLoginSuccess();
                             } else {
                                 Log.d("LOGIN", "Failed");

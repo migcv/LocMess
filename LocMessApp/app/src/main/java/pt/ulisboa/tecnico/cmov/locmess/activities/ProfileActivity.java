@@ -13,11 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileFragment;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileIntererstsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
  * Created by Rafael Barreira on 03/04/2017.
@@ -32,12 +35,15 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity_view);
 
+        TextView text3 = (TextView) findViewById(R.id.username);
+        text3.setText(SocketHandler.getUsername());
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         setupViewPager(mViewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setOnTabSelectedListener(onTabSelectedListener(mViewPager));
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
