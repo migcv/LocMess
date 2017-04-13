@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        _loginButton.setEnabled(false);
+        //_loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
                 R.style.AppTheme);
@@ -110,19 +110,21 @@ public class MainActivity extends AppCompatActivity {
                             DataInputStream dis = new DataInputStream(s.getInputStream());
                             str = dis.readUTF();
                             Log.d("SIGNIN", str);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
 
-                        if (str.startsWith("OK;:;")) {
-                            Log.d("LOGIN", "Success");
-                            String[] aux = str.split(";:;");
-                            Log.d("TOKEN", aux[1]);
-                            SocketHandler.setToken(aux[1]);
-                            onLoginSuccess();
-                        } else {
-                            Log.d("LOGIN", "Failed");
-                            onLoginFailed();
+                            if (str.startsWith("OK;:;")) {
+                                Log.d("LOGIN", "Success");
+                                String[] aux = str.split(";:;");
+                                Log.d("TOKEN", aux[1]);
+                                SocketHandler.setToken(aux[1]);
+                                onLoginSuccess();
+                            } else {
+                                Log.d("LOGIN", "Failed");
+                                onLoginFailed();
+                            }
+                        } catch (Exception e) {
+                            Log.d("CONNECTION", "Error socket null!");
+                            Toast.makeText(getApplicationContext(), "Error connecting to the server", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
                         }
 
                         // On complete call either onLoginSuccess or onLoginFailed

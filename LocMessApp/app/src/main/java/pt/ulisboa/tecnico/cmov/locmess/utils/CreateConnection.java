@@ -21,8 +21,8 @@ import javax.net.ssl.TrustManager;
 
 public class CreateConnection extends AsyncTask<String, Void, Void> {
 
-    private static final String ip = "192.168.1.5";
-    private static final int port = 6666;
+    private static final String ip = "192.168.1.71";
+    private static final int port = 10000;
     private static SSLSocketFactory sslSocketFactory;
     public Context c;
     private static Socket s;
@@ -36,8 +36,6 @@ public class CreateConnection extends AsyncTask<String, Void, Void> {
     @Override
     protected Void doInBackground(String... strings) {
         try {
-
-
             Log.d("CONNECTION", "Initiating connection!");
             s = new Socket(ip, port);
             SocketHandler.setSocket(s);

@@ -13,11 +13,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -105,7 +107,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 final String toSend;
                 if(NewPost.deliveryMode.equals("GPS")){
                     toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode + ";:;" + String.format("%.4f, %.4f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius;
-                }else {
+                } else {
                     toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode;
                 }
 
@@ -139,6 +141,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
             }
         });
 
+        // RADIO BUTTONS
         radioButtonEveryone = (RadioButton) findViewById(R.id.radioButton_everyone);
         radioButtonEveryone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,14 +167,35 @@ public class RestritionOptionActivity extends AppCompatActivity {
             }
         });
 
+
+        final String toSend = "GetAllRestrictions";
+        String[] restrictionsSugestions = null;
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        try {
+            Socket s = SocketHandler.getSocket();
+            Log.d("CONNECTION", "Connection successful!");
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF(toSend);
+            dout.flush();
+            Log.d("RESTRICTIONS", toSend);
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            String str = dis.readUTF();
+            Log.d("RESTRICTIONS", str);
+            restrictionsSugestions = str.split(";:;");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Get the string array
-        String[] suggestions = {"students", "Termite is Love", "Termite is Life", "ist", "macaco", "mamas", "bananas", "CMU", "Nuninho Fan Club"};
+        //String[] restrictionsSugestions = {"students", "Termite is Love", "Termite is Life", "ist", "macaco", "mamas", "bananas", "CMU", "Nuninho Fan Club"};
         /*
          *      WHITE RESTRICTION
          */
         final AutoCompleteTextView autoComplete_white = (AutoCompleteTextView) findViewById(R.id.autocomplete_white);
         // Create the adapter and set it to the AutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, suggestions);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, restrictionsSugestions);
         autoComplete_white.setAdapter(adapter);
         autoComplete_white.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -199,7 +223,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
          */
         final AutoCompleteTextView autoComplete_black = (AutoCompleteTextView) findViewById(R.id.autocomplete_black);
         // Create the adapter and set it to the AutoCompleteTextView
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, suggestions);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, restrictionsSugestions);
         autoComplete_black.setAdapter(adapter);
         autoComplete_black.setOnTouchListener(new View.OnTouchListener(){
             @Override

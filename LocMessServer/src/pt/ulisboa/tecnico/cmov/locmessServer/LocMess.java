@@ -1,16 +1,18 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Set;
 
 public class LocMess {
 
-	private static final int port = 6666;
+	private static final int port = 10000;
 	private static Socket s;
 	private static HashMap<String, User> users = new HashMap<>();
 	private static HashMap<User, Posts> posts = new HashMap<>();
@@ -39,6 +41,7 @@ public class LocMess {
 			aux.put("Animals", aux1);
 
 			LocMess.getUserRestrictions().put(u, aux);
+			LocMess.getGlobalRestrictions().put("Animals", aux1);
 			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
 
 			while (true) {
@@ -69,6 +72,9 @@ public class LocMess {
 				if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
 					Posts p = new Posts();
 					p.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
+				}
+				if(res[0].equals("GetAllRestrictions")) {
+					getAllRestrictions();
 				}
 				if (res[0].equals("SignOut")) {
 					ss.close();
@@ -110,6 +116,20 @@ public class LocMess {
 
 	public static Hashtable<String, String> getUserSessions() {
 		return userSessions;
+	}
+	
+	private static void getAllRestrictions() throws IOException {
+		Set<String> keySet = globalRestrictions.keySet();
+		String response = "";
+		for(String key : keySet) {
+			for(String restriction : globalRestrictions.get(key)) {
+				response += restriction + ";:;";
+			}
+		}
+		System.out.println("GetAllRestrictions-RESPONSE: " + response);
+		DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
+		dataOutputStream.writeUTF(response);
+		dataOutputStream.flush();
 	}
 
 }
