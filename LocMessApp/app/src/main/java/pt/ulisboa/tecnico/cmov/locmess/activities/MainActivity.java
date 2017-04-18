@@ -21,6 +21,7 @@ import java.net.Socket;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import pt.ulisboa.tecnico.cmov.locmess.services.LocationService;
 import pt.ulisboa.tecnico.cmov.locmess.utils.CreateConnection;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
@@ -160,6 +161,9 @@ public class MainActivity extends AppCompatActivity {
         _loginButton.setEnabled(true);
         Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
         startActivityForResult(intent, RESULT_OK);
+
+        startService(new Intent(this, LocationService.class));
+        Log.d("SERVICE", "Starting Service!");
     }
 
     public void onLoginFailed() {

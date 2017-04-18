@@ -58,8 +58,11 @@
             android:label="My Posts"
             android:theme="@style/AppTheme.NoActionBar"
             android:title="My Posts" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyByIqMmc8ovTFNQsiTS_reKsoZBw29RJuk"/>
+
+        <service android:name=".services.LocationService" android:enabled="true" />
     </application>
 </manifest>
