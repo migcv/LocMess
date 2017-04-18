@@ -13,12 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileFragment;
-import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileIntererstsFragment;
+import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileInterestsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
@@ -80,7 +79,7 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
     private void setupViewPager(ViewPager viewPager) {
         CollectionPagerAdapter adapter = new CollectionPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ProfileFragment(), "About");
-        adapter.addFragment(new ProfileIntererstsFragment(), "Interests");
+        adapter.addFragment(new ProfileInterestsFragment(), "Interests");
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         onTabSelectedListener(viewPager);

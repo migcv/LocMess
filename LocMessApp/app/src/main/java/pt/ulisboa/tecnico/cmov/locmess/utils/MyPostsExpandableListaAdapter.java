@@ -83,9 +83,9 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int listPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
-        String listTitle = getGroup(listPosition).toString();
+    public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        final View convert_view = convertView;
+        final String listTitle = getGroup(listPosition).toString();
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -102,6 +102,7 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
                 final Dialog dialog = new Dialog(context);
 
                 dialog.setContentView(R.layout.delete_popup);
+                ((TextView)dialog.findViewById(R.id.text_post)).setText(listTitle + "?");
 
                 dialog.findViewById(R.id.delete).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
@@ -122,8 +123,7 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
             }
         };
         holder.button.setOnClickListener(clickL);
-        TextView listTitleTextView = (TextView) convertView
-                .findViewById(R.id.text1);
+        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.text1);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
         return convertView;
