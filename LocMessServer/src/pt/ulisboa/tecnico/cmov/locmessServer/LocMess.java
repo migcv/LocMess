@@ -50,9 +50,13 @@ public class LocMess {
 					User u1 = session.getUserFromSession(res[1]);
 					LocMess.getUsers().get(u1.getUsername()).sendRestrictions(u1.getUsername());
 				}
-				if (res[0].equals("Restrictions")) {
+				if (res[0].equals("AddRestrictions")) {
 					User ux = session.getUserFromSession(res[1]);
-					LocMess.getUsers().get(ux.getUsername()).addRestriction(res[1], res[2]);
+					LocMess.getUsers().get(ux.getUsername()).addRestriction(ux.getUsername(), res[2]);
+				}
+				if (res[0].equals("RemoveRestrictions")) {
+					User ux = session.getUserFromSession(res[1]);
+					LocMess.getUsers().get(ux.getUsername()).removeRestriction(ux.getUsername(), res[2]);
 				}
 				if (res[0].equals("SignUp")) {
 					new SignUp(res[1], res[2], res[3]);

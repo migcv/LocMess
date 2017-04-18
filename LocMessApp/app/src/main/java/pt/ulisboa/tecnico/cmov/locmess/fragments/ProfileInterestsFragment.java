@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess.fragments;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,9 +79,6 @@ public class ProfileInterestsFragment extends Fragment {
                         list.add(value);
                         restrictionsApp.put(topic, list);
 
-                        // Send to Server
-                        //TODO Connection to server
-
                         // Adds to layout
                         LinearLayout topicLayout = layoutTopicMap.get(topic);
                         topicLayout.addView(addNewInterestValue(topic, value));
@@ -90,9 +88,6 @@ public class ProfileInterestsFragment extends Fragment {
                     ArrayList<String> list = new ArrayList<String>();
                     list.add(value);
                     restrictionsApp.put(topic, list);
-
-                    // Send to Server
-                    //TODO Connection to server
 
                     // Adds to layout
                     LinearLayout topicLayout = new LinearLayout(view.getContext());
@@ -115,6 +110,7 @@ public class ProfileInterestsFragment extends Fragment {
 
                     interestLayout.addView(topicLayout);
                 }
+                addRestriction(SocketHandler.getToken(), topic, value);
                 topicView.setText("");
                 valueView.setText("");
             }
@@ -123,6 +119,22 @@ public class ProfileInterestsFragment extends Fragment {
         populateView();
 
         return view;
+    }
+
+    public void addRestriction(String token, String topic, String value){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        String toSend = "AddRestrictions;:;" + token + ";:;" + topic + ":" + value;
+        try {
+            Socket s = SocketHandler.getSocket();
+            Log.d("CONNECTION", "Connection successful!");
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF(toSend);
+            dout.flush();
+            Log.d("RESTRICTIONS", toSend);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void populateRestrictions() {
@@ -220,12 +232,29 @@ public class ProfileInterestsFragment extends Fragment {
                 }
 
                 // TODO Connection to Server
+                removeRestriction(SocketHandler.getToken(), topic, value);
             }
         });
 
         newLayout.addView(deleteButton);
 
         return newLayout;
+    }
+
+    public void removeRestriction(String token, String topic, String value){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        String toSend = "RemoveRestrictions;:;" + token + ";:;" + topic + ":" + value;
+        try {
+            Socket s = SocketHandler.getSocket();
+            Log.d("CONNECTION", "Connection successful!");
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF(toSend);
+            dout.flush();
+            Log.d("RESTRICTIONS", toSend);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -40,14 +40,25 @@ public class User {
 		String[] res = restriction.split(":");
 		if (LocMess.getUserRestrictions().get(u).containsKey(res[0])) {
 			LocMess.getUserRestrictions().get(u).get(res[0]).add(res[1]);
-			ArrayList<String> aux = LocMess.getGlobalRestrictions().get(res[0]);
-			aux.add(res[1]);
-			LocMess.getGlobalRestrictions().put(res[0], aux);
+			LocMess.getGlobalRestrictions().get(res[0]).add(res[1]);
 		} else {
 			ArrayList<String> aux = new ArrayList<>();
 			aux.add(res[1]);
 			LocMess.getUserRestrictions().get(u).put(res[0], aux);
+			LocMess.getGlobalRestrictions().put(res[0], aux);
 		}
+	}
+	
+	public void removeRestriction(String username, String restriction) {
+		User u = getUserByUsername(username);
+		String[] res = restriction.split(":");
+		if (LocMess.getUserRestrictions().get(u).containsKey(res[0])){ 
+			LocMess.getUserRestrictions().get(u).get(res[0]).remove(res[1]);
+		}
+		if(LocMess.getUserRestrictions().get(u).get(res[0]).isEmpty()){
+			LocMess.getUserRestrictions().get(u).remove(res[0]);
+		}
+		
 	}
 
 	public void sendRestrictions(String username) {
