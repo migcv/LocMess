@@ -277,7 +277,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
             whiteRestrictionList.add(content);
         }
 
-        final String restriciotnFinal = restrictionPolicy;
+        final String restrictionFinal = restrictionPolicy;
         Button deleteButton = new Button(this);
         deleteButton.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -286,7 +286,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String restriction = restriciotnFinal;
+                String restriction = restrictionFinal;
                 if(restriction.equals(NewPost.BLACK)) {
                     removeContent(blackRestrictionList, content);
                 } else {
