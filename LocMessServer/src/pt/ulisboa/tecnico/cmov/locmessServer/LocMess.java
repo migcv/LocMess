@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmessServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,33 +24,16 @@ public class LocMess {
 
 	public static void main(String[] args) {
 		try {
+			System.out.println("Server Up");
 			ServerSocket ss = new ServerSocket(port);
 			s = ss.accept();// establishes connection
-			System.out.println("ACEITEI ALGUEM!");
+			System.out.println("Accepted someone");
 
-			// SIGNUP
-			User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
-			LocMess.getUsers().put("qwerty", u);
-			LocMess.getPosts().put(u, null);
+			if (users.isEmpty()) {
+				populate();
+			}
+			System.out.println("qwerty User with restrictions");
 
-			// Create user restrictions
-			HashMap<String, ArrayList<String>> aux = new HashMap<>();
-			ArrayList<String> aux1 = new ArrayList<>();
-			aux1.add("Macaco");
-			aux1.add("Gorila");
-			aux1.add("Chimpanze");
-			aux.put("Animals", aux1);
-
-			
-			ArrayList<String> aux2 = new ArrayList<>();
-			aux2.add("Estudante");
-			aux2.add("Pedreiro");
-			aux2.add("Desempregado");
-			aux.put("Jobs", aux2);
-			
-			LocMess.getUserRestrictions().put(u, aux);
-			LocMess.getGlobalRestrictions().put("Animals", aux1);
-			LocMess.getGlobalRestrictions().put("Jobs", aux2);
 			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
 
 			while (true) {
@@ -81,16 +65,21 @@ public class LocMess {
 					Posts p = new Posts();
 					p.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 				}
-				if(res[0].equals("GetAllRestrictions")) {
+				if (res[0].equals("GetAllRestrictions")) {
 					getAllRestrictions();
 				}
 				if (res[0].equals("SignOut")) {
-					ss.close();
+					s.close();
 				}
 			}
 
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			try {
+				s.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -125,12 +114,12 @@ public class LocMess {
 	public static Hashtable<String, String> getUserSessions() {
 		return userSessions;
 	}
-	
+
 	private static void getAllRestrictions() throws IOException {
 		Set<String> keySet = globalRestrictions.keySet();
 		String response = "";
-		for(String key : keySet) {
-			for(String restriction : globalRestrictions.get(key)) {
+		for (String key : keySet) {
+			for (String restriction : globalRestrictions.get(key)) {
 				response += restriction + " (" + key + ")" + ";:;";
 			}
 		}
@@ -138,6 +127,32 @@ public class LocMess {
 		DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
 		dataOutputStream.writeUTF(response);
 		dataOutputStream.flush();
+	}
+
+	private static void populate() {
+		// SIGNUP
+		User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
+		LocMess.getUsers().put("qwerty", u);
+		LocMess.getPosts().put(u, null);
+
+		// Create user restrictions
+		HashMap<String, ArrayList<String>> aux = new HashMap<>();
+		ArrayList<String> aux1 = new ArrayList<>();
+		aux1.add("Macaco");
+		aux1.add("Gorila");
+		aux1.add("Chimpanze");
+		aux.put("Animals", aux1);
+
+		ArrayList<String> aux2 = new ArrayList<>();
+		aux2.add("Estudante");
+		aux2.add("Pedreiro");
+		aux2.add("Desempregado");
+		aux.put("Jobs", aux2);
+
+		LocMess.getUserRestrictions().put(u, aux);
+		LocMess.getGlobalRestrictions().put("Animals", aux1);
+		LocMess.getGlobalRestrictions().put("Jobs", aux2);
+
 	}
 
 }
