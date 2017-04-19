@@ -34,7 +34,11 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     public Object getChild(int listPosition, int expandedListPosition) {
         String content = this.expandableListDetail.get(listPosition).get(1);
         String contact = this.expandableListDetail.get(listPosition).get(2);
-        return "Content: " +content + " \n" +"Contact: "+ contact;
+        String date =  this.expandableListDetail.get(listPosition).get(3);
+        String time =  this.expandableListDetail.get(listPosition).get(4);
+        String deliveryMode =  this.expandableListDetail.get(listPosition).get(5);
+
+        return "Content: " +content + " \n" +"Contact: "+ contact + "\n" + date + " " + time + "\n" + deliveryMode;
     }
 
     @Override
