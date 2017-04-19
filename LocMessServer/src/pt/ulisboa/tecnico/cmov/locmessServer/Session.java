@@ -29,7 +29,9 @@ public class Session {
 	}
 
 	public void removeUserFromSession(String token) {
-		LocMess.getUserSessions().remove(token);
+		if (LocMess.getUserSessions().containsKey(token)) {
+			LocMess.getUserSessions().remove(token);
+		}
 	}
 
 	public User getUserFromSession(String token) {

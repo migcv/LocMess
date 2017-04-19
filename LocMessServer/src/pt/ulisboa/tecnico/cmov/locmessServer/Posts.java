@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
+import java.util.ArrayList;
+
 public class Posts {
 
 	private String title;
@@ -38,13 +40,20 @@ public class Posts {
 	public Posts() {
 	}
 
-	public static void addPostsWIFI(String token, String title, String content, String contact, String date, String time,
-			String deliveryMode) {
+	public static void addPostsWIFI(String token, String title, String content, String contact, String date,
+			String time, String deliveryMode) {
 
 		Session ss = LocMess.getSession();
 		User u = ss.getUserFromSession(token);
 		Posts p = new Posts(title, content, contact, date, time, deliveryMode);
-		LocMess.getPosts().put(u, p);
+		if (LocMess.getPosts().containsKey(u))
+			LocMess.getPosts().get(u).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getPosts().put(u, aux);
+		}
+
 	}
 
 	public static void addPostsGPS(String token, String title, String content, String contact, String date, String time,
@@ -53,7 +62,13 @@ public class Posts {
 		Session ss = LocMess.getSession();
 		User u = ss.getUserFromSession(token);
 		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius);
-		LocMess.getPosts().put(u, p);
+		if (LocMess.getPosts().containsKey(u))
+			LocMess.getPosts().get(u).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getPosts().put(u, aux);
+		}
 	}
 
 	public String getTitle() {

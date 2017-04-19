@@ -107,4 +107,30 @@ public class User {
 		}
 	}
 
+	public void sendUserPosts(Socket s) {
+		ArrayList<Posts> aux = LocMess.getPosts().get(this);
+		DataOutputStream dataOutputStream;
+		for (int i = 0; i < aux.size(); i++) {
+			String response = "MYPosts;:; " + aux.get(i).getTitle() + "," + aux.get(i).getContent() + ","
+					+ aux.get(i).getContact() + "," + aux.get(i).getDate() + "," + aux.get(i).getTime() + ","
+					+ aux.get(i).getDeliveryMode();
+			try {
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF(response);
+				dataOutputStream.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			dataOutputStream = new DataOutputStream(s.getOutputStream());
+			dataOutputStream.writeUTF("END");
+			dataOutputStream.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
