@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -25,11 +26,9 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private ArrayList<String> expandableListTitle;
-    private HashMap<Integer, List<String>> expandableListDetail;
-    private PopupWindow popupMessage;
+    private ArrayList<List<String>> expandableListDetail;
 
-    public MyPostsExpandableListaAdapter(Context context, ArrayList<String> expandableListTitle,
-                                       HashMap<Integer, List<String>> expandableListDetail) {
+    public MyPostsExpandableListaAdapter(Context context, ArrayList<String> expandableListTitle, ArrayList<List<String>> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
@@ -37,11 +36,11 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        String content = this.expandableListDetail.get(listPosition).get(1);
-        String contact = this.expandableListDetail.get(listPosition).get(2);
-        String date =  this.expandableListDetail.get(listPosition).get(3);
-        String time =  this.expandableListDetail.get(listPosition).get(4);
-        String deliveryMode =  this.expandableListDetail.get(listPosition).get(5);
+        String content = this.expandableListDetail.get(listPosition).get(2);
+        String contact = this.expandableListDetail.get(listPosition).get(3);
+        String date =  this.expandableListDetail.get(listPosition).get(4);
+        String time =  this.expandableListDetail.get(listPosition).get(5);
+        String deliveryMode =  this.expandableListDetail.get(listPosition).get(6);
         return "Content: " +content + " \n" +"Contact: "+ contact + "\n" + date + " " + time + "\n" + deliveryMode;
     }
 
@@ -51,17 +50,21 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int listPosition, final int expandedListPosition,
-                             boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(int listPosition, final int expandedListPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+
         final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_item, null);
         }
-        TextView expandedListTextView = (TextView) convertView
-                .findViewById(R.id.expandedListItem);
-        expandedListTextView.setText(expandedListText);
+        TextView text_content = (TextView) convertView.findViewById(R.id.text_content);
+        text_content.setText(expandableListDetail.get(listPosition).get(1));
+        TextView text_contact = (TextView) convertView.findViewById(R.id.text_contact);
+        text_contact.setText(this.expandableListDetail.get(listPosition).get(2));
+        TextView text_date = (TextView) convertView.findViewById(R.id.text_date);
+        text_date.setText(this.expandableListDetail.get(listPosition).get(3) + " " + this.expandableListDetail.get(listPosition).get(4));
         return convertView;
     }
 
@@ -77,7 +80,7 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return this.expandableListDetail.keySet().size();
+        return this.expandableListDetail.size();
     }
 
     @Override
@@ -86,14 +89,24 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        final View convert_view = convertView;
-        final String listTitle = getGroup(listPosition).toString();
+    public View getGroupView(final int listPosition, boolean isExpanded, View convertView, final ViewGroup parent) {
+        Log.d("GROUP_VIEW", "" + listPosition);
+        Log.d("GROUP_VIEW", getGroup(listPosition) == null ? "NULL" : "" + getGroup(listPosition));
+        final String listTitle = (String) getGroup(listPosition);
+
+        if(listTitle == null) {
+            return convertView;
+        }
+
+        LayoutInflater layoutInflater = null;
+
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context.
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.my_posts_list_group, null);
         }
+
+        final View convert_view = convertView;
+        final View layout = convertView.findViewById(R.id.layout_post);
 
         ViewHolder holder = new ViewHolder(convertView);
 
@@ -101,27 +114,26 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
         View.OnClickListener clickL = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DEBUG", "OLAAAAAA");
                 final Dialog dialog = new Dialog(context);
-
                 dialog.setContentView(R.layout.delete_popup);
                 ((TextView)dialog.findViewById(R.id.text_post)).setText(listTitle + "?");
 
                 dialog.findViewById(R.id.delete).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
-                        Log.d("DEBUG", "DELETE");
+
+                        expandableListTitle.remove(listPosition);
+                        expandableListDetail.remove(listPosition);
+
+                        notifyDataSetChanged();
+
+                        dialog.dismiss();
                     }
-                }
-                );
+                });
                 dialog.findViewById(R.id.cancel).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
                         dialog.dismiss();
                     }
-                }
-                );
-
-
-
+                });
                 dialog.show();
             }
         };
@@ -129,7 +141,7 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.text1);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
-        return convertView;
+        return convert_view;
     }
 
     @Override

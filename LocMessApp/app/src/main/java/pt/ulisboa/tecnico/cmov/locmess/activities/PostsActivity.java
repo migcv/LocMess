@@ -58,14 +58,14 @@ public class PostsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(PostsActivity.this);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
+        ArrayList<List<String>> expandableList = ExpandableListDataPump.getData();
 
         ArrayList<String> expandableListTitle = new ArrayList<String>();
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
-        expandableListView.setAdapter(expandableListAdapter);
+        //ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        //expandableListView.setAdapter(expandableListAdapter);
     }
 
     @Override
