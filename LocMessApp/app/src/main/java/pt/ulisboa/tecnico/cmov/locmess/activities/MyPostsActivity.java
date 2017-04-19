@@ -34,13 +34,15 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 public class MyPostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    ArrayList<List<String>> expandableMap;
+    ArrayList<String> expandableListTitle;
+    ExpandableListAdapter expandableListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_posts_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
-
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -60,20 +62,21 @@ public class MyPostsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(MyPostsActivity.this);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        HashMap<Integer, List<String>> expandableList = ExpandableListDataPump.getData();
+        expandableMap = ExpandableListDataPump.getMyPosts();
 
-        ArrayList<String> expandableListTitle = new ArrayList<String>();
-        for(int i = 0; i < expandableList.size(); i++) {
-            expandableListTitle.add(expandableList.get(i).get(0));
+        expandableListTitle = new ArrayList<String>();
+        for(int i = 0; i < expandableMap.size(); i++) {
+            Log.d("MY_POSTS", expandableMap.get(i) == null ? "NULL" : "" + expandableMap.get(i).get(0));
+            expandableListTitle.add(expandableMap.get(i).get(1));
+            Log.d("MY_POSTS", expandableListTitle.get(i) == null ? "NULL" : i + "" + expandableListTitle.get(i));
         }
-        ExpandableListAdapter expandableListAdapter = new MyPostsExpandableListaAdapter(this, expandableListTitle, expandableList);
+        expandableListAdapter = new MyPostsExpandableListaAdapter(this, expandableListTitle, expandableMap);
         expandableListView.setAdapter(expandableListAdapter);
     }
 
