@@ -1,8 +1,13 @@
 <component name="libraryTable">
   <library name="multi-level-listview-1.0.1">
     <CLASSES>
+<<<<<<< HEAD
       <root url="file://$USER_HOME$/.android/build-cache/971c3a15da60ab01b9a310cd5f946add1196ec73/output/res" />
       <root url="jar://$USER_HOME$/.android/build-cache/971c3a15da60ab01b9a310cd5f946add1196ec73/output/jars/classes.jar!/" />
+=======
+      <root url="file://$USER_HOME$/.android/build-cache/b010bc54c5d9194a8659be3fc643367b4f69c7a2/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/b010bc54c5d9194a8659be3fc643367b4f69c7a2/output/jars/classes.jar!/" />
+>>>>>>> f511bf54ac1436f1920a666bfd73ed932876505c
     </CLASSES>
     <JAVADOC />
     <SOURCES>

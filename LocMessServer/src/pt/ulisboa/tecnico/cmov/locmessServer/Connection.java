@@ -50,19 +50,21 @@ public class Connection implements Runnable {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				LocMess.getUsers().get(ux.getUsername()).removeRestriction(ux.getUsername(), res[2]);
 			}
-
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
-
 				Posts.addPostsWIFI(res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
 				Posts.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 			}
+			if (res[0].equals("MYPosts")) {
+				User ux = LocMess.getSession().getUserFromSession(res[1]);
+				ux.sendUserPosts(s);
+			}
 			if (res[0].equals("GetAllRestrictions")) {
 				getAllRestrictions();
 			}
 			if (res[0].equals("SignOut")) {
-
+				signOut(res[1]);
 			}
 		}
 
@@ -86,6 +88,19 @@ public class Connection implements Runnable {
 			dataOutputStream = new DataOutputStream(s.getOutputStream());
 			dataOutputStream.writeUTF(response);
 			dataOutputStream.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void signOut(String token) {
+
+		LocMess.getSession().removeUserFromSession(token);
+
+		try {
+			s.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

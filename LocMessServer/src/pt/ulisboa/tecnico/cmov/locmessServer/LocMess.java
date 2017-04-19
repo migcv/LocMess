@@ -12,7 +12,7 @@ public class LocMess {
 	private static final int port = 10000;
 	private static ServerSocket ss;
 	private static HashMap<String, User> users = new HashMap<>();
-	private static HashMap<User, Posts> posts = new HashMap<>();
+	private static HashMap<User, ArrayList<Posts>> userPosts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
 	private static Hashtable<String, String> userSessions = new Hashtable<String, String>();
@@ -42,8 +42,8 @@ public class LocMess {
 		return users;
 	}
 
-	public static HashMap<User, Posts> getPosts() {
-		return posts;
+	public static HashMap<User, ArrayList<Posts>> getPosts() {
+		return userPosts;
 	}
 
 	public static HashMap<User, HashMap<String, ArrayList<String>>> getUserRestrictions() {
@@ -71,15 +71,15 @@ public class LocMess {
 		// Create user restrictions
 		HashMap<String, ArrayList<String>> aux = new HashMap<>();
 		ArrayList<String> aux1 = new ArrayList<>();
-		aux1.add("Macaco");
-		aux1.add("Gorila");
-		aux1.add("Chimpanze");
+		aux1.add("Monkey");
+		aux1.add("Gorilla");
+		aux1.add("Chimpanzee");
 		aux.put("Animals", aux1);
 
 		ArrayList<String> aux2 = new ArrayList<>();
-		aux2.add("Estudante");
-		aux2.add("Pedreiro");
-		aux2.add("Desempregado");
+		aux2.add("Student");
+		aux2.add("Mason");
+		aux2.add("Unemployed");
 		aux.put("Jobs", aux2);
 
 		LocMess.getUserRestrictions().put(u, aux);
