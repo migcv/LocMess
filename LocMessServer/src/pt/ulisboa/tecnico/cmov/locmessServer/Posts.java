@@ -38,7 +38,7 @@ public class Posts {
 	public Posts() {
 	}
 
-	public void addPostsWIFI(String token, String title, String content, String contact, String date, String time,
+	public static void addPostsWIFI(String token, String title, String content, String contact, String date, String time,
 			String deliveryMode) {
 
 		Session ss = LocMess.getSession();
@@ -47,7 +47,7 @@ public class Posts {
 		LocMess.getPosts().put(u, p);
 	}
 
-	public void addPostsGPS(String token, String title, String content, String contact, String date, String time,
+	public static void addPostsGPS(String token, String title, String content, String contact, String date, String time,
 			String deliveryMode, String coordinates, String radius) {
 
 		Session ss = LocMess.getSession();

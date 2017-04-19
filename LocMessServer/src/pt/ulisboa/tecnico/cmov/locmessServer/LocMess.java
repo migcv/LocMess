@@ -1,20 +1,16 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
 
 public class LocMess {
 
 	private static final int port = 10000;
-	private static Socket s;
+	private static ServerSocket ss;
 	private static HashMap<String, User> users = new HashMap<>();
 	private static HashMap<User, Posts> posts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
@@ -23,76 +19,23 @@ public class LocMess {
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
-		try {
-			System.out.println("Server Up");
-			ServerSocket ss = new ServerSocket(port);
-			s = ss.accept();// establishes connection
-			System.out.println("Accepted someone");
+		System.out.println("Server Up");
 
-			if (users.isEmpty()) {
-				populate();
-			}
-			System.out.println("qwerty User with restrictions");
-
-			System.out.println(LocMess.getUsers().get("qwerty").getPassword());
-
-			while (true) {
-				DataInputStream dis = new DataInputStream(s.getInputStream());
-				String str = dis.readUTF();
-				String[] res = parser(str);
-
-				System.out.println("message= " + str);
-
-				if (res[0].equals("Login")) {
-					new Login(res[1], res[2]);
-				}
-				if (res[0].equals("MYRestrictions")) {
-					User u1 = session.getUserFromSession(res[1]);
-					LocMess.getUsers().get(u1.getUsername()).sendRestrictions(u1.getUsername());
-				}
-				if (res[0].equals("AddRestrictions")) {
-					User ux = session.getUserFromSession(res[1]);
-					LocMess.getUsers().get(ux.getUsername()).addRestriction(ux.getUsername(), res[2]);
-				}
-				if (res[0].equals("RemoveRestrictions")) {
-					User ux = session.getUserFromSession(res[1]);
-					LocMess.getUsers().get(ux.getUsername()).removeRestriction(ux.getUsername(), res[2]);
-				}
-				if (res[0].equals("SignUp")) {
-					new SignUp(res[1], res[2], res[3]);
-				}
-				if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
-					Posts p = new Posts();
-					p.addPostsWIFI(res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
-				}
-				if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
-					Posts p = new Posts();
-					p.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
-				}
-				if (res[0].equals("GetAllRestrictions")) {
-					getAllRestrictions();
-				}
-				if (res[0].equals("SignOut")) {
-					s.close();
-				}
-			}
-
-		} catch (Exception e) {
-			try {
-				s.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		if (users.isEmpty()) {
+			populate();
 		}
-	}
-
-	public static String[] parser(String revc) {
-		return revc.split(";:;");
-	}
-
-	public static Socket getSocket() {
-		return s;
+		try {
+			ss = new ServerSocket(port);
+			while (true) {
+				System.out.println("entrei no while!");
+				Socket s = ss.accept();// establishes connection
+				System.out.println("Accepted: " + s.getInetAddress());
+				new Thread(new Connection(s)).start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static HashMap<String, User> getUsers() {
@@ -117,20 +60,6 @@ public class LocMess {
 
 	public static Hashtable<String, String> getUserSessions() {
 		return userSessions;
-	}
-
-	private static void getAllRestrictions() throws IOException {
-		Set<String> keySet = globalRestrictions.keySet();
-		String response = "";
-		for (String key : keySet) {
-			for (String restriction : globalRestrictions.get(key)) {
-				response += restriction + " (" + key + ")" + ";:;";
-			}
-		}
-		System.out.println("GetAllRestrictions-RESPONSE: " + response);
-		DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
-		dataOutputStream.writeUTF(response);
-		dataOutputStream.flush();
 	}
 
 	private static void populate() {

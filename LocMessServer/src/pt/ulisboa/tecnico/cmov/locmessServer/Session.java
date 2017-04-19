@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
-import java.util.Hashtable;
 import java.util.Random;
 
 public class Session {

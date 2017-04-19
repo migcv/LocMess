@@ -64,10 +64,9 @@ public class User {
 
 	}
 
-	public void sendRestrictions(String username) {
+	public void sendRestrictions(Socket s, String username) {
 		User u = getUserByUsername(username);
 		HashMap<String, ArrayList<String>> res = LocMess.getUserRestrictions().get(u);
-		Socket s = LocMess.getSocket();
 		DataOutputStream dataOutputStream;
 		if (res == null) {
 			try {
