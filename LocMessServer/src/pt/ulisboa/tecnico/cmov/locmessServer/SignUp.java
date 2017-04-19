@@ -7,8 +7,7 @@ import java.util.Collection;
 
 public class SignUp {
 
-	public SignUp(String username, String password, String email) {
-		Socket s = LocMess.getSocket();
+	public SignUp(Socket s, String username, String password, String email) {
 		DataOutputStream dataOutputStream;
 		Collection<User> users = LocMess.getUsers().values();
 		String toSend = "";

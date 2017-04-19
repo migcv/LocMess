@@ -6,8 +6,7 @@ import java.net.Socket;
 
 public class Login {
 
-	public Login(String username, String password) {
-		Socket s = LocMess.getSocket();
+	public Login(Socket s, String username, String password) {
 		DataOutputStream dataOutputStream;
 		
 		System.out.println("USERNAME: " + username);
