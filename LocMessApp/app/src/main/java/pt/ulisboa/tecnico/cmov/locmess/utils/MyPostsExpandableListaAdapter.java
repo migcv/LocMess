@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess.utils;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,9 @@ import android.widget.ExpandableListAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,6 +124,21 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
 
                 dialog.findViewById(R.id.delete).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
+
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        try {
+                            String toSend = "RemovePost;:;" + SocketHandler.getToken() + ";:;" + expandableListDetail.get(listPosition).get(0);
+                            Socket s = SocketHandler.getSocket();
+                            Log.d("CONNECTION", "Connection successful!");
+                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                            dout.writeUTF(toSend);
+                            dout.flush();
+                            //dout.close();
+                            Log.d("MYPosts", toSend);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         expandableListTitle.remove(listPosition);
                         expandableListDetail.remove(listPosition);
