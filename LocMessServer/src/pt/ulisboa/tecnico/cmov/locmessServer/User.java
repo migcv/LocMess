@@ -174,6 +174,7 @@ public class User {
 		ArrayList<Posts> aux = LocMess.getPosts().get(this);
 		for (int i = 0; i < aux.size(); i++) {
 			if (aux.get(i).getId() == id) {
+				System.out.println(LocMess.getPosts().get(this).get(i).getTitle());
 				LocMess.getPosts().get(this).remove(i);
 				break;
 			}
