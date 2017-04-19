@@ -1,14 +1,11 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
 
 public class LocMess {
 
@@ -40,7 +37,6 @@ public class LocMess {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public static HashMap<String, User> getUsers() {
 		return users;
@@ -65,8 +61,6 @@ public class LocMess {
 	public static Hashtable<String, String> getUserSessions() {
 		return userSessions;
 	}
-
-	
 
 	private static void populate() {
 		// SIGNUP
