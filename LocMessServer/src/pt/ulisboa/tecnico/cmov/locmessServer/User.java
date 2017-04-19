@@ -12,6 +12,7 @@ public class User {
 	private String username;
 	private String password;
 	private String email;
+	private int numOfPost;
 
 	public User(String username, String password, String email) {
 		this.username = username;
@@ -33,6 +34,14 @@ public class User {
 
 	public User getUserByUsername(String username) {
 		return LocMess.getUsers().get(username);
+	}
+	
+	public int getNumOfPost() {
+		return numOfPost;
+	}
+
+	public void setNumOfPost() {
+		this.numOfPost++;
 	}
 
 	public void addRestriction(String username, String restriction) {
@@ -111,9 +120,9 @@ public class User {
 		ArrayList<Posts> aux = LocMess.getPosts().get(this);
 		DataOutputStream dataOutputStream;
 		for (int i = 0; i < aux.size(); i++) {
-			String response = "MYPosts;:; " + aux.get(i).getTitle() + "," + aux.get(i).getContent() + ","
-					+ aux.get(i).getContact() + "," + aux.get(i).getDate() + "," + aux.get(i).getTime() + ","
-					+ aux.get(i).getDeliveryMode();
+			String response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
+					+ aux.get(i).getContent() + "," + aux.get(i).getContact() + "," + aux.get(i).getDate() + ","
+					+ aux.get(i).getTime() + "," + aux.get(i).getDeliveryMode();
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF(response);
@@ -130,6 +139,44 @@ public class User {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public void addPostsWIFI(String title, String content, String contact, String date, String time,
+			String deliveryMode) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, date, time, deliveryMode, getNumOfPost());
+		if (LocMess.getPosts().containsKey(this))
+			LocMess.getPosts().get(this).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getPosts().put(this, aux);
+		}
+
+	}
+
+	public void addPostsGPS(String title, String content, String contact, String date, String time, String deliveryMode,
+			String coordinates, String radius) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius, getNumOfPost());
+		if (LocMess.getPosts().containsKey(this))
+			LocMess.getPosts().get(this).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getPosts().put(this, aux);
+		}
+	}
+
+	public void removePost(String postID) {
+		int id = Integer.parseInt(postID);
+		ArrayList<Posts> aux = LocMess.getPosts().get(this);
+		for (int i = 0; i < aux.size(); i++) {
+			if (aux.get(i).getId() == id) {
+				LocMess.getPosts().get(this).remove(i);
+				break;
+			}
 		}
 	}
 

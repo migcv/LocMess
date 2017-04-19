@@ -1,13 +1,11 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
-import java.util.Random;
+import java.util.UUID;
 
 public class Session {
 
 	public String createToken() {
-		Random r = new Random();
-		Integer n = r.nextInt(50) + 1;
-		String token = Integer.toString(n);
+		String token = UUID.randomUUID().toString();
 		return token;
 	}
 

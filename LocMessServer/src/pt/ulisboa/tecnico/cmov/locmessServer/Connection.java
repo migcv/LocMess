@@ -51,14 +51,20 @@ public class Connection implements Runnable {
 				LocMess.getUsers().get(ux.getUsername()).removeRestriction(ux.getUsername(), res[2]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
-				Posts.addPostsWIFI(res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
-				Posts.addPostsGPS(res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 			}
 			if (res[0].equals("MYPosts")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				ux.sendUserPosts(s);
+			}
+			if (res[0].equals("RemovePost")) {
+				User ux = LocMess.getSession().getUserFromSession(res[1]);
+				ux.removePost(res[2]);
 			}
 			if (res[0].equals("GetAllRestrictions")) {
 				getAllRestrictions();

@@ -66,7 +66,6 @@ public class LocMess {
 		// SIGNUP
 		User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
 		LocMess.getUsers().put("qwerty", u);
-		LocMess.getPosts().put(u, null);
 
 		// Create user restrictions
 		HashMap<String, ArrayList<String>> aux = new HashMap<>();
@@ -85,6 +84,19 @@ public class LocMess {
 		LocMess.getUserRestrictions().put(u, aux);
 		LocMess.getGlobalRestrictions().put("Animals", aux1);
 		LocMess.getGlobalRestrictions().put("Jobs", aux2);
+
+		// Create posts
+		ArrayList<Posts> posts = new ArrayList<>();
+		u.setNumOfPost();
+		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		u.setNumOfPost();
+		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		u.setNumOfPost();
+		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		posts.add(p);
+		posts.add(p1);
+		posts.add(p2);
+		LocMess.getPosts().put(u, posts);
 
 	}
 
