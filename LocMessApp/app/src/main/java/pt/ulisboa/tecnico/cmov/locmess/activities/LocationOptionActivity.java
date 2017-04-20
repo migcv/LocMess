@@ -55,7 +55,6 @@ public class LocationOptionActivity extends AppCompatActivity {
     private RadioButton radioButtonLocation;
     private RadioButton radioButtonWifDirect;
 
-    private static final String URL = "http://maps.googleapis.com/maps/api/geocode/xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,23 +182,6 @@ public class LocationOptionActivity extends AppCompatActivity {
                 textRadius.setText("" + radius + "m");
             }
 
-        });
-
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: obter informações sobre o local selecionado.
-                Log.i("LOCATION", "Place: " + place.getName());
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Solucionar o erro.
-                Log.i("LOCATION", "Ocorreu um erro: " + status);
-            }
         });
 
     }

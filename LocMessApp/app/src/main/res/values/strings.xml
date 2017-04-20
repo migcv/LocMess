@@ -37,6 +37,7 @@
 
     <!-- Strings related to Create Post - Location -->
     <string name="title_activity_location_option">Post Location</string>
+    <string name="my_location">My Locations</string>
     <string name="location">Location</string>
     <string name="location_search_hint">Insert Location</string>
     <string name="wifi_direct">Wifi-Direct</string>

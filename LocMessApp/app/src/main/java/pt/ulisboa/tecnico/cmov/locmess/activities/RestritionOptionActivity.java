@@ -106,8 +106,6 @@ public class RestritionOptionActivity extends AppCompatActivity {
                     }
                 }
 
-
-
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -300,6 +298,8 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         deleteButton.setText("X");
+        deleteButton.setTextColor(getResources().getColorStateList(R.color.colorWhite));
+        deleteButton.setBackgroundTintList(getResources().getColorStateList(R.color.colorRemove));
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

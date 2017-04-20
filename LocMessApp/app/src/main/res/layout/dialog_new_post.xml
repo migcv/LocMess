@@ -209,12 +209,14 @@
         android:layout_height="match_parent">
 
         <Button
-            android:text="@string/post"
+            android:id="@+id/button_post"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button_post"
             android:layout_weight="1"
-            android:textAlignment="center" />
+            android:backgroundTint="@color/colorPrimary"
+            android:text="@string/post"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite" />
 
         <Button
             android:text="@string/cancel"

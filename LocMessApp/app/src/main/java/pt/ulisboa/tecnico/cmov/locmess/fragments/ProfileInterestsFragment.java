@@ -217,6 +217,8 @@ public class ProfileInterestsFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         deleteButton.setText("X");
+        deleteButton.setTextColor(getContext().getResources().getColorStateList(R.color.colorWhite));
+        deleteButton.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.colorRemove));
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
