@@ -106,18 +106,23 @@ public class RestritionOptionActivity extends AppCompatActivity {
                     }
                 }
 
-                final String toSend;
-                if(NewPost.deliveryMode.equals("GPS")){
-                    toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode + ";:;" + String.format("%.4f, %.4f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius;
-                } else {
-                    toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;" + NewPost.deliveryMode;
-                }
+
 
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
                             try {
+                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;";
+                                StringBuilder restrictions = new StringBuilder();
+                                for (Object str : NewPost.restrictionList ) {
+                                    restrictions.append(str.toString() + ",");
+                                }
+                                if(NewPost.deliveryMode.equals("GPS")){
+                                    toSend = toSend + NewPost.deliveryMode + ";:;" + String.format("%.4f, %.4f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                } else {
+                                    toSend = toSend + NewPost.deliveryMode+ ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                }
                                 Socket s = SocketHandler.getSocket();
                                 Log.d("CONNECTION", "Connection successful!");
                                 DataOutputStream dout = new DataOutputStream(s.getOutputStream());

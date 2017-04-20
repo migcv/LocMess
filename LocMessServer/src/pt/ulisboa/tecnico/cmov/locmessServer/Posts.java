@@ -11,19 +11,24 @@ public class Posts {
 	private String coordinates;
 	private String radius;
 	private Integer id;
+	private String restrictionPolicy;
+	private String restrictions;
 
-	public Posts(String title, String content, String contact, String date, String time, String deliveryMode, int id) {
+	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
+			String restrictionPolicy, String restrictions, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
 		this.date = date;
 		this.time = time;
 		this.deliveryMode = deliveryMode;
+		this.restrictionPolicy = restrictionPolicy;
+		this.restrictions = restrictions;
 		this.id = id;
 	}
 
 	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius, int id) {
+			String coordinates, String radius, String restrictionPolicy, String restrictions, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -32,6 +37,8 @@ public class Posts {
 		this.deliveryMode = deliveryMode;
 		this.coordinates = coordinates;
 		this.radius = radius;
+		this.restrictionPolicy = restrictionPolicy;
+		this.restrictions = restrictions;
 		this.id = id;
 	}
 
@@ -73,6 +80,14 @@ public class Posts {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getRestrictionPolicy() {
+		return restrictionPolicy;
+	}
+
+	public String getRestrictions() {
+		return restrictions;
 	}
 
 }

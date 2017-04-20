@@ -35,7 +35,7 @@ public class User {
 	public User getUserByUsername(String username) {
 		return LocMess.getUsers().get(username);
 	}
-	
+
 	public int getNumOfPost() {
 		return numOfPost;
 	}
@@ -143,9 +143,10 @@ public class User {
 	}
 
 	public void addPostsWIFI(String title, String content, String contact, String date, String time,
-			String deliveryMode) {
+			String deliveryMode, String restrictionPolicy, String restrictions) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, getNumOfPost());
+		Posts p = new Posts(title, content, contact, date, time, deliveryMode, restrictionPolicy, restrictions,
+				getNumOfPost());
 		if (LocMess.getPosts().containsKey(this))
 			LocMess.getPosts().get(this).add(p);
 		else {
@@ -157,9 +158,10 @@ public class User {
 	}
 
 	public void addPostsGPS(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius) {
+			String coordinates, String radius, String restrictionPolicy, String restrictions) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius, getNumOfPost());
+		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius, restrictionPolicy,
+				restrictions, getNumOfPost());
 		if (LocMess.getPosts().containsKey(this))
 			LocMess.getPosts().get(this).add(p);
 		else {

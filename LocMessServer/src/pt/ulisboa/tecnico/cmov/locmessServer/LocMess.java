@@ -19,7 +19,7 @@ public class LocMess {
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
-		
+
 		if (users.isEmpty()) {
 			populate();
 		}
@@ -88,11 +88,14 @@ public class LocMess {
 		// Create posts
 		ArrayList<Posts> posts = new ArrayList<>();
 		u.setNumOfPost();
-		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
+				"Student (Job)", u.getNumOfPost());
 		u.setNumOfPost();
-		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
+				"Student (Job)", u.getNumOfPost());
 		u.setNumOfPost();
-		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", u.getNumOfPost());
+		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
+				"Student (Job)", u.getNumOfPost());
 		posts.add(p);
 		posts.add(p1);
 		posts.add(p2);

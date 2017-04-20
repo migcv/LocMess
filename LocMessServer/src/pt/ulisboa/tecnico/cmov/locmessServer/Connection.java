@@ -52,11 +52,11 @@ public class Connection implements Runnable {
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
+				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11]);
 			}
 			if (res[0].equals("MYPosts")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);

@@ -50,6 +50,12 @@ public class ExpandableListDataPump {
 
                 response = dis.readUTF();
                 Log.d("GET_MY_POSTS", response);
+                Log.d("POSTS_ARGUMENTS", postArguments[0]);
+                Log.d("POSTS_ARGUMENTS", postArguments[1]);
+                Log.d("POSTS_ARGUMENTS", postArguments[2]);
+                Log.d("POSTS_ARGUMENTS", postArguments[3]);
+                Log.d("POSTS_ARGUMENTS", postArguments[4]);
+                Log.d("POSTS_ARGUMENTS", postArguments[5]);
 
                 responseSplitted = response.split(";:;");
             }

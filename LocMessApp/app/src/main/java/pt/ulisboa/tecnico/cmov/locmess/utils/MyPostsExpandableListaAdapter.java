@@ -64,11 +64,11 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
             convertView = layoutInflater.inflate(R.layout.list_item, null);
         }
         TextView text_content = (TextView) convertView.findViewById(R.id.text_content);
-        text_content.setText(expandableListDetail.get(listPosition).get(1));
+        text_content.setText(expandableListDetail.get(listPosition).get(2));
         TextView text_contact = (TextView) convertView.findViewById(R.id.text_contact);
-        text_contact.setText(this.expandableListDetail.get(listPosition).get(2));
+        text_contact.setText(this.expandableListDetail.get(listPosition).get(3));
         TextView text_date = (TextView) convertView.findViewById(R.id.text_date);
-        text_date.setText(this.expandableListDetail.get(listPosition).get(3) + " " + this.expandableListDetail.get(listPosition).get(4));
+        text_date.setText(this.expandableListDetail.get(listPosition).get(4) + " " + this.expandableListDetail.get(listPosition).get(5));
         return convertView;
     }
 
