@@ -44,38 +44,35 @@ public class User {
 		this.numOfPost++;
 	}
 
-	public void addRestriction(String username, String restriction) {
-		User u = getUserByUsername(username);
+	public void addRestriction(String restriction) {
 		String[] res = restriction.split(":");
-		if (LocMess.getUserRestrictions().get(u).containsKey(res[0])) {
-			LocMess.getUserRestrictions().get(u).get(res[0]).add(res[1]);
+		if (LocMess.getUserRestrictions().get(this).containsKey(res[0])) {
+			LocMess.getUserRestrictions().get(this).get(res[0]).add(res[1]);
 			LocMess.getGlobalRestrictions().get(res[0]).add(res[1]);
-			System.out.println(LocMess.getUserRestrictions().get(u).get(res[0]).size());
+			System.out.println(LocMess.getUserRestrictions().get(this).get(res[0]).size());
 		} else {
 			ArrayList<String> aux = new ArrayList<>();
 			aux.add(res[1]);
-			LocMess.getUserRestrictions().get(u).put(res[0], aux);
+			LocMess.getUserRestrictions().get(this).put(res[0], aux);
 			LocMess.getGlobalRestrictions().put(res[0], aux);
-			System.out.println(LocMess.getUserRestrictions().get(u).get(res[0]).size());
+			System.out.println(LocMess.getUserRestrictions().get(this).get(res[0]).size());
 		}
 	}
 
-	public void removeRestriction(String username, String restriction) {
-		User u = getUserByUsername(username);
+	public void removeRestriction(String restriction) {
 		String[] res = restriction.split(":");
-		if (LocMess.getUserRestrictions().get(u).containsKey(res[0])) {
-			LocMess.getUserRestrictions().get(u).get(res[0]).remove(res[1]);
-			System.out.println(LocMess.getUserRestrictions().get(u).get(res[0]).size());
+		if (LocMess.getUserRestrictions().get(this).containsKey(res[0])) {
+			LocMess.getUserRestrictions().get(this).get(res[0]).remove(res[1]);
+			System.out.println(LocMess.getUserRestrictions().get(this).get(res[0]).size());
 		}
-		if (LocMess.getUserRestrictions().get(u).get(res[0]).isEmpty()) {
-			LocMess.getUserRestrictions().get(u).remove(res[0]);
+		if (LocMess.getUserRestrictions().get(this).get(res[0]).isEmpty()) {
+			LocMess.getUserRestrictions().get(this).remove(res[0]);
 		}
 
 	}
 
-	public void sendRestrictions(Socket s, String username) {
-		User u = getUserByUsername(username);
-		HashMap<String, ArrayList<String>> res = LocMess.getUserRestrictions().get(u);
+	public void sendRestrictions(Socket s) {
+		HashMap<String, ArrayList<String>> res = LocMess.getUserRestrictions().get(this);
 		DataOutputStream dataOutputStream;
 		if (res == null) {
 			try {
@@ -181,6 +178,32 @@ public class User {
 				break;
 			}
 		}
+
+	}
+
+	public void sendLocations(Socket s) {
+		ArrayList<String> locations = LocMess.getUsersLocations().get(this);
+		String toSend = "";
+		DataOutputStream dataOutputStream;
+		for (String str : locations) {
+			toSend = toSend.concat(str + ";:;");
+		}
+		try {
+			dataOutputStream = new DataOutputStream(s.getOutputStream());
+			dataOutputStream.writeUTF(toSend);
+			dataOutputStream.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void addLocations(String loc) {
+		LocMess.getUsersLocations().get(this).add(loc);
+	}
+
+	public void removeLocations(String loc) {
+		LocMess.getUsersLocations().get(this).remove(loc);
 	}
 
 }
