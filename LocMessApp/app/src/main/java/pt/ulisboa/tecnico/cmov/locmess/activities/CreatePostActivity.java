@@ -111,10 +111,11 @@ public class CreatePostActivity extends AppCompatActivity {
         dayPost = myCalendar.get(Calendar.DAY_OF_MONTH);
         monthPost = myCalendar.get(Calendar.MONTH);
         yearPost = myCalendar.get(Calendar.YEAR);
+        myCalendar.setTime(new Date(System.currentTimeMillis()+5*60*1000));
         hourPost = myCalendar.get(Calendar.HOUR_OF_DAY);
         minutePost = myCalendar.get(Calendar.MINUTE);
         SimpleDateFormat dateF = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", Locale.getDefault());
-        String date = dateF.format(Calendar.getInstance().getTime());
+        String date = dateF.format(myCalendar.getTime());
         datetime.setText(date);
 
         datetime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -140,6 +141,7 @@ public class CreatePostActivity extends AppCompatActivity {
         dayPost = myCalendar.get(Calendar.DAY_OF_MONTH);
         monthPost = myCalendar.get(Calendar.MONTH);
         yearPost = myCalendar.get(Calendar.YEAR);
+        myCalendar.setTime(new Date(System.currentTimeMillis()+5*60*1000));
         hourPost = myCalendar.get(Calendar.HOUR_OF_DAY);
         minutePost = myCalendar.get(Calendar.MINUTE);
 

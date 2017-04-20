@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +27,8 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationSource;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -38,13 +39,13 @@ import com.mapbox.services.android.telemetry.location.LocationEngine;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.activities.RestritionOptionActivity;
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 
 public class LocationOptionActivity extends AppCompatActivity {
 
     private int radius = 250;
-    private LatLng userLocation = new LatLng(38.7378954, -9.1378972);
+    private LatLng userLocation;
 
     private MapView mapView;
     private MapboxMap map;
@@ -110,10 +111,19 @@ public class LocationOptionActivity extends AppCompatActivity {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
+                userLocation = new LatLng(((GlobalLocMess) getApplicationContext()).getLatitude(), ((GlobalLocMess) getApplicationContext()).getLongitude());
+                Log.d("LOCATION_OPTION", "User Location: " + userLocation.getLatitude() + ", " + userLocation.getLongitude());
+                mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                                            .target(userLocation) // Sets the new camera position
+                                            .zoom(15) // Sets the zoom
+                                            .bearing(0) // Rotate the camera
+                                            .tilt(0) // Set the camera tilt
+                                            .build() // Creates a CameraPosition from the builder);
+                );
                 marker = mapboxMap.addMarker(new MarkerViewOptions().position(userLocation));
                 mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
                     @Override
-                    public void onMapClick(@NonNull LatLng point) {
+                    public void onMapClick(LatLng point) {
                         ValueAnimator markerAnimator = ObjectAnimator.ofObject(marker, "position",
                                 new LatLngEvaluator(), marker.getPosition(), point);
                         markerAnimator.setDuration(250);
@@ -121,6 +131,16 @@ public class LocationOptionActivity extends AppCompatActivity {
 
                         map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(point, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
                         map.removePolygon(map.getPolygons().get(0));
+
+                        CameraPosition position = new CameraPosition.Builder()
+                                .target(point) // Sets the new camera position
+                                .zoom(15) // Sets the zoom
+                                .bearing(0) // Rotate the camera
+                                .tilt(0) // Set the camera tilt
+                                .build(); // Creates a CameraPosition from the builder
+
+                        map.animateCamera(CameraUpdateFactory
+                                .newCameraPosition(position), 1000);
                     }
                 });
                 LatLng location = userLocation;

@@ -38,6 +38,8 @@ public class RestritionOptionActivity extends AppCompatActivity {
     private ArrayList<String> whiteRestrictionList = new ArrayList<String>();
     private ArrayList<String> blackRestrictionList = new ArrayList<String>();
 
+    private ArrayAdapter<String> adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,7 +197,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
          */
         final AutoCompleteTextView autoComplete_white = (AutoCompleteTextView) findViewById(R.id.autocomplete_white);
         // Create the adapter and set it to the AutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, restrictionsSugestions);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, restrictionsSugestions);
         autoComplete_white.setAdapter(adapter);
         autoComplete_white.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -209,6 +211,11 @@ public class RestritionOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String content = autoComplete_white.getText().toString();
                 findViewById(R.id.white_placeholder).setVisibility(View.GONE);
+                if(!adapterContains(content)) {
+                    Snackbar.make(view, "Restriction doesn't exists", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    return;
+                }
                 if(!whiteRestrictionList.contains(content)) {
                     addContentToLayout((LinearLayout) findViewById(R.id.layout_white_content), content);
                     autoComplete_white.setText("");
@@ -237,6 +244,11 @@ public class RestritionOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String content = autoComplete_black.getText().toString();
                 findViewById(R.id.black_placeholder).setVisibility(View.GONE);
+                if(!adapterContains(content)) {
+                    Snackbar.make(view, "Restriction doesn't exists", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    return;
+                }
                 if(!blackRestrictionList.contains(content)) {
                     addContentToLayout((LinearLayout) findViewById(R.id.layout_black_content), content);
                     autoComplete_black.setText("");
@@ -314,6 +326,15 @@ public class RestritionOptionActivity extends AppCompatActivity {
         findViewById(R.id.layout_everyone).setVisibility(View.GONE);
         findViewById(R.id.layout_white).setVisibility(View.GONE);
         findViewById(R.id.layout_black).setVisibility(View.GONE);
+    }
+
+    private boolean adapterContains(String content) {
+        for(int i = 0; i < adapter.getCount(); i++) {
+            if(adapter.getItem(i).equals(content)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

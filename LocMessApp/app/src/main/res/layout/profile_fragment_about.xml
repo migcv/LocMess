@@ -23,21 +23,17 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:text="Contact: "
                     android:textColor="@android:color/primary_text_light"
                     android:textStyle="bold" />
 
-                <android.support.design.widget.TextInputLayout
+
+                <EditText
+                    android:id="@+id/account_contact"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <EditText
-                        android:id="@+id/account_contact"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="917494376"
-                        android:textColor="@android:color/secondary_text_light" />
-                </android.support.design.widget.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:hint="917494376"
+                    android:textColor="@android:color/secondary_text_light" />
             </LinearLayout>
 
             <LinearLayout
@@ -48,14 +44,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
                     android:text="E-Mail: "
                     android:textColor="@android:color/primary_text_light"
                     android:textStyle="bold" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/account_mail"
                     android:layout_width="match_parent"
@@ -63,7 +55,6 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@android:color/secondary_text_light"
                     android:hint="mail@mail.mail" />
-                </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
         </LinearLayout>

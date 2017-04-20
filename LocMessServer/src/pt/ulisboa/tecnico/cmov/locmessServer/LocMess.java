@@ -19,15 +19,15 @@ public class LocMess {
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
-		System.out.println("Server Up");
-
+		
 		if (users.isEmpty()) {
 			populate();
 		}
 		try {
 			ss = new ServerSocket(port);
+			System.out.println("Server Up " + ss.getLocalPort());
 			while (true) {
-				System.out.println("entrei no while!");
+				System.out.println("Listening!");
 				Socket s = ss.accept();// establishes connection
 				System.out.println("Accepted: " + s.getInetAddress());
 				new Thread(new Connection(s)).start();

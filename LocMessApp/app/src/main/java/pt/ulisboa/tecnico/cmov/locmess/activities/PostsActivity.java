@@ -64,8 +64,8 @@ public class PostsActivity extends AppCompatActivity
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        //ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
-        //expandableListView.setAdapter(expandableListAdapter);
+        ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        expandableListView.setAdapter(expandableListAdapter);
     }
 
     @Override

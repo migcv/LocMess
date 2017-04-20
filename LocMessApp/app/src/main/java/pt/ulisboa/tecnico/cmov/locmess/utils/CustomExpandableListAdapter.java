@@ -21,10 +21,9 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private ArrayList<String> expandableListTitle;
-    private HashMap<Integer, List<String>> expandableListDetail;
+    private ArrayList<List<String>> expandableListDetail;
 
-    public CustomExpandableListAdapter(Context context, ArrayList<String> expandableListTitle,
-                                       HashMap<Integer, List<String>> expandableListDetail) {
+    public CustomExpandableListAdapter(Context context, ArrayList<String> expandableListTitle, ArrayList<List<String>> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
@@ -81,7 +80,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return this.expandableListDetail.keySet().size();
+        return this.expandableListDetail.size();
     }
 
     @Override

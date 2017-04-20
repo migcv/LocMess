@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+
 /**
  * Created by Miguel on 18/04/2017.
  */
@@ -42,7 +44,11 @@ public class LocationService extends Service implements LocationListener {
             try {
                 while(true) {
                     getLocation();
-                    Log.d("LOCATION_ SERVICE", location == null ? "Null" : "" + latitude + ", " + longitude);
+                    Log.d("LOCATION_ SERVICE", location == null ? "Location Null" : "Location " + latitude + ", " + longitude);
+                    if(location != null) {
+                        ((GlobalLocMess) getApplicationContext()).setLatitude(latitude);
+                        ((GlobalLocMess) getApplicationContext()).setLongitude(longitude);
+                    }
                     Thread.sleep(30000);
                 }
             } catch (SecurityException e) {
@@ -70,7 +76,7 @@ public class LocationService extends Service implements LocationListener {
                             LocationManager.NETWORK_PROVIDER,
                             5000,
                             10, this);
-                    Log.d("Network", "Network Enabled");
+                    Log.d("LOCATION_ SERVICE", "Network Enabled");
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -87,7 +93,7 @@ public class LocationService extends Service implements LocationListener {
                                 LocationManager.GPS_PROVIDER,
                                 5000,
                                 10, this);
-                        Log.d("GPS", "GPS Enabled");
+                        Log.d("LOCATION_ SERVICE", "GPS Enabled");
                         if (locationManager != null) {
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
