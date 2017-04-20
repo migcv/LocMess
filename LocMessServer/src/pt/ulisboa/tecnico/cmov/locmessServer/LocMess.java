@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class LocMess {
 
@@ -15,7 +14,8 @@ public class LocMess {
 	private static HashMap<User, ArrayList<Posts>> userPosts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
-	private static Hashtable<String, String> userSessions = new Hashtable<String, String>();
+	private static HashMap<String, String> userSessions = new HashMap<>();
+	private static HashMap<User, ArrayList<String>> usersLocations = new HashMap<>();
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
@@ -58,8 +58,12 @@ public class LocMess {
 		return session;
 	}
 
-	public static Hashtable<String, String> getUserSessions() {
+	public static HashMap<String, String> getUserSessions() {
 		return userSessions;
+	}
+
+	public static HashMap<User, ArrayList<String>> getUsersLocations() {
+		return usersLocations;
 	}
 
 	private static void populate() {
@@ -100,6 +104,13 @@ public class LocMess {
 		posts.add(p1);
 		posts.add(p2);
 		LocMess.getPosts().put(u, posts);
+		
+		ArrayList<String> aux3 = new ArrayList<>();
+		aux3.add("GPS:1.2343,1.2343");
+		aux3.add("GPS:12.2343,12.2343");
+		aux3.add("GPS:32.2343,32.2343");
+		aux3.add("WIFI:edurom");
+		LocMess.getUsersLocations().put(u, aux3);
 
 	}
 

@@ -38,17 +38,20 @@ public class Connection implements Runnable {
 			if (res[0].equals("SignUp")) {
 				new SignUp(s, res[1], res[2], res[3]);
 			}
+			if (res[0].equals("GetAllRestrictions")) {
+				getAllRestrictions();
+			}
 			if (res[0].equals("MYRestrictions")) {
 				User u1 = LocMess.getSession().getUserFromSession(res[1]);
-				LocMess.getUsers().get(u1.getUsername()).sendRestrictions(s, u1.getUsername());
+				u1.sendRestrictions(s);
 			}
 			if (res[0].equals("AddRestrictions")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
-				LocMess.getUsers().get(ux.getUsername()).addRestriction(ux.getUsername(), res[2]);
+				ux.addRestriction(res[2]);
 			}
 			if (res[0].equals("RemoveRestrictions")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
-				LocMess.getUsers().get(ux.getUsername()).removeRestriction(ux.getUsername(), res[2]);
+				ux.removeRestriction(res[2]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
@@ -66,8 +69,17 @@ public class Connection implements Runnable {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				ux.removePost(res[2]);
 			}
-			if (res[0].equals("GetAllRestrictions")) {
-				getAllRestrictions();
+			if (res[0].equals("MYLocations")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.sendLocations(s);
+			}
+			if (res[0].equals("AddLocations")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addLocations(res[2]);
+			}
+			if (res[0].equals("RemoveLocations")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.removeLocations(res[2]);
 			}
 			if (res[0].equals("SignOut")) {
 				signOut(res[1]);
