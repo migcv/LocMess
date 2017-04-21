@@ -198,6 +198,7 @@ public class User {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF(toSend);
 				dataOutputStream.flush();
+				toSend = "";
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

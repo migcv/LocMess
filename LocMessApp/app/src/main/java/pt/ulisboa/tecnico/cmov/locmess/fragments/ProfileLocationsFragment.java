@@ -12,6 +12,7 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,6 +32,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -127,26 +129,30 @@ public class ProfileLocationsFragment extends Fragment {
                 final Dialog locationDialog = new Dialog(getView().getContext());
                 locationDialog.setContentView(R.layout.dialog_new_location);
 
-                DecimalFormat df = new DecimalFormat("##.####");
+                DecimalFormat df = new DecimalFormat("##.######");
                 ((TextView) locationDialog.findViewById(R.id.text_location)).setText(df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
 
                 locationDialog.findViewById(R.id.button_add_location).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
+                        String locationName = ((TextView)locationDialog.findViewById(R.id.input_location_name)).getText().toString();
+                        String coordenates = marker.getPosition().getLatitude()+ ", " + marker.getPosition().getLongitude();
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
                         try {
                             //Mudar esta String
-                            String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:Arco do Cego;:32.2343,32.2343";
+                            String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:" + locationName + ";:" + coordenates;
                             Socket s = SocketHandler.getSocket();
                             Log.d("CONNECTION", "Connection successful!");
                             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
                             dout.writeUTF(toSend);
                             dout.flush();
                             //dout.close();
-                            Log.d("NEW POST", toSend);
+                            Log.d("NEW_LOCATION", toSend);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        DecimalFormat df = new DecimalFormat("##.######");
+                        addContentToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), locationName, df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
                         locationDialog.dismiss();
                     }
                 });
@@ -159,14 +165,34 @@ public class ProfileLocationsFragment extends Fragment {
             }
         });
 
-        addContentToLayout((LinearLayout) view.findViewById(R.id.layout_locations), "Arco do Cego", "38.736109, -9.142490");
+        //addContentToLayout((LinearLayout) view.findViewById(R.id.layout_locations), "Arco do Cego", "38.736109, -9.142490");
+
+        populateLocations();
 
         return view;
     }
 
+    private void populateLocations() {
+        try {
+            Socket s = SocketHandler.getSocket();
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF("MYLocations;:;" + SocketHandler.getToken());
+            dout.flush();
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            String str = dis.readUTF();
+            String[] locations = str.split(";:;");
+            while(!str.equals("END")) {
+                addContentToLayout((LinearLayout) view.findViewById(R.id.layout_locations), locations[2], locations[3]);
+                str = dis.readUTF();
+                Log.d("MY_LOCATIONS", str);
+                locations = str.split(";:;");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addContentToLayout(LinearLayout layout, final String name, String location) {
-
-
         final LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setLayoutParams(new LinearLayout.LayoutParams(
@@ -253,35 +279,5 @@ public class ProfileLocationsFragment extends Fragment {
                     ((endValue.getLongitude() - startValue.getLongitude()) * fraction));
             return latLng;
         }
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-        mapView.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
     }
 }

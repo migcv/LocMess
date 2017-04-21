@@ -106,15 +106,15 @@ public class LocMess {
 		LocMess.getPosts().put(u, posts);
 
 		ArrayList<Locations> aux3 = new ArrayList<>();
-		Locations l1 = new Locations("GPS", "Arco do Cego", "1.2343,1.2343");
-		Locations l2 = new Locations("GPS", "Portimao", "12.2343,12.2343");
-		Locations l3 = new Locations("GPS", "Faro", "32.2343,32.2343");
-		Locations l4 = new Locations("WIFI", "Edurom");
+		Locations l1 = new Locations("GPS", "Arco do Cego", "1.2343, 1.2343");
+		Locations l2 = new Locations("GPS", "Portimao", "12.2343, 12.2343");
+		Locations l3 = new Locations("GPS", "Faro", "32.2343, 32.2343");
+		//Locations l4 = new Locations("WIFI", "Edurom");
 
 		aux3.add(l1);
 		aux3.add(l2);
 		aux3.add(l3);
-		aux3.add(l4);
+		//aux3.add(l4);
 		LocMess.getUsersLocations().put(u, aux3);
 
 	}
