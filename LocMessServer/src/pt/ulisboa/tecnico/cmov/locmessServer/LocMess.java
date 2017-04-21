@@ -16,6 +16,7 @@ public class LocMess {
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
 	private static HashMap<String, String> userSessions = new HashMap<>();
 	private static HashMap<User, ArrayList<Locations>> usersLocations = new HashMap<>();
+	private static ArrayList<Locations> globalLocations = new ArrayList<>();
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
@@ -42,7 +43,7 @@ public class LocMess {
 		return users;
 	}
 
-	public static HashMap<User, ArrayList<Posts>> getPosts() {
+	public static HashMap<User, ArrayList<Posts>> getUserPosts() {
 		return userPosts;
 	}
 
@@ -64,6 +65,10 @@ public class LocMess {
 
 	public static HashMap<User, ArrayList<Locations>> getUsersLocations() {
 		return usersLocations;
+	}
+
+	public static ArrayList<Locations> getGlobalLocations() {
+		return globalLocations;
 	}
 
 	private static void populate() {
@@ -100,22 +105,29 @@ public class LocMess {
 		u.setNumOfPost();
 		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
 				"Student (Job)", u.getNumOfPost());
+		u.setNumOfPost();
+		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
+				"100", "White", "Student (Job)", u.getNumOfPost());
 		posts.add(p);
 		posts.add(p1);
 		posts.add(p2);
-		LocMess.getPosts().put(u, posts);
+		posts.add(p3);
+		LocMess.getUserPosts().put(u, posts);
 
 		ArrayList<Locations> aux3 = new ArrayList<>();
-		Locations l1 = new Locations("GPS", "Arco do Cego", "1.2343, 1.2343");
-		Locations l2 = new Locations("GPS", "Portimao", "12.2343, 12.2343");
+		Locations l1 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
+		Locations l2 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
 		Locations l3 = new Locations("GPS", "Faro", "37.019355, -7.930440");
-		//Locations l4 = new Locations("WIFI", "Edurom");
+		// Locations l4 = new Locations("WIFI", "Edurom");
 
 		aux3.add(l1);
 		aux3.add(l2);
 		aux3.add(l3);
-		//aux3.add(l4);
+		// aux3.add(l4);
 		LocMess.getUsersLocations().put(u, aux3);
+		LocMess.getGlobalLocations().add(l1);
+		LocMess.getGlobalLocations().add(l2);
+		LocMess.getGlobalLocations().add(l3);
 
 	}
 

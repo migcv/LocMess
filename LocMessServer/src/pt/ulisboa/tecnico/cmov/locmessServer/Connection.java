@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class Connection implements Runnable {
@@ -25,6 +26,7 @@ public class Connection implements Runnable {
 				dis = new DataInputStream(s.getInputStream());
 				str = dis.readUTF();
 			} catch (IOException e) {
+				e.toString();
 				break;
 			}
 
@@ -37,6 +39,10 @@ public class Connection implements Runnable {
 			}
 			if (res[0].equals("SignUp")) {
 				new SignUp(s, res[1], res[2], res[3]);
+			}
+			if (res[0].equals("CurrentLocation")) {
+				User u1 = LocMess.getSession().getUserFromSession(res[1]);
+				u1.setCurrentLocation(res[2]);
 			}
 			if (res[0].equals("GetAllRestrictions")) {
 				getAllRestrictions();
@@ -53,13 +59,24 @@ public class Connection implements Runnable {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				ux.removeRestriction(res[2]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT")) {
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && !(res[8].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
 				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("GPS")) {
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && res[8].equals("EVERYONE")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8]);
+			}
+			if (res[0].equals("NewPosts") && res[7].equals("GPS") && !(res[10].equals("EVERYONE"))) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				for(String a : res){
+					System.out.println(a);
+				}
 				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11]);
+			}
+			if (res[0].equals("NewPosts") && res[7].equals("GPS") && res[10].equals("EVERYONE")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
 			}
 			if (res[0].equals("MYPosts")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
@@ -72,6 +89,9 @@ public class Connection implements Runnable {
 			if (res[0].equals("MYLocations")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
 				u.sendLocations(s);
+			}
+			if (res[0].equals("GetAllLocations")) {
+				sendAllLocations();
 			}
 			if (res[0].equals("AddLocations")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
@@ -105,6 +125,41 @@ public class Connection implements Runnable {
 		try {
 			dataOutputStream = new DataOutputStream(s.getOutputStream());
 			dataOutputStream.writeUTF(response);
+			dataOutputStream.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void sendAllLocations() {
+		ArrayList<Locations> locations = LocMess.getGlobalLocations();
+		String response = "";
+		DataOutputStream dataOutputStream;
+		for (int i = 0; i < locations.size(); i++) {
+			if (locations.get(i).getType().equals("GPS")) {
+				response += response + locations.get(i).getType() + ";:;" + locations.get(i).getLocationName() + ";:;"
+						+ locations.get(i).getLatitude().toString() + ", " + locations.get(i).getLongitude().toString()
+						+ ";:;";
+			} else {
+				response += response + locations.get(i).getType() + ";:;" + locations.get(i).getLocationName() + ";:;"
+						+ locations.get(i).getSSId() + ";:;";
+			}
+			try {
+				System.out.println(response);
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF(response);
+				dataOutputStream.flush();
+				response = "";
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			dataOutputStream = new DataOutputStream(s.getOutputStream());
+			dataOutputStream.writeUTF("END");
 			dataOutputStream.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

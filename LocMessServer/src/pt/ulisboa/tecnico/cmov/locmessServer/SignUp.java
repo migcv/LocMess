@@ -41,7 +41,7 @@ public class SignUp {
 				dataOutputStream.flush();
 				User u = new User(username, password, email);
 				LocMess.getUsers().put(username, u);
-				LocMess.getPosts().put(u, null);
+				LocMess.getUserPosts().put(u, null);
 				LocMess.getUserRestrictions().put(u, null);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
