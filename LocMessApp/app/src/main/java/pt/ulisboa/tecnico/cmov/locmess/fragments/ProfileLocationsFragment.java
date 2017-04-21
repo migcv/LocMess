@@ -132,6 +132,21 @@ public class ProfileLocationsFragment extends Fragment {
 
                 locationDialog.findViewById(R.id.button_add_location).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        try {
+                            //Mudar esta String
+                            String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:Arco do Cego;:32.2343,32.2343";
+                            Socket s = SocketHandler.getSocket();
+                            Log.d("CONNECTION", "Connection successful!");
+                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                            dout.writeUTF(toSend);
+                            dout.flush();
+                            //dout.close();
+                            Log.d("NEW POST", toSend);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         locationDialog.dismiss();
                     }
                 });
@@ -151,7 +166,6 @@ public class ProfileLocationsFragment extends Fragment {
 
     private void addContentToLayout(LinearLayout layout, final String name, String location) {
 
-        String restrictionPolicy = null;
 
         final LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.HORIZONTAL);
@@ -199,7 +213,23 @@ public class ProfileLocationsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ll.setVisibility(View.GONE);
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                try {
+                    //Mudar esta String
+                    String toSend = "RemoveLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:Arco do Cego;:32.2343,32.2343";
+                    Socket s = SocketHandler.getSocket();
+                    Log.d("CONNECTION", "Connection successful!");
+                    DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                    dout.writeUTF(toSend);
+                    dout.flush();
+                    //dout.close();
+                    Log.d("NEW POST", toSend);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
         });
 
         ll.addView(deleteButton);

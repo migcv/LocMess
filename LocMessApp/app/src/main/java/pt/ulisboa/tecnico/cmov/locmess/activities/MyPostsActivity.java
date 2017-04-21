@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -131,6 +132,20 @@ public class MyPostsActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Socket s = SocketHandler.getSocket();
+                Log.d("CONNECTION", "Connection successful!");
+                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
+                dout.flush();
+                s.close();
+                Intent intent = new Intent(MyPostsActivity.this, MainActivity.class);
+                startActivity(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

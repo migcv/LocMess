@@ -182,15 +182,30 @@ public class User {
 	}
 
 	public void sendLocations(Socket s) {
-		ArrayList<String> locations = LocMess.getUsersLocations().get(this);
+		ArrayList<Locations> locations = LocMess.getUsersLocations().get(this);
 		String toSend = "";
 		DataOutputStream dataOutputStream;
-		for (String str : locations) {
-			toSend = toSend.concat(str + ";:;");
+		for (int i = 0; i < locations.size(); i++) {
+			if (locations.get(i).getType().equals("GPS")) {
+				toSend = toSend.concat("MYLocations" + ";:;" + locations.get(i).getType() + ";:;"
+						+ locations.get(i).getLocationName() + ";:;" + locations.get(i).getId());
+			} else {
+				toSend = toSend
+						.concat("MYLocations" + ";:;" + locations.get(i).getType() + ";:;" + locations.get(i).getId());
+			}
+
+			try {
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF(toSend);
+				dataOutputStream.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		try {
 			dataOutputStream = new DataOutputStream(s.getOutputStream());
-			dataOutputStream.writeUTF(toSend);
+			dataOutputStream.writeUTF("END");
 			dataOutputStream.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -199,11 +214,31 @@ public class User {
 	}
 
 	public void addLocations(String loc) {
-		LocMess.getUsersLocations().get(this).add(loc);
+		String[] aux = loc.split(";:");
+		Locations l1;
+		if (aux[0].equals("GPS")) {
+			l1 = new Locations(aux[0], aux[1], aux[2]);
+		} else {
+			l1 = new Locations(aux[0], aux[1]);
+		}
+		LocMess.getUsersLocations().get(this).add(l1);
 	}
 
 	public void removeLocations(String loc) {
-		LocMess.getUsersLocations().get(this).remove(loc);
+		ArrayList<Locations> locations = LocMess.getUsersLocations().get(this);
+		String[] aux = loc.split(";:");
+		for (int i = 0; i < locations.size(); i++) {
+			if (aux.length == 3) {
+				if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getLocationName().equals(aux[1])
+						&& locations.get(i).getId().equals(aux[2])) {
+					LocMess.getUsersLocations().get(this).remove(i);
+					break;
+				}
+			} else if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getId().equals(aux[2])) {
+				LocMess.getUsersLocations().get(this).remove(i);
+				break;
+			}
+		}
 	}
 
 }

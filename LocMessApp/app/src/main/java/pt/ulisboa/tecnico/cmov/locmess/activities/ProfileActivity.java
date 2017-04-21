@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +17,10 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.Mapbox;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
@@ -140,7 +145,20 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {
-
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Socket s = SocketHandler.getSocket();
+                Log.d("CONNECTION", "Connection successful!");
+                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
+                dout.flush();
+                s.close();
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                startActivity(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

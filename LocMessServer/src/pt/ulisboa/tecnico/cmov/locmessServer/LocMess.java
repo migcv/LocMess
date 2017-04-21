@@ -15,7 +15,7 @@ public class LocMess {
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
 	private static HashMap<String, String> userSessions = new HashMap<>();
-	private static HashMap<User, ArrayList<String>> usersLocations = new HashMap<>();
+	private static HashMap<User, ArrayList<Locations>> usersLocations = new HashMap<>();
 	private static Session session = new Session();
 
 	public static void main(String[] args) {
@@ -62,7 +62,7 @@ public class LocMess {
 		return userSessions;
 	}
 
-	public static HashMap<User, ArrayList<String>> getUsersLocations() {
+	public static HashMap<User, ArrayList<Locations>> getUsersLocations() {
 		return usersLocations;
 	}
 
@@ -104,12 +104,17 @@ public class LocMess {
 		posts.add(p1);
 		posts.add(p2);
 		LocMess.getPosts().put(u, posts);
-		
-		ArrayList<String> aux3 = new ArrayList<>();
-		aux3.add("GPS:1.2343,1.2343");
-		aux3.add("GPS:12.2343,12.2343");
-		aux3.add("GPS:32.2343,32.2343");
-		aux3.add("WIFI:edurom");
+
+		ArrayList<Locations> aux3 = new ArrayList<>();
+		Locations l1 = new Locations("GPS", "Arco do Cego", "1.2343,1.2343");
+		Locations l2 = new Locations("GPS", "Portimao", "12.2343,12.2343");
+		Locations l3 = new Locations("GPS", "Faro", "32.2343,32.2343");
+		Locations l4 = new Locations("WIFI", "Edurom");
+
+		aux3.add(l1);
+		aux3.add(l2);
+		aux3.add(l3);
+		aux3.add(l4);
 		LocMess.getUsersLocations().put(u, aux3);
 
 	}
