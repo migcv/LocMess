@@ -4,25 +4,30 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
@@ -36,11 +41,18 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.Location;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 public class LocationOptionActivity extends AppCompatActivity {
 
@@ -52,12 +64,15 @@ public class LocationOptionActivity extends AppCompatActivity {
     private Marker marker ;
     private LocationEngine locationEngine;
 
-    private RadioButton radioButtonLocation;
+    private RadioButton radioButtonLocations;
     private RadioButton radioButtonWifDirect;
 
+    private ArrayAdapter<Object> adapter;
+
+    private HashMap<String, Location> locationsMap = new HashMap<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_location_option);
@@ -83,7 +98,7 @@ public class LocationOptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(radioButtonLocation.isChecked()) {
+                if(radioButtonLocations.isChecked()) {
                     NewPost.deliveryMode = NewPost.LOCATION;
                     NewPost.location = marker.getPosition();
                     NewPost.radius = radius;
@@ -102,6 +117,39 @@ public class LocationOptionActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
+        populateLocations();
+        final Object[] locations = locationsMap.keySet().toArray();
+
+        final AutoCompleteTextView autoComplete_locations = (AutoCompleteTextView) findViewById(R.id.autocomplete_locations);
+        // Create the adapter and set it to the AutoCompleteTextView
+        adapter = new ArrayAdapter<Object>(this, android.R.layout.simple_list_item_1, locations);
+        autoComplete_locations.setAdapter(adapter);
+        autoComplete_locations.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
+                autoComplete_locations.showDropDown();
+                return false;
+            }
+        });
+        findViewById(R.id.button_set_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String content = autoComplete_locations.getText().toString();
+                if(locationsMap.get(content).getType().equals("GPS")) {
+                    Location loc = locationsMap.get(content);
+                    LatLng latlog = new LatLng(loc.getLatitude(), loc.getLongitude());
+                    map.setCameraPosition(new CameraPosition.Builder()
+                            .target(latlog)
+                            .build());
+                    marker.setPosition(latlog);
+                    map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(latlog, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
+                    map.removePolygon(map.getPolygons().get(0));
+                } else {
+
+                }
+            }
+        });
+
         locationEngine = LocationSource.getLocationEngine(this);
         locationEngine.activate();
 
@@ -113,58 +161,18 @@ public class LocationOptionActivity extends AppCompatActivity {
                 userLocation = new LatLng(((GlobalLocMess) getApplicationContext()).getLatitude(), ((GlobalLocMess) getApplicationContext()).getLongitude());
                 Log.d("LOCATION_OPTION", "User Location: " + userLocation.getLatitude() + ", " + userLocation.getLongitude());
                 mapboxMap.setCameraPosition(new CameraPosition.Builder()
-                                            .target(userLocation) // Sets the new camera position
-                                            .zoom(15) // Sets the zoom
-                                            .bearing(0) // Rotate the camera
-                                            .tilt(0) // Set the camera tilt
-                                            .build() // Creates a CameraPosition from the builder);
+                        .target(userLocation) // Sets the new camera position
+                        .zoom(14) // Sets the zoom
+                        .bearing(0) // Rotate the camera
+                        .tilt(0) // Set the camera tilt
+                        .build() // Creates a CameraPosition from the builder);
                 );
                 marker = mapboxMap.addMarker(new MarkerViewOptions().position(userLocation));
-                mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng point) {
-                        ValueAnimator markerAnimator = ObjectAnimator.ofObject(marker, "position",
-                                new LatLngEvaluator(), marker.getPosition(), point);
-                        markerAnimator.setDuration(250);
-                        markerAnimator.start();
-
-                        map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(point, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
-                        map.removePolygon(map.getPolygons().get(0));
-
-                        CameraPosition position = new CameraPosition.Builder()
-                                .target(point) // Sets the new camera position
-                                .zoom(15) // Sets the zoom
-                                .bearing(0) // Rotate the camera
-                                .tilt(0) // Set the camera tilt
-                                .build(); // Creates a CameraPosition from the builder
-
-                        map.animateCamera(CameraUpdateFactory
-                                .newCameraPosition(position), 1000);
-                    }
-                });
                 LatLng location = userLocation;
                 mapboxMap.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(location, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float)0.4));
                 map = mapboxMap;
             }
         });
-
-        radioButtonLocation = (RadioButton) findViewById(R.id.radioButton_location);
-        radioButtonLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setLayoutsGone();
-                findViewById(R.id.layout_location).setVisibility(View.VISIBLE);
-            }
-        });
-        radioButtonWifDirect = (RadioButton) findViewById(R.id.radioButton_wifi_direct);
-        radioButtonWifDirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setLayoutsGone();
-                findViewById(R.id.layout_wifi_direct).setVisibility(View.VISIBLE);
-            }
-        });
-
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar_radius);
         final TextView textRadius = (TextView) findViewById(R.id.text_radius);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -184,6 +192,28 @@ public class LocationOptionActivity extends AppCompatActivity {
 
         });
 
+        radioButtonLocations = (RadioButton) findViewById(R.id.radioButton_locations);
+        radioButtonWifDirect = (RadioButton) findViewById(R.id.radioButton_wifi_direct);
+    }
+
+    private void populateLocations() {
+        try {
+            Socket s = SocketHandler.getSocket();
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF("MYLocations;:;" + SocketHandler.getToken());
+            dout.flush();
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            String str = dis.readUTF();
+            String[] locations = str.split(";:;");
+            while(!str.equals("END")) {
+                Log.d("MY_LOCATIONS", str);
+                locationsMap.put(locations[2], new Location(locations[1], locations[3]));
+                str = dis.readUTF();
+                locations = str.split(";:;");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -263,8 +293,17 @@ public class LocationOptionActivity extends AppCompatActivity {
     }
 
     private void setLayoutsGone(){
-        findViewById(R.id.layout_location).setVisibility(View.GONE);
+        findViewById(R.id.layout_locations).setVisibility(View.GONE);
         findViewById(R.id.layout_wifi_direct).setVisibility(View.GONE);
+    }
+
+    private boolean adapterContains(String content) {
+        for(int i = 0; i < adapter.getCount(); i++) {
+            if(adapter.getItem(i).equals(content)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

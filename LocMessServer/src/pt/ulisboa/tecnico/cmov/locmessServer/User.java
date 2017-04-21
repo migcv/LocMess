@@ -195,6 +195,7 @@ public class User {
 			}
 
 			try {
+				System.out.println(toSend);
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF(toSend);
 				dataOutputStream.flush();
