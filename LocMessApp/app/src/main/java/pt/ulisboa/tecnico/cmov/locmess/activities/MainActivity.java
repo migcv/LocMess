@@ -48,16 +48,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        CreateConnection cc = new CreateConnection(this);
-        cc.execute();
-
-
         this.setTitle("Login");
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                CreateConnection cc = new CreateConnection(getApplicationContext());
+                cc.execute();
                 login();
             }
         });

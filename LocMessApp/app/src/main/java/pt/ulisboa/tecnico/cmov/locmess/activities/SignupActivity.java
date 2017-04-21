@@ -21,6 +21,7 @@ import java.net.Socket;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.CreateConnection;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 public class SignupActivity extends AppCompatActivity {
@@ -47,6 +48,8 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CreateConnection cc = new CreateConnection(getApplicationContext());
+                cc.execute();
                 signup();
             }
         });

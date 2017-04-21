@@ -1,18 +1,26 @@
 package pt.ulisboa.tecnico.cmov.locmess.fragments;
 
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,11 +45,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
-import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
@@ -60,12 +68,20 @@ public class ProfileLocationsFragment extends Fragment {
     private Marker marker ;
     private LocationEngine locationEngine;
 
+    private WifiManager mainWifi;
+    private WifiReceiver receiverWifi;
+
+    private ArrayList<String> wifiSSIDList = new ArrayList<>();
+
+    private RadioButton radioButtonGPS;
+    private RadioButton radioButtonWIFI;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
         view = inflater.inflate(R.layout.profile_fragment_locations, container, false);
 
-        RadioButton radioButtonLocation = (RadioButton) view.findViewById(R.id.radioButton_GPS);
+        final RadioButton radioButtonLocation = (RadioButton) view.findViewById(R.id.radioButton_GPS);
         radioButtonLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +97,11 @@ public class ProfileLocationsFragment extends Fragment {
                 getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
             }
         });
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
 
         locationEngine = LocationSource.getLocationEngine(getContext());
         locationEngine.activate();
@@ -129,33 +150,51 @@ public class ProfileLocationsFragment extends Fragment {
                 final Dialog locationDialog = new Dialog(getView().getContext());
                 locationDialog.setContentView(R.layout.dialog_new_location);
 
-                DecimalFormat df = new DecimalFormat("##.######");
-                ((TextView) locationDialog.findViewById(R.id.text_location)).setText(df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
+                if(radioButtonGPS.isChecked()) {
+                    DecimalFormat df = new DecimalFormat("##.######");
+                    locationDialog.findViewById(R.id.layout_wifi_SSID).setVisibility(View.GONE);
+                    locationDialog.findViewById(R.id.text_location).setVisibility(View.VISIBLE);
+                    ((TextView) locationDialog.findViewById(R.id.text_location)).setText(df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
 
-                locationDialog.findViewById(R.id.button_add_location).setOnClickListener( new View.OnClickListener() {
-                    public void onClick(View v) {
-                        String locationName = ((TextView)locationDialog.findViewById(R.id.input_location_name)).getText().toString();
-                        String coordenates = marker.getPosition().getLatitude()+ ", " + marker.getPosition().getLongitude();
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-                        try {
-                            //Mudar esta String
-                            String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:" + locationName + ";:" + coordenates;
-                            Socket s = SocketHandler.getSocket();
-                            Log.d("CONNECTION", "Connection successful!");
-                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-                            dout.writeUTF(toSend);
-                            dout.flush();
-                            //dout.close();
-                            Log.d("NEW_LOCATION", toSend);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    locationDialog.findViewById(R.id.button_add_location).setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            String locationName = ((TextView) locationDialog.findViewById(R.id.input_location_name)).getText().toString();
+                            String coordenates = marker.getPosition().getLatitude() + ", " + marker.getPosition().getLongitude();
+                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                            StrictMode.setThreadPolicy(policy);
+                            try {
+                                //Mudar esta String
+                                String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:" + locationName + ";:" + coordenates;
+                                Socket s = SocketHandler.getSocket();
+                                Log.d("CONNECTION", "Connection successful!");
+                                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                                dout.writeUTF(toSend);
+                                dout.flush();
+                                //dout.close();
+                                Log.d("NEW_LOCATION", toSend);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            DecimalFormat df = new DecimalFormat("##.######");
+                            addGPSToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), locationName, df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
+                            locationDialog.dismiss();
                         }
-                        DecimalFormat df = new DecimalFormat("##.######");
-                        addContentToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), locationName, df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
-                        locationDialog.dismiss();
+                    });
+                }
+                else if(radioButtonWIFI.isChecked()) {
+                    locationDialog.findViewById(R.id.layout_wifi_SSID).setVisibility(View.VISIBLE);
+                    locationDialog.findViewById(R.id.text_location).setVisibility(View.GONE);
+
+                    for(String ssid : wifiSSIDList) {
+                        addWifiToLayout((LinearLayout) locationDialog.findViewById(R.id.layout_wifi_SSID), ssid);
                     }
-                });
+
+                    locationDialog.findViewById(R.id.button_add_location).setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            //TODO
+                        }
+                    });
+                }
                 locationDialog.findViewById(R.id.button_cancel).setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
                         locationDialog.dismiss();
@@ -164,12 +203,51 @@ public class ProfileLocationsFragment extends Fragment {
                 locationDialog.show();
             }
         });
+        try {
+            mainWifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        //addContentToLayout((LinearLayout) view.findViewById(R.id.layout_locations), "Arco do Cego", "38.736109, -9.142490");
+            receiverWifi = new WifiReceiver();
+            getContext().registerReceiver(receiverWifi, new IntentFilter(
+                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            if (mainWifi.isWifiEnabled() == false) {
+                mainWifi.setWifiEnabled(true);
+            }
+            Log.d("LOCATIONS_WIFI", "Enable Wifi");
+
+            mainWifi = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+            receiverWifi = new WifiReceiver();
+            getContext().registerReceiver(receiverWifi, new IntentFilter(
+                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            mainWifi.startScan();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
 
         populateLocations();
 
+        radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
+        radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
+
         return view;
+    }
+
+    class WifiReceiver extends BroadcastReceiver {
+        public void onReceive(Context c, Intent intent) {
+            ArrayList<String> connections=new ArrayList<String>();
+            ArrayList<Float> Signal_Strenth= new ArrayList<Float>();
+
+            List<ScanResult> wifiList;
+            wifiList = mainWifi.getScanResults();
+            for(int i = 0; i < wifiList.size(); i++) {
+                connections.add(wifiList.get(i).SSID);
+                Log.d("LOCATION_WIFI", i + " " + wifiList.get(i).SSID);
+                if(!wifiSSIDList.contains(wifiList.get(i).SSID)) {
+                    wifiSSIDList.add(wifiList.get(i).SSID);
+                    addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), wifiList.get(i).SSID);
+                }
+            }
+        }
     }
 
     private void populateLocations() {
@@ -182,7 +260,7 @@ public class ProfileLocationsFragment extends Fragment {
             String str = dis.readUTF();
             String[] locations = str.split(";:;");
             while(!str.equals("END")) {
-                addContentToLayout((LinearLayout) view.findViewById(R.id.layout_locations), locations[2], locations[3]);
+                addGPSToLayout((LinearLayout) view.findViewById(R.id.layout_locations), locations[2], locations[3]);
                 str = dis.readUTF();
                 Log.d("MY_LOCATIONS", str);
                 locations = str.split(";:;");
@@ -192,7 +270,7 @@ public class ProfileLocationsFragment extends Fragment {
         }
     }
 
-    private void addContentToLayout(LinearLayout layout, final String name, String location) {
+    private void addGPSToLayout(LinearLayout layout, final String name, String location) {
         final LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setLayoutParams(new LinearLayout.LayoutParams(
@@ -261,6 +339,20 @@ public class ProfileLocationsFragment extends Fragment {
         ll.addView(deleteButton);
 
         layout.addView(ll);
+    }
+
+    private void addWifiToLayout(LinearLayout layout, String wifi) {
+
+        TextView text_wifi = new TextView(getContext());
+        text_wifi.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1.0f));
+        text_wifi.setTypeface(text_wifi.getTypeface(), Typeface.BOLD);
+        text_wifi.setTextSize(14);
+        text_wifi.setText("" + wifi);
+
+        layout.addView(text_wifi);
     }
 
     private void setLayoutsGone(){

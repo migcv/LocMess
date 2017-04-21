@@ -91,12 +91,6 @@
 
             </com.mapbox.mapboxsdk.maps.MapView>
 
-            <Button
-                android:id="@+id/button_add_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add This Location" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -107,20 +101,19 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/textView5"
+            <LinearLayout
+                android:id="@+id/layout_wifi_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="WIFI_DIRECT"
-                android:textAlignment="center" />
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add This Location" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"></LinearLayout>
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/button_add_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add This Location" />
 
     </LinearLayout>
 

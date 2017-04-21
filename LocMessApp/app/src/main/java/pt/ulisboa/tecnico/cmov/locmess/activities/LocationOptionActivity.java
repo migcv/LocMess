@@ -136,6 +136,9 @@ public class LocationOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String content = autoComplete_locations.getText().toString();
                 if(locationsMap.get(content).getType().equals("GPS")) {
+                    setLayoutsGone();
+                    findViewById(R.id.layout_gps).setVisibility(View.VISIBLE);
+
                     Location loc = locationsMap.get(content);
                     LatLng latlog = new LatLng(loc.getLatitude(), loc.getLongitude());
                     map.setCameraPosition(new CameraPosition.Builder()
@@ -145,7 +148,8 @@ public class LocationOptionActivity extends AppCompatActivity {
                     map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(latlog, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
                     map.removePolygon(map.getPolygons().get(0));
                 } else {
-
+                    setLayoutsGone();
+                    findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -196,18 +200,61 @@ public class LocationOptionActivity extends AppCompatActivity {
         radioButtonWifDirect = (RadioButton) findViewById(R.id.radioButton_wifi_direct);
     }
 
+    private void addContentToLayout(LinearLayout layout, String name, String location) {
+        final LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.HORIZONTAL);
+        ll.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+
+        LinearLayout ll_text = new LinearLayout(this);
+        ll_text.setOrientation(LinearLayout.VERTICAL);
+        ll_text.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1.0f));
+
+        TextView text_name = new TextView(this);
+        text_name.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1.0f));
+        text_name.setTypeface(text_name.getTypeface(), Typeface.BOLD);
+        text_name.setTextSize(14);
+        text_name.setText("" + name);
+
+        ll_text.addView(text_name);
+
+        TextView text_location = new TextView(this);
+        text_location.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1.0f));
+        text_location.setText("" + location);
+
+        ll_text.addView(text_location);
+
+        ll.addView(ll_text);
+
+        layout.addView(ll);
+    }
+
     private void populateLocations() {
         try {
             Socket s = SocketHandler.getSocket();
             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-            dout.writeUTF("MYLocations;:;" + SocketHandler.getToken());
+            dout.writeUTF("GetAllLocations;:;" + SocketHandler.getToken());
             dout.flush();
             DataInputStream dis = new DataInputStream(s.getInputStream());
             String str = dis.readUTF();
             String[] locations = str.split(";:;");
             while(!str.equals("END")) {
-                Log.d("MY_LOCATIONS", str);
-                locationsMap.put(locations[2], new Location(locations[1], locations[3]));
+                Log.d("GET_ALL_LOCATIONS", str);
+                if(locations[0].equals("GPS")) { // GPS
+                    locationsMap.put(locations[1], new Location(locations[0], locations[2]));
+                } else { // WIFI
+                    locationsMap.put(locations[1], new Location(locations[0], locations[2]));
+                }
                 str = dis.readUTF();
                 locations = str.split(";:;");
             }
@@ -293,8 +340,8 @@ public class LocationOptionActivity extends AppCompatActivity {
     }
 
     private void setLayoutsGone(){
-        findViewById(R.id.layout_locations).setVisibility(View.GONE);
-        findViewById(R.id.layout_wifi_direct).setVisibility(View.GONE);
+        findViewById(R.id.layout_gps).setVisibility(View.GONE);
+        findViewById(R.id.layout_wifi).setVisibility(View.GONE);
     }
 
     private boolean adapterContains(String content) {

@@ -24,6 +24,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
@@ -117,7 +118,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
                                     restrictions.append(str.toString() + ",");
                                 }
                                 if(NewPost.deliveryMode.equals("GPS")){
-                                    toSend = toSend + NewPost.deliveryMode + ";:;" + String.format("%.4f, %.4f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    toSend = toSend + NewPost.deliveryMode + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
                                 } else {
                                     toSend = toSend + NewPost.deliveryMode+ ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
                                 }

@@ -8,9 +8,15 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.util.Log;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
  * Created by Miguel on 18/04/2017.
@@ -48,6 +54,22 @@ public class LocationService extends Service implements LocationListener {
                     if(location != null) {
                         ((GlobalLocMess) getApplicationContext()).setLatitude(latitude);
                         ((GlobalLocMess) getApplicationContext()).setLongitude(longitude);
+
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        try {
+                            String toSend = "CurrentLocation;:;" + SocketHandler.getToken() + ";:;" + latitude + ", " + longitude;
+                            Socket s = SocketHandler.getSocket();
+                            Log.d("CONNECTION", "Connection successful!");
+                            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                            dout.writeUTF(toSend);
+                            dout.flush();
+                            //dout.close();
+                            Log.d("CURRENT_LOCATION", toSend);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     Thread.sleep(30000);
                 }
