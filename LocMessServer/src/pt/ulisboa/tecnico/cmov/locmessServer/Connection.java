@@ -43,6 +43,7 @@ public class Connection implements Runnable {
 			if (res[0].equals("CurrentLocation")) {
 				User u1 = LocMess.getSession().getUserFromSession(res[1]);
 				u1.setCurrentLocation(res[2]);
+				u1.sendPosts(s);
 			}
 			if (res[0].equals("GetAllRestrictions")) {
 				getAllRestrictions();
