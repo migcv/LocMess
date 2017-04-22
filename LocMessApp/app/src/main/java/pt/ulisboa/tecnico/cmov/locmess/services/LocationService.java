@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -66,6 +67,14 @@ public class LocationService extends Service implements LocationListener {
                             dout.flush();
                             //dout.close();
                             Log.d("CURRENT_LOCATION", toSend);
+                            DataInputStream dis = new DataInputStream(s.getInputStream());
+                            String str = dis.readUTF();
+                            Log.d("CURRENT_LOCATION", str);
+                            while (!str.equals("END")) {
+                                dis = new DataInputStream(s.getInputStream());
+                                str = dis.readUTF();
+                                Log.d("CURRENT_LOCATION", str);
+                            }
 
                         } catch (IOException e) {
                             e.printStackTrace();
