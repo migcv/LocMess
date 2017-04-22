@@ -9,15 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -26,13 +26,13 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
  * Created by Rafael Barreira on 06/04/2017.
  */
 
-public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
+public class MyPostsListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private ArrayList<String> expandableListTitle;
     private ArrayList<List<String>> expandableListDetail;
 
-    public MyPostsExpandableListaAdapter(Context context, ArrayList<String> expandableListTitle, ArrayList<List<String>> expandableListDetail) {
+    public MyPostsListAdapter(Context context, ArrayList<String> expandableListTitle, ArrayList<List<String>> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
@@ -42,10 +42,10 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
     public Object getChild(int listPosition, int expandedListPosition) {
         String content = this.expandableListDetail.get(listPosition).get(2);
         String contact = this.expandableListDetail.get(listPosition).get(3);
-        String date =  this.expandableListDetail.get(listPosition).get(4);
-        String time =  this.expandableListDetail.get(listPosition).get(5);
+        String post_time =  this.expandableListDetail.get(listPosition).get(4);
+        String post_lifetime =  this.expandableListDetail.get(listPosition).get(5);
         String deliveryMode =  this.expandableListDetail.get(listPosition).get(6);
-        return "Content: " +content + " \n" +"Contact: "+ contact + "\n" + date + " " + time + "\n" + deliveryMode;
+        return "Content: " +content + " \n" +"Contact: "+ contact + "\n" + post_time + " " + post_lifetime + "\n" + deliveryMode;
     }
 
     @Override
@@ -61,14 +61,33 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_item, null);
+            convertView = layoutInflater.inflate(R.layout.my_post_list_item, null);
         }
         TextView text_content = (TextView) convertView.findViewById(R.id.text_content);
         text_content.setText(expandableListDetail.get(listPosition).get(2));
+
         TextView text_contact = (TextView) convertView.findViewById(R.id.text_contact);
         text_contact.setText(this.expandableListDetail.get(listPosition).get(3));
-        TextView text_date = (TextView) convertView.findViewById(R.id.text_date);
-        text_date.setText(this.expandableListDetail.get(listPosition).get(4) + " " + this.expandableListDetail.get(listPosition).get(5));
+
+        TextView text_post_time = (TextView) convertView.findViewById(R.id.text_post_time);
+        long post_time = Long.parseLong(this.expandableListDetail.get(listPosition).get(4));
+        DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+        Log.d("MY_POST", "Post Time: " + formatter.format(new Date(post_time)));
+        text_post_time.setText(formatter.format(new Date(post_time)));
+
+        TextView text_post_lifetime = (TextView) convertView.findViewById(R.id.text_post_lifetime);
+        long post_lifetime = Long.parseLong(this.expandableListDetail.get(listPosition).get(5));
+        Log.d("MY_POST", "Post LifeTime: " + formatter.format(new Date(post_lifetime)));
+        Log.d("MY_POST", "Current Time: " + formatter.format(new Date(System.currentTimeMillis())));
+        DateFormat dayFormatter = new SimpleDateFormat("d");
+        DateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+        if(post_lifetime - System.currentTimeMillis() > 0) {
+            text_post_lifetime.setText(dayFormatter.format(new Date(post_lifetime - System.currentTimeMillis())) + " days, " + timeFormatter.format(new Date(post_lifetime - System.currentTimeMillis())));
+        } else {
+            text_post_lifetime.setText("EXPIRED!");
+        }
+
+
         return convertView;
     }
 
@@ -94,8 +113,6 @@ public class MyPostsExpandableListaAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int listPosition, boolean isExpanded, View convertView, final ViewGroup parent) {
-        Log.d("GROUP_VIEW", "" + listPosition);
-        Log.d("GROUP_VIEW", getGroup(listPosition) == null ? "NULL" : "" + getGroup(listPosition));
         final String listTitle = (String) getGroup(listPosition);
 
         if(listTitle == null) {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,10 +22,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.utils.CustomExpandableListAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.PostsListAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.utils.ExpandableListDataPump;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
@@ -63,13 +64,13 @@ public class PostsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(PostsActivity.this);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        ArrayList<List<String>> expandableList = ExpandableListDataPump.getData();
+        ArrayList<List<String>> expandableList = ExpandableListDataPump.setPost(((GlobalLocMess)getApplicationContext()).getPostsMap());
 
         ArrayList<String> expandableListTitle = new ArrayList<String>();
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        ExpandableListAdapter expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableList);
+        ExpandableListAdapter expandableListAdapter = new PostsListAdapter(this, expandableListTitle, expandableList);
         expandableListView.setAdapter(expandableListAdapter);
     }
 

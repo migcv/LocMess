@@ -61,15 +61,38 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: "
+            android:text="Posted: "
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_date"
+            android:id="@+id/text_post_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="DATE_TIME"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+        android:paddingTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Remaining: "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_post_lifetime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TIME_REMAINING"
             android:textSize="16sp" />
     </LinearLayout>
 

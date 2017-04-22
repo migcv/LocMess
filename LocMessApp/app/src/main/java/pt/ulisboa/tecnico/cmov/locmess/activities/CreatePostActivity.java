@@ -3,12 +3,14 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.DatePicker;
@@ -89,15 +91,14 @@ public class CreatePostActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if(!error) {
+                    Date post_lifetime = (Date) calendar.getTime();
+
                     NewPost.tittle = ((EditText) findViewById(R.id.input_tittle)).getText().toString();
                     NewPost.content = ((EditText) findViewById(R.id.input_content)).getText().toString();
                     NewPost.contact = ((EditText) findViewById(R.id.input_contact)).getText().toString();
+                    NewPost.lifetime = post_lifetime.getTime();
 
-                    NewPost.day = dayPost;
-                    NewPost.month = monthPost;
-                    NewPost.year = yearPost;
-                    NewPost.hour = hourPost;
-                    NewPost.minute = minutePost;
+                    Log.d("NEW_POST", NewPost.tittle + ", " + NewPost.content + ", " + NewPost.contact + ", " + NewPost.lifetime);
 
                     Intent intent = new Intent(getApplicationContext(), LocationOptionActivity.class);
                     startActivity(intent);

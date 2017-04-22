@@ -1,18 +1,13 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
@@ -33,7 +27,6 @@ import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationSource;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -99,9 +92,14 @@ public class LocationOptionActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if(radioButtonLocations.isChecked()) {
-                    NewPost.deliveryMode = NewPost.LOCATION;
-                    NewPost.location = marker.getPosition();
-                    NewPost.radius = radius;
+                    NewPost.location_name = ((AutoCompleteTextView) findViewById(R.id.autocomplete_locations)).getText().toString();
+                    if(locationsMap.get(NewPost.location_name).getType().equals("GPS")) {
+                        NewPost.deliveryMode = NewPost.GPS;
+                        NewPost.location = marker.getPosition();
+                        NewPost.radius = radius;
+                    } else if(locationsMap.get(NewPost.location_name).getType().equals("WIFI")) {
+                        NewPost.deliveryMode = NewPost.WIFI;
+                    }
                 }
                 else if(radioButtonWifDirect.isChecked()) {
                     NewPost.deliveryMode = NewPost.WIFI_DIRECT;
@@ -150,6 +148,7 @@ public class LocationOptionActivity extends AppCompatActivity {
                 } else {
                     setLayoutsGone();
                     findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
+                    ((TextView) findViewById(R.id.text_wifi)).setText("" + locationsMap.get(content).getLocation());
                 }
             }
         });

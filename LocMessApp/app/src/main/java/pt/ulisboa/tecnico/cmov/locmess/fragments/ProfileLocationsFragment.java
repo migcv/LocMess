@@ -171,12 +171,12 @@ public class ProfileLocationsFragment extends Fragment {
                                 dout.writeUTF(toSend);
                                 dout.flush();
                                 //dout.close();
-                                Log.d("NEW_LOCATION", toSend);
+                                Log.d("NEW_LOCATION_GPS", toSend);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                             DecimalFormat df = new DecimalFormat("##.######");
-                            addGPSToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), locationName, df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
+                            addLocationToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), "GPS", locationName, df.format(marker.getPosition().getLatitude()) + ", " + df.format(marker.getPosition().getLongitude()));
                             locationDialog.dismiss();
                         }
                     });
@@ -185,13 +185,33 @@ public class ProfileLocationsFragment extends Fragment {
                     locationDialog.findViewById(R.id.layout_wifi_SSID).setVisibility(View.VISIBLE);
                     locationDialog.findViewById(R.id.text_location).setVisibility(View.GONE);
 
-                    for(String ssid : wifiSSIDList) {
-                        addWifiToLayout((LinearLayout) locationDialog.findViewById(R.id.layout_wifi_SSID), ssid);
-                    }
-
                     locationDialog.findViewById(R.id.button_add_location).setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            //TODO
+                            String locationName = ((TextView) locationDialog.findViewById(R.id.input_location_name)).getText().toString();
+
+                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                            StrictMode.setThreadPolicy(policy);
+                            try {
+                                String ssids = "";
+                                for(String ssid : wifiSSIDList) {
+                                    addWifiToLayout((LinearLayout) locationDialog.findViewById(R.id.layout_wifi_SSID), ssid);
+                                    ssids = ssids + "" + ssid + ",";
+                                }
+
+                                final String toSend = "AddLocations;:;" + SocketHandler.getToken() + ";:;" + "WIFI;:" + locationName + ";:" + ssids;
+
+                                Socket s = SocketHandler.getSocket();
+                                Log.d("CONNECTION", "Connection successful!");
+                                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                                dout.writeUTF(toSend);
+                                dout.flush();
+                                //dout.close();
+                                Log.d("NEW_LOCATION_WIFI", toSend);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            addLocationToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), "WIFI", locationName, "Wifi");
+                            locationDialog.dismiss();
                         }
                     });
                 }
@@ -214,11 +234,6 @@ public class ProfileLocationsFragment extends Fragment {
             }
             Log.d("LOCATIONS_WIFI", "Enable Wifi");
 
-            mainWifi = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-            receiverWifi = new WifiReceiver();
-            getContext().registerReceiver(receiverWifi, new IntentFilter(
-                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
             mainWifi.startScan();
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -232,7 +247,7 @@ public class ProfileLocationsFragment extends Fragment {
         return view;
     }
 
-    class WifiReceiver extends BroadcastReceiver {
+    private class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
             ArrayList<String> connections=new ArrayList<String>();
             ArrayList<Float> Signal_Strenth= new ArrayList<Float>();
@@ -260,7 +275,7 @@ public class ProfileLocationsFragment extends Fragment {
             String str = dis.readUTF();
             String[] locations = str.split(";:;");
             while(!str.equals("END")) {
-                addGPSToLayout((LinearLayout) view.findViewById(R.id.layout_locations), locations[2], locations[3]);
+                addLocationToLayout((LinearLayout) view.findViewById(R.id.layout_locations),locations[1], locations[2], locations[3]);
                 str = dis.readUTF();
                 Log.d("MY_LOCATIONS", str);
                 locations = str.split(";:;");
@@ -270,7 +285,7 @@ public class ProfileLocationsFragment extends Fragment {
         }
     }
 
-    private void addGPSToLayout(LinearLayout layout, final String name, String location) {
+    private void addLocationToLayout(LinearLayout layout, final String type, final String name, final String value) {
         final LinearLayout ll = new LinearLayout(getContext());
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setLayoutParams(new LinearLayout.LayoutParams(
@@ -300,7 +315,7 @@ public class ProfileLocationsFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 1.0f));
-        text_location.setText("" + location);
+        text_location.setText("" + value);
 
         ll_text.addView(text_location);
 
@@ -321,7 +336,7 @@ public class ProfileLocationsFragment extends Fragment {
                 StrictMode.setThreadPolicy(policy);
                 try {
                     //Mudar esta String
-                    String toSend = "RemoveLocations;:;" + SocketHandler.getToken() + ";:;" + "GPS;:Arco do Cego;:32.2343,32.2343";
+                    String toSend = "RemoveLocations;:;" + SocketHandler.getToken() + ";:;" + type + ";:" + name + ";:" + value;
                     Socket s = SocketHandler.getSocket();
                     Log.d("CONNECTION", "Connection successful!");
                     DataOutputStream dout = new DataOutputStream(s.getOutputStream());

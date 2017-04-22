@@ -14,24 +14,28 @@ import java.util.List;
 
 public class ExpandableListDataPump {
 
-    private static  ArrayList<List<String>> expandableListDetail = new ArrayList<List<String>>();
+    private static  ArrayList<List<String>> posts = new ArrayList<List<String>>();
     private static ArrayList<List<String>> myPosts = new ArrayList<List<String>>();
     private static int count = 0;
 
-    public static ArrayList<List<String>> getData() {
-        if(expandableListDetail.size() == 0) {
-            populate();
-            return expandableListDetail;
-        }
-        else
-            return expandableListDetail;
-    }
+    public static ArrayList<List<String>> setPost(HashMap<String, Post> postsMap) {
+        posts = new ArrayList<List<String>>();
 
-    public static void populate() {
-        setData("Macaco", "Eu gosto de macacos", "211234561a", "", "", "");
-        setData("Macaco1", "Eu gosto de macacos1", "211234561b", "", "", "");
-        setData("Macaco2", "Eu gosto de macacos2", "211234561c", "", "", "");
-        setData("Macaco3", "Eu gosto de macacos3", "211234561d", "", "", "");
+        for(String id : postsMap.keySet()) {
+            Post post = postsMap.get(id);
+            List<String> aux = new ArrayList<String>();
+            aux.add(post.getTittle());
+            aux.add(post.getContent());
+            aux.add(post.getContact());
+            aux.add(post.getUser());
+            aux.add(post.getPostTime());
+            aux.add(post.getPostLifetime());
+            aux.add(post.getType());
+            aux.add(post.getLocationName());
+            aux.add(id);
+            posts.add(aux);
+        }
+        return posts;
     }
 
     public static ArrayList<List<String>> getMyPosts() {
@@ -74,19 +78,19 @@ public class ExpandableListDataPump {
         aux.add(date);
         aux.add(time);
         aux.add(deliveryMode);
-        expandableListDetail.add(aux);
+        posts.add(aux);
         setCount();
 
     }
 
-    public static void setDataMyPost(String id, String title, String content, String contact, String date, String time, String deliveryMode ){
+    public static void setDataMyPost(String id, String title, String content, String contact, String post_time, String post_lifetime, String deliveryMode ){
         List<String> aux = new ArrayList<String>();
         aux.add(id);
         aux.add(title);
         aux.add(content);
         aux.add(contact);
-        aux.add(date);
-        aux.add(time);
+        aux.add(post_time);
+        aux.add(post_lifetime);
         aux.add(deliveryMode);
         myPosts.add(aux);
     }

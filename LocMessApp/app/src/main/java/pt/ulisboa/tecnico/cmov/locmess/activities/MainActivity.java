@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 import butterknife.ButterKnife;
@@ -189,11 +188,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             _passwordText.setError(null);
         }
-
         return valid;
     }
-
 }
+
 
 
 

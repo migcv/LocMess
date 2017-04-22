@@ -32,8 +32,16 @@ public class GlobalLocMess extends Application {
         this.longitude = longitude;
     }
 
-    public void addPost() {
+    public HashMap<String, Post> getPostsMap() {
+        return this.postsMap;
+    }
 
+    public void addPost(String id, Post post) {
+        postsMap.put(id, post);
+    }
+
+    public Post getPost(String id) {
+        return postsMap.get(id);
     }
 
 }

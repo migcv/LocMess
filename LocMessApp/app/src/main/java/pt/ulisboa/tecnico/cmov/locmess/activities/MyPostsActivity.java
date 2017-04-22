@@ -15,16 +15,14 @@ import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.utils.ExpandableListDataPump;
-import pt.ulisboa.tecnico.cmov.locmess.utils.MyPostsExpandableListaAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.utils.MyPostsListAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
@@ -77,7 +75,7 @@ public class MyPostsActivity extends AppCompatActivity
             expandableListTitle.add(expandableMap.get(i).get(1));
             Log.d("MY_POSTS", expandableListTitle.get(i) == null ? "NULL" : i + "" + expandableListTitle.get(i));
         }
-        expandableListAdapter = new MyPostsExpandableListaAdapter(this, expandableListTitle, expandableMap);
+        expandableListAdapter = new MyPostsListAdapter(this, expandableListTitle, expandableMap);
         expandableListView.setAdapter(expandableListAdapter);
     }
 

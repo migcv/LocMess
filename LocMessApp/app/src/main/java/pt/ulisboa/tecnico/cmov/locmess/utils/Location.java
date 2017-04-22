@@ -9,17 +9,22 @@ import java.util.ArrayList;
 public class Location {
 
     private String type;
-    private String gps;
+    private String location;
     private double latitude;
     private double longitude;
     private ArrayList<String> wifi;
 
-    public Location(String type, String gps) {
+    public Location(String type, String location) {
         this.type = type;
-        this.gps = gps;
-        String[] splt = gps.split(", ");
-        this.latitude = Double.parseDouble(splt[0]);
-        this.longitude = Double.parseDouble(splt[1]);
+        this.location = location;
+        if(type.equals("GPS")) {
+            String[] splt = location.split(", ");
+            this.latitude = Double.parseDouble(splt[0]);
+            this.longitude = Double.parseDouble(splt[1]);
+        }
+        else if(type.equals("WIFI")) {
+            this.location = location;
+        }
     }
 
     public Location(String type, ArrayList<String> wifi) {
@@ -35,8 +40,8 @@ public class Location {
         return wifi;
     }
 
-    public String getGps() {
-        return gps;
+    public String getLocation() {
+        return location;
     }
 
     public double getLatitude() {

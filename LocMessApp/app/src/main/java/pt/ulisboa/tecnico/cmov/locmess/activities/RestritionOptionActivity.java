@@ -23,7 +23,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -80,11 +84,14 @@ public class RestritionOptionActivity extends AppCompatActivity {
 
                 final Dialog postDialog = new Dialog(view.getContext());
                 postDialog.setContentView(R.layout.dialog_new_post);
+
+                DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+                String lifetime_str = formatter.format(new Date(NewPost.lifetime));
+
                 ((TextView)postDialog.findViewById(R.id.text_tittle)).setText(NewPost.tittle);
                 ((TextView)postDialog.findViewById(R.id.text_content)).setText(NewPost.content);
                 ((TextView)postDialog.findViewById(R.id.text_contact)).setText(NewPost.contact);
-                ((TextView)postDialog.findViewById(R.id.text_date)).setText(String.format(" %02d:%02d", NewPost.hour, NewPost.minute) + " "
-                                    + NewPost.day + "/" + NewPost.month + "/" + NewPost.year);
+                ((TextView)postDialog.findViewById(R.id.text_date)).setText(lifetime_str);
                 ((TextView)postDialog.findViewById(R.id.text_delivery_mode)).setText(NewPost.deliveryMode);
 
                 if(NewPost.deliveryMode.equals("GPS")) {
@@ -109,16 +116,24 @@ public class RestritionOptionActivity extends AppCompatActivity {
 
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
+
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
                             try {
-                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + NewPost.day + "/" + NewPost.month + "/" + NewPost.year + ";:;" + String.format("%02d:%02d", NewPost.hour, NewPost.minute) + ";:;";
+                                DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+                                Log.d("NEW_POST", "CurrentTime " + formatter.format(new Date(System.currentTimeMillis())));
+                                Log.d("NEW_POST", "LifeTime " + formatter.format(new Date(NewPost.lifetime)));
+
+
+                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
                                 StringBuilder restrictions = new StringBuilder();
                                 for (Object str : NewPost.restrictionList ) {
                                     restrictions.append(str.toString() + ",");
                                 }
                                 if(NewPost.deliveryMode.equals("GPS")){
-                                    toSend = toSend + NewPost.deliveryMode + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    toSend = toSend + NewPost.deliveryMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                } else if(NewPost.deliveryMode.equals("WIFI")) {
+                                    toSend = toSend + NewPost.deliveryMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
                                 } else {
                                     toSend = toSend + NewPost.deliveryMode+ ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
                                 }
@@ -193,9 +208,6 @@ public class RestritionOptionActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Get the string array
-        //String[] restrictionsSugestions = {"students", "Termite is Love", "Termite is Life", "ist", "macaco", "mamas", "bananas", "CMU", "Nuninho Fan Club"};
         /*
          *      WHITE RESTRICTION
          */
