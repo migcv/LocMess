@@ -60,7 +60,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/layout_location"
+                    android:id="@+id/layout_gps"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="0.67"
@@ -108,6 +108,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_wifi"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

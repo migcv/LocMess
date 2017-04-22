@@ -54,7 +54,15 @@
             android:textAlignment="center"
             android:textSize="14sp"
             android:visibility="visible" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_wifi_SSID"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"></LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
