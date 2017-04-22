@@ -75,9 +75,13 @@ public class LocMess {
 		// SIGNUP
 		User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
 		LocMess.getUsers().put("qwerty", u);
+		
+		User u1 = new User("asdasd", "asdasd", "asdasd@gmail.com");
+		LocMess.getUsers().put("asdasd", u1);
 
 		// Create user restrictions
 		HashMap<String, ArrayList<String>> aux = new HashMap<>();
+		HashMap<String, ArrayList<String>> aux4 = new HashMap<>();
 		ArrayList<String> aux1 = new ArrayList<>();
 		aux1.add("Monkey");
 		aux1.add("Gorilla");
@@ -88,31 +92,38 @@ public class LocMess {
 		aux2.add("Student");
 		aux2.add("Mason");
 		aux2.add("Unemployed");
-		aux.put("Jobs", aux2);
+		aux4.put("Job", aux2);
 
-		LocMess.getUserRestrictions().put(u, aux);
+		LocMess.getUserRestrictions().put(u, aux4);
+		LocMess.getUserRestrictions().put(u1, aux4);
 		LocMess.getGlobalRestrictions().put("Animals", aux1);
 		LocMess.getGlobalRestrictions().put("Jobs", aux2);
 
 		// Create posts
 		ArrayList<Posts> posts = new ArrayList<>();
 		u.setNumOfPost();
-		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
+		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
+				"100", "WHITE",
 				"Student (Job)", u.getNumOfPost());
 		u.setNumOfPost();
-		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
+		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
+				"100", "WHITE",
 				"Student (Job)", u.getNumOfPost());
-		u.setNumOfPost();
-		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "WIFI-DIRECT", "White",
-				"Student (Job)", u.getNumOfPost());
+		
+		ArrayList<Posts> posts1 = new ArrayList<>();
+		u1.setNumOfPost();
+		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
+				"100", "EVERYONE", u1.getNumOfPost());
 		u.setNumOfPost();
 		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
-				"100", "White", "Student (Job)", u.getNumOfPost());
+				"100",  "WHITE",
+				"Student (Job)", u1.getNumOfPost());
 		posts.add(p);
 		posts.add(p1);
-		posts.add(p2);
-		posts.add(p3);
+		posts1.add(p2);
+		posts1.add(p3);
 		LocMess.getUserPosts().put(u, posts);
+		LocMess.getUserPosts().put(u1, posts1);
 
 		ArrayList<Locations> aux3 = new ArrayList<>();
 		Locations l1 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");

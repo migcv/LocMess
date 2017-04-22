@@ -4,9 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 
 public class User {
@@ -356,32 +354,59 @@ public class User {
 					Posts p = LocMess.getUserPosts().get(key).get(i);
 					if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(), p.getLongitude(),
 							p.getRadius())) {
+						
+						System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
+						
 						if (p.getRestrictionPolicy().equals("EVERYONE")) {
-							String response = "Posts;:;" + p.getId() + "," + p.getTitle() + "," + p.getContent() + ","
+							String response = "Posts;:;" + p.getId() + "," + key.getUsername()+ "," + p.getTitle() + "," + p.getContent() + ","
 									+ p.getContact() + "," + p.getDate() + "," + p.getTime() + ","
 									+ p.getDeliveryMode();
 							try {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
 								dataOutputStream.writeUTF(response);
 								dataOutputStream.flush();
+								System.out.println("EVERYONE: " + response);
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
-						if (p.getRestrictionPolicy().equals("WHITE")) {
+						else if (p.getRestrictionPolicy().equals("WHITE")) {
 							HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions()
 									.get(this);
 							Set<String> ures = userRestrictions.keySet();
 							String restrictions = p.getRestrictions();
 							HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
 							Set<String> pres = postRestrictions.keySet();
+							boolean flag = false;
 							for (String res : pres) {
-
+								if(ures.contains(res)){
+									for(int a = 0; a < postRestrictions.get(res).size(); a++){
+										
+										if(userRestrictions.get(res).contains(postRestrictions.get(res).get(a))){
+											String response = "Posts;:;" + p.getId() +  "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent() + ","
+													+ p.getContact() + "," + p.getDate() + "," + p.getTime() + ","
+													+ p.getDeliveryMode();
+											try {
+												dataOutputStream = new DataOutputStream(s.getOutputStream());
+												dataOutputStream.writeUTF(response);
+												dataOutputStream.flush();
+												System.out.println("WHITE: " + response);
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											flag = true;
+											break;
+										}
+									}
+									if(flag){
+										break;
+									}
+								}
 							}
-
 						}
-						if (p.getRestrictionPolicy().equals("BLACK")) {
+						else if (p.getRestrictionPolicy().equals("BLACK")) {
 							// Don't receive the message
 						}
 					}
@@ -392,6 +417,7 @@ public class User {
 			dataOutputStream = new DataOutputStream(s.getOutputStream());
 			dataOutputStream.writeUTF("END");
 			dataOutputStream.flush();
+			System.out.println("END");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -400,12 +426,18 @@ public class User {
 	}
 
 	public boolean verifyPostRange(double currentLat, double currentLong, double lat, double longi, double radius) {
-		double dx = lat - currentLat;
-		double dy = longi - currentLong;
-		if ((Math.pow(dx, 2) + Math.pow(dy, 2)) <= Math.pow(radius, 2)) {
-			return true;
-		}
-		return false;
+		double earthRadius = 6371000; //meters
+	    double dLat = Math.toRadians(lat-currentLat);
+	    double dLng = Math.toRadians(longi-currentLong);
+	    double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+	               Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(currentLat)) *
+	               Math.sin(dLng/2) * Math.sin(dLng/2);
+	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	    float dist = (float) (earthRadius * c);
+	    if(dist <= radius){
+	    	return true;
+	    }
+	    return false;
 	}
 
 	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {
@@ -420,10 +452,10 @@ public class User {
 				String value = aux[i].split("\\(")[0];
 
 				if (newW.containsKey(key)) {
-					newW.get(key).add(value);
+					newW.get(key).add(value.substring(0, value.length() -1));
 				} else {
 					ArrayList<String> a = new ArrayList<>();
-					a.add(value);
+					a.add(value.substring(0, value.length() -1));
 					newW.put(key, a);
 				}
 			}
