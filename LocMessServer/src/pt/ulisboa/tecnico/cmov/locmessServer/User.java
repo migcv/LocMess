@@ -13,7 +13,7 @@ public class User {
 	private String password;
 	private String email;
 	private int numOfPost;
-	private String currentLocation;
+	private String currentGPS;
 	private Double currentLatitude;
 	private Double currentLongitude;
 
@@ -48,12 +48,12 @@ public class User {
 	}
 
 	public String getCurrentLocation() {
-		return currentLocation;
+		return currentGPS;
 	}
 
-	public void setCurrentLocation(String currentLocation) {
-		this.currentLocation = currentLocation;
-		String[] aux = currentLocation.split(", ");
+	public void setCurrentGPS(String currentGPS) {
+		this.currentGPS = currentGPS;
+		String[] aux = currentGPS.split(", ");
 		setCurrentLatitude(Double.parseDouble(aux[0]));
 		setCurrentLongitude(Double.parseDouble(aux[1]));
 	}
@@ -83,13 +83,13 @@ public class User {
 			a.put(res[0], a1);
 			if (LocMess.getGlobalRestrictions().get(res[0]) == null) {
 				LocMess.getGlobalRestrictions().put(res[0], a1);
-			} else if(!LocMess.getGlobalRestrictions().get(res[0]).contains(res[1])){
+			} else if (!LocMess.getGlobalRestrictions().get(res[0]).contains(res[1])) {
 				LocMess.getGlobalRestrictions().get(res[0]).add(res[1]);
 			}
 			LocMess.getUserRestrictions().put(this, a);
 		} else if (LocMess.getUserRestrictions().get(this).containsKey(res[0])) {
 			LocMess.getUserRestrictions().get(this).get(res[0]).add(res[1]);
-			if(!LocMess.getGlobalRestrictions().get(res[0]).contains(res[1])){
+			if (!LocMess.getGlobalRestrictions().get(res[0]).contains(res[1])) {
 				LocMess.getGlobalRestrictions().get(res[0]).add(res[1]);
 			}
 			System.out.println(LocMess.getUserRestrictions().get(this).get(res[0]).size());
@@ -171,8 +171,9 @@ public class User {
 		} else {
 			for (int i = 0; i < aux.size(); i++) {
 				String response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-						+ aux.get(i).getContent() + "," + aux.get(i).getContact() + "," + aux.get(i).getDate() + ","
-						+ aux.get(i).getTime() + "," + aux.get(i).getDeliveryMode();
+						+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
+						+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
+						+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName();
 				try {
 					dataOutputStream = new DataOutputStream(s.getOutputStream());
 					dataOutputStream.writeUTF(response);
@@ -193,11 +194,12 @@ public class User {
 		}
 	}
 
-	public void addPostsWIFI(String title, String content, String contact, String date, String time,
-			String deliveryMode, String restrictionPolicy, String restrictions) {
+	public void addPostsWIFI_DIRECT(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String locationName, String deliveryMode, String restrictionPolicy,
+			String restrictions) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, restrictionPolicy, restrictions,
-				getNumOfPost());
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				restrictionPolicy, restrictions, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
 		else {
@@ -208,10 +210,11 @@ public class User {
 
 	}
 
-	public void addPostsWIFI(String title, String content, String contact, String date, String time,
-			String deliveryMode, String restrictionPolicy) {
+	public void addPostsWIFI_DIRECT(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, restrictionPolicy, getNumOfPost());
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				restrictionPolicy, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
 		else {
@@ -222,11 +225,12 @@ public class User {
 
 	}
 
-	public void addPostsGPS(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius, String restrictionPolicy, String restrictions) {
+	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
+			String restrictions) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius, restrictionPolicy,
-				restrictions, getNumOfPost());
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				coordinates, radius, restrictionPolicy, restrictions, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
 		else {
@@ -236,11 +240,40 @@ public class User {
 		}
 	}
 
-	public void addPostsGPS(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius, String restrictionPolicy) {
+	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, date, time, deliveryMode, coordinates, radius, restrictionPolicy,
-				getNumOfPost());
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				restrictionPolicy, getNumOfPost());
+		if (LocMess.getUserPosts().get(this) != null)
+			LocMess.getUserPosts().get(this).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy,
+			String restrictions) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				restrictionPolicy, restrictions, getNumOfPost());
+		if (LocMess.getUserPosts().get(this) != null)
+			LocMess.getUserPosts().get(this).add(p);
+		else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				coordinates, radius, restrictionPolicy, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
 		else {
@@ -278,13 +311,19 @@ public class User {
 			}
 		} else {
 			for (int i = 0; i < locations.size(); i++) {
+				System.out.println(locations.get(i).getType());
 				if (locations.get(i).getType().equals("GPS")) {
 					toSend = toSend.concat("MYLocations" + ";:;" + locations.get(i).getType() + ";:;"
-							+ locations.get(i).getLocationName() + ";:;" + locations.get(i).getLatitude().toString()
-							+ ", " + locations.get(i).getLongitude().toString());
+							+ locations.get(i).getLocationName() + ";:;"
+							+ String.valueOf(locations.get(i).getLatitude()) + ", "
+							+ String.valueOf(locations.get(i).getLongitude()));
 				} else {
+					String ssIDSend = "";
+					for (int j = 0; j < locations.get(i).getSSId().size(); j++) {
+						ssIDSend = ssIDSend + locations.get(i).getSSId().get(j) + ",";
+					}
 					toSend = toSend.concat("MYLocations" + ";:;" + locations.get(i).getType() + ";:;"
-							+ locations.get(i).getLocationName() + ";:;" + locations.get(i).getSSId());
+							+ locations.get(i).getLocationName() + ";:;" + ssIDSend);
 				}
 
 				try {
@@ -311,13 +350,18 @@ public class User {
 
 	public void addLocations(String loc) {
 		String[] aux = loc.split(";:");
-		Locations l1;
+		Locations l1 = null;
 		if (aux[0].equals("GPS")) {
 			l1 = new Locations(aux[0], aux[1], aux[2]);
-		} else {
-			l1 = new Locations(aux[0], aux[1]);
 		}
-		if (LocMess.getUsersLocations().get(this) == null) {
+		if (aux[0].equals("WIFI")) {
+			ArrayList<String> wifiIDs = new ArrayList<>();
+			for (int i = 2; i < aux.length; i++) {
+				wifiIDs.add(aux[i]);
+			}
+			l1 = new Locations(aux[0], aux[1], wifiIDs);
+		}
+		if (LocMess.getUsersLocations().get(this) == null && l1 != null) {
 			ArrayList<Locations> a1 = new ArrayList<>();
 			a1.add(l1);
 			LocMess.getUsersLocations().put(this, a1);
@@ -331,18 +375,16 @@ public class User {
 	public void removeLocations(String loc) {
 		ArrayList<Locations> locations = LocMess.getUsersLocations().get(this);
 		String[] aux = loc.split(";:");
+		if (locations == null) {
+			return;
+		}
 		for (int i = 0; i < locations.size(); i++) {
-			if (aux.length == 3) {
-				if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getLocationName().equals(aux[1])
-						&& locations.get(i).getSSId().equals(aux[2])) {
-					LocMess.getUsersLocations().get(this).remove(i);
-					break;
-				}
-			} else if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getSSId().equals(aux[2])) {
+			if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getLocationName().equals(aux[1])) {
 				LocMess.getUsersLocations().get(this).remove(i);
 				break;
 			}
 		}
+
 	}
 
 	public void sendPosts(Socket s) {
@@ -354,13 +396,13 @@ public class User {
 					Posts p = LocMess.getUserPosts().get(key).get(i);
 					if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(), p.getLongitude(),
 							p.getRadius())) {
-						
+
 						System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
-						
+
 						if (p.getRestrictionPolicy().equals("EVERYONE")) {
-							String response = "Posts;:;" + p.getId() + "," + key.getUsername()+ "," + p.getTitle() + "," + p.getContent() + ","
-									+ p.getContact() + "," + p.getDate() + "," + p.getTime() + ","
-									+ p.getDeliveryMode();
+							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
+									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
 							try {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
 								dataOutputStream.writeUTF(response);
@@ -370,8 +412,7 @@ public class User {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						}
-						else if (p.getRestrictionPolicy().equals("WHITE")) {
+						} else if (p.getRestrictionPolicy().equals("WHITE")) {
 							HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions()
 									.get(this);
 							Set<String> ures = userRestrictions.keySet();
@@ -380,33 +421,34 @@ public class User {
 							Set<String> pres = postRestrictions.keySet();
 							boolean flag = false;
 							for (String res : pres) {
-								if(ures.contains(res)){
-									for(int a = 0; a < postRestrictions.get(res).size(); a++){
-										
-										if(userRestrictions.get(res).contains(postRestrictions.get(res).get(a))){
-											String response = "Posts;:;" + p.getId() +  "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent() + ","
-													+ p.getContact() + "," + p.getDate() + "," + p.getTime() + ","
-													+ p.getDeliveryMode();
+								if (ures.contains(res)) {
+									for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+
+										if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+											String response = "Posts;:;" + p.getId() + "," + key.getUsername() + ","
+													+ p.getTitle() + "," + p.getContent() + "," + p.getContact() + ","
+													+ p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+													+ p.getDeliveryMode() + "," + p.getLocationName();
 											try {
 												dataOutputStream = new DataOutputStream(s.getOutputStream());
 												dataOutputStream.writeUTF(response);
 												dataOutputStream.flush();
 												System.out.println("WHITE: " + response);
 											} catch (IOException e) {
-												// TODO Auto-generated catch block
+												// TODO Auto-generated catch
+												// block
 												e.printStackTrace();
 											}
 											flag = true;
 											break;
 										}
 									}
-									if(flag){
+									if (flag) {
 										break;
 									}
 								}
 							}
-						}
-						else if (p.getRestrictionPolicy().equals("BLACK")) {
+						} else if (p.getRestrictionPolicy().equals("BLACK")) {
 							// Don't receive the message
 						}
 					}
@@ -426,18 +468,17 @@ public class User {
 	}
 
 	public boolean verifyPostRange(double currentLat, double currentLong, double lat, double longi, double radius) {
-		double earthRadius = 6371000; //meters
-	    double dLat = Math.toRadians(lat-currentLat);
-	    double dLng = Math.toRadians(longi-currentLong);
-	    double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-	               Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(currentLat)) *
-	               Math.sin(dLng/2) * Math.sin(dLng/2);
-	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-	    float dist = (float) (earthRadius * c);
-	    if(dist <= radius){
-	    	return true;
-	    }
-	    return false;
+		double earthRadius = 6371000; // meters
+		double dLat = Math.toRadians(lat - currentLat);
+		double dLng = Math.toRadians(longi - currentLong);
+		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat))
+				* Math.cos(Math.toRadians(currentLat)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		float dist = (float) (earthRadius * c);
+		if (dist <= radius) {
+			return true;
+		}
+		return false;
 	}
 
 	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {
@@ -452,10 +493,10 @@ public class User {
 				String value = aux[i].split("\\(")[0];
 
 				if (newW.containsKey(key)) {
-					newW.get(key).add(value.substring(0, value.length() -1));
+					newW.get(key).add(value.substring(0, value.length() - 1));
 				} else {
 					ArrayList<String> a = new ArrayList<>();
-					a.add(value.substring(0, value.length() -1));
+					a.add(value.substring(0, value.length() - 1));
 					newW.put(key, a);
 				}
 			}

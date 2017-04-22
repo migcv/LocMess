@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
 public class Connection implements Runnable {
@@ -34,15 +35,17 @@ public class Connection implements Runnable {
 
 			System.out.println("message= " + str);
 
+			expiredPosts();
+
 			if (res[0].equals("Login")) {
 				new Login(s, res[1], res[2]);
 			}
 			if (res[0].equals("SignUp")) {
 				new SignUp(s, res[1], res[2], res[3]);
 			}
-			if (res[0].equals("CurrentLocation")) {
+			if (res[0].equals("CurrentGPS")) {
 				User u1 = LocMess.getSession().getUserFromSession(res[1]);
-				u1.setCurrentLocation(res[2]);
+				u1.setCurrentGPS(res[2]);
 				u1.sendPosts(s);
 			}
 			if (res[0].equals("GetAllRestrictions")) {
@@ -60,24 +63,30 @@ public class Connection implements Runnable {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				ux.removeRestriction(res[2]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && !(res[8].equals("EVERYONE"))) {
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && !(res[9].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
+				u.addPostsWIFI_DIRECT(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && res[8].equals("EVERYONE")) {
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && res[9].equals("EVERYONE")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8]);
+				u.addPostsWIFI_DIRECT(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[10]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("GPS") && !(res[10].equals("EVERYONE"))) {
+			if (res[0].equals("NewPosts") && res[7].equals("GPS") && !(res[11].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				for(String a : res){
-					System.out.println(a);
-				}
+				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11],
+						res[12]);
+			}
+			if (res[0].equals("NewPosts") && res[7].equals("GPS") && res[11].equals("EVERYONE")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
 				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("GPS") && res[10].equals("EVERYONE")) {
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI") && !(res[9].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
+			}
+			if (res[0].equals("NewPosts") && res[7].equals("WIFI") && res[9].equals("EVERYONE")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
 			}
 			if (res[0].equals("MYPosts")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
@@ -141,11 +150,15 @@ public class Connection implements Runnable {
 		for (int i = 0; i < locations.size(); i++) {
 			if (locations.get(i).getType().equals("GPS")) {
 				response += response + locations.get(i).getType() + ";:;" + locations.get(i).getLocationName() + ";:;"
-						+ locations.get(i).getLatitude().toString() + ", " + locations.get(i).getLongitude().toString()
-						+ ";:;";
-			} else {
+						+ locations.get(i).getLatitude() + ", " + locations.get(i).getLongitude() + ";:;";
+			} else if (locations.get(i).getType().equals("WIFI")) {
+				String ssIDSend = "";
+				for (int j = 0; j < locations.get(i).getSSId().size(); j++) {
+					ssIDSend = ssIDSend + locations.get(i).getSSId().get(j) + ",";
+				}
+
 				response += response + locations.get(i).getType() + ";:;" + locations.get(i).getLocationName() + ";:;"
-						+ locations.get(i).getSSId() + ";:;";
+						+ ssIDSend + ";:;";
 			}
 			try {
 				System.out.println(response);
@@ -169,10 +182,26 @@ public class Connection implements Runnable {
 
 	}
 
-	public void signOut(String token) {
+	private void expiredPosts() {
+		HashMap<User, ArrayList<Posts>> aux = LocMess.getUserPosts();
+		if (aux.isEmpty()) {
+			return;
+		}
+		Set<User> users = aux.keySet();
+		for (User u : users) {
+			ArrayList<Posts> posts = aux.get(u);
+			for (int i = 0; i < posts.size(); i++) {
+				Long postLimitTime = Long.valueOf(posts.get(i).getLimitDateTime());
+				Long currentTime = System.currentTimeMillis();
+				if (postLimitTime - currentTime < 0) {
+					aux.get(u).remove(i);
+				}
+			}
+		}
+	}
 
+	private void signOut(String token) {
 		LocMess.getSession().removeUserFromSession(token);
-
 		try {
 			s.close();
 		} catch (IOException e) {

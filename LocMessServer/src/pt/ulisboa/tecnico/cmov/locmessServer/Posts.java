@@ -5,9 +5,10 @@ public class Posts {
 	private String title;
 	private String content;
 	private String contact;
-	private String date;
-	private String time;
+	private String creationDateTime;
+	private String limitDateTime;
 	private String deliveryMode;
+	private String locationName;
 	private Double latitude;
 	private Double longitude;
 	private Double radius;
@@ -15,39 +16,43 @@ public class Posts {
 	private String restrictionPolicy;
 	private String restrictions;
 
-	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
-			String restrictionPolicy, String restrictions, int id) {
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName,String restrictionPolicy, String restrictions, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
-		this.date = date;
-		this.time = time;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
 		this.deliveryMode = deliveryMode;
+		this.locationName = locationName;
 		this.restrictionPolicy = restrictionPolicy;
 		this.restrictions = restrictions;
 		this.id = id;
 	}
 
-	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
-			String restrictionPolicy, int id) {
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName,String restrictionPolicy, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
-		this.date = date;
-		this.time = time;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
 		this.deliveryMode = deliveryMode;
+		this.locationName = locationName;
 		this.restrictionPolicy = restrictionPolicy;
 		this.id = id;
 	}
 
-	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius, String restrictionPolicy, String restrictions, int id) {
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
+			String restrictions, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
-		this.date = date;
-		this.time = time;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
 		this.deliveryMode = deliveryMode;
+		this.locationName = locationName;
 		String[] latlong = coordinates.split(", ");
 		this.latitude = Double.parseDouble(latlong[0]);
 		this.longitude = Double.parseDouble(latlong[1]);
@@ -57,14 +62,15 @@ public class Posts {
 		this.id = id;
 	}
 
-	public Posts(String title, String content, String contact, String date, String time, String deliveryMode,
-			String coordinates, String radius, String restrictionPolicy, int id) {
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
-		this.date = date;
-		this.time = time;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
 		this.deliveryMode = deliveryMode;
+		this.locationName = locationName;
 		String[] latlong = coordinates.split(", ");
 		this.latitude = Double.parseDouble(latlong[0]);
 		this.longitude = Double.parseDouble(latlong[1]);
@@ -85,16 +91,8 @@ public class Posts {
 		return contact;
 	}
 
-	public String getTime() {
-		return time;
-	}
-
 	public String getDeliveryMode() {
 		return deliveryMode;
-	}
-
-	public String getDate() {
-		return date;
 	}
 
 	public Integer getId() {
@@ -123,6 +121,18 @@ public class Posts {
 
 	public Double getLongitude() {
 		return longitude;
+	}
+
+	public String getCreationDateTime() {
+		return creationDateTime;
+	}
+
+	public String getLimitDateTime() {
+		return limitDateTime;
+	}
+
+	public String getLocationName() {
+		return locationName;
 	}
 
 }

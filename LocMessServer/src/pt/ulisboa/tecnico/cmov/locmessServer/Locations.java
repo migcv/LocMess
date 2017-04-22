@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
+import java.util.ArrayList;
+
 public class Locations {
 
 	private String type;
 	private String locationName;
-	private String ssID;
+	private ArrayList<String> ssID;
 	private Double latitude;
 	private Double longitude;
 	
@@ -16,8 +18,9 @@ public class Locations {
 		this.longitude = Double.parseDouble(latlong[1]);
 	}
 	
-	public Locations(String type, String ssid) {
+	public Locations(String type, String locationName,ArrayList<String> ssid) {
 		this.type = type;
+		this.locationName = locationName;
 		this.ssID = ssid;
 	}
 
@@ -29,7 +32,7 @@ public class Locations {
 		return locationName;
 	}
 
-	public String getSSId() {
+	public ArrayList<String> getSSId() {
 		return ssID;
 	}
 

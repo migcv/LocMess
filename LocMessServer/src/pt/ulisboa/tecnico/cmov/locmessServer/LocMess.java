@@ -75,7 +75,7 @@ public class LocMess {
 		// SIGNUP
 		User u = new User("qwerty", "qwerty", "qwerty@gmail.com");
 		LocMess.getUsers().put("qwerty", u);
-		
+
 		User u1 = new User("asdasd", "asdasd", "asdasd@gmail.com");
 		LocMess.getUsers().put("asdasd", u1);
 
@@ -102,24 +102,27 @@ public class LocMess {
 		// Create posts
 		ArrayList<Posts> posts = new ArrayList<>();
 		u.setNumOfPost();
-		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
-				"100", "WHITE",
-				"Student (Job)", u.getNumOfPost());
+		Posts p = new Posts("Arco do Cego", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS",
+				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost());
 		u.setNumOfPost();
-		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
-				"100", "WHITE",
-				"Student (Job)", u.getNumOfPost());
-		
+		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
+				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost());
+		u.setNumOfPost();
+		Posts p4 = new Posts("Jardim", "adsadsd", "1213243", "1545931375100", "1545931375100", "WIFI", "Edurom",
+				"WHITE", "Student (Job)", u.getNumOfPost());
+		u.setNumOfPost();
+
 		ArrayList<Posts> posts1 = new ArrayList<>();
 		u1.setNumOfPost();
-		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
-				"100", "EVERYONE", u1.getNumOfPost());
-		u.setNumOfPost();
-		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "24/05/2013", "13:13", "GPS", "38.736151, -9.142168",
-				"100",  "WHITE",
-				"Student (Job)", u1.getNumOfPost());
+		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
+				"38.736151, -9.142168", "100", "EVERYONE", u1.getNumOfPost());
+		u1.setNumOfPost();
+		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1545931375100", "1545931375100", "WIFI", "Arco do Cego",
+				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u1.getNumOfPost());
+		u1.setNumOfPost();
 		posts.add(p);
 		posts.add(p1);
+		posts.add(p4);
 		posts1.add(p2);
 		posts1.add(p3);
 		LocMess.getUserPosts().put(u, posts);
@@ -129,16 +132,20 @@ public class LocMess {
 		Locations l1 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
 		Locations l2 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
 		Locations l3 = new Locations("GPS", "Faro", "37.019355, -7.930440");
-		// Locations l4 = new Locations("WIFI", "Edurom");
+		ArrayList<String> ssid = new ArrayList<>();
+		ssid.add("ALENTEJO");
+		ssid.add("Eventos-Lusiada");
+		Locations l4 = new Locations("WIFI", "Edurom", ssid);
 
 		aux3.add(l1);
 		aux3.add(l2);
 		aux3.add(l3);
-		// aux3.add(l4);
+		aux3.add(l4);
 		LocMess.getUsersLocations().put(u, aux3);
 		LocMess.getGlobalLocations().add(l1);
 		LocMess.getGlobalLocations().add(l2);
 		LocMess.getGlobalLocations().add(l3);
+		LocMess.getGlobalLocations().add(l4);
 
 	}
 
