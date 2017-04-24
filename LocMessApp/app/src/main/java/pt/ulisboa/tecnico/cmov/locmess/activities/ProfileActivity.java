@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -15,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.Mapbox;
@@ -37,9 +35,7 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 public class ProfileActivity extends FragmentActivity  implements NavigationView.OnNavigationItemSelectedListener {
     CollectionPagerAdapter mCollectionPagerAdapter;
     ViewPager mViewPager;
-    private static final int REQUEST_CREATE_POST = 0;
     TabLayout tabLayout;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,17 +61,6 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(ProfileActivity.this);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-                Intent intent = new Intent(getApplicationContext(), CreatePostActivity.class);
-                startActivityForResult(intent, REQUEST_CREATE_POST);
-            }
-        });
 
     }
 
@@ -118,6 +103,27 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.posts, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -136,7 +142,9 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
             Intent intent = new Intent(ProfileActivity.this, MyPostsActivity.class);
             startActivity(intent);
 
-        }  else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_logout) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             try {

@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.services;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -161,15 +160,16 @@ public class LocationService extends Service implements LocationListener {
         if(global.getPost(postArguments[0] + "" + postArguments[1]) == null) {
             Post newPost = new Post(postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);
             mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                    .setSmallIcon(android.R.drawable.ic_menu_gallery)
-                    .setContentTitle("New Post");
+                    .setSmallIcon(android.R.drawable.ic_menu_send)
+                    .setContentTitle("New Post")
+                    .setTicker("Starting uploads");
             global.addPost(postArguments[0] + "" + postArguments[1], newPost);
 
             Intent notificationIntent = new Intent(this, PostsActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(pendingIntent);
-            mBuilder.setAutoCancel(true);
+            mBuilder.setProgress(100, 0, true);
 
             startForeground(12345, mBuilder.build());
 
