@@ -14,6 +14,7 @@ public class User {
 	private String email;
 	private int numOfPost;
 	private String currentGPS;
+	private ArrayList<String> currentWIFI;
 	private Double currentLatitude;
 	private Double currentLongitude;
 
@@ -56,6 +57,20 @@ public class User {
 		String[] aux = currentGPS.split(", ");
 		setCurrentLatitude(Double.parseDouble(aux[0]));
 		setCurrentLongitude(Double.parseDouble(aux[1]));
+	}
+
+	public ArrayList<String> getCurrentWIFI() {
+		return currentWIFI;
+	}
+
+	public void setCurrentWIFI(String currentWIFI) {
+		String[] aux = currentWIFI.split(",");
+		ArrayList<String> current = new ArrayList<>();
+		for (int i = 0; i < aux.length; i++) {
+			current.add(aux[i]);
+		}
+		this.currentWIFI = current;
+
 	}
 
 	public Double getCurrentLatitude() {
@@ -387,69 +402,73 @@ public class User {
 
 	}
 
-	public void sendPosts(Socket s) {
+	public void sendPostsGPS(Socket s) {
 		Set<User> keySet = LocMess.getUserPosts().keySet();
 		DataOutputStream dataOutputStream;
 		for (User key : keySet) {
 			for (int i = 0; i < LocMess.getUserPosts().get(key).size(); i++) {
 				if (!this.equals(key)) {
 					Posts p = LocMess.getUserPosts().get(key).get(i);
-					if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(), p.getLongitude(),
-							p.getRadius())) {
+					if (p.getLatitude() != null && p.getLongitude() != null) {
+						if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(),
+								p.getLongitude(), p.getRadius())) {
 
-						System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
+							System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
 
-						if (p.getRestrictionPolicy().equals("EVERYONE")) {
-							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
-									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
-							try {
-								dataOutputStream = new DataOutputStream(s.getOutputStream());
-								dataOutputStream.writeUTF(response);
-								dataOutputStream.flush();
-								System.out.println("EVERYONE: " + response);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} else if (p.getRestrictionPolicy().equals("WHITE")) {
-							HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions()
-									.get(this);
-							Set<String> ures = userRestrictions.keySet();
-							String restrictions = p.getRestrictions();
-							HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
-							Set<String> pres = postRestrictions.keySet();
-							boolean flag = false;
-							for (String res : pres) {
-								if (ures.contains(res)) {
-									for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+							if (p.getRestrictionPolicy().equals("EVERYONE")) {
+								String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
+										+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime()
+										+ "," + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+										+ p.getLocationName();
+								try {
+									dataOutputStream = new DataOutputStream(s.getOutputStream());
+									dataOutputStream.writeUTF(response);
+									dataOutputStream.flush();
+									System.out.println("EVERYONE: " + response);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else if (p.getRestrictionPolicy().equals("WHITE")) {
+								HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions()
+										.get(this);
+								Set<String> ures = userRestrictions.keySet();
+								String restrictions = p.getRestrictions();
+								HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(
+										restrictions);
+								Set<String> pres = postRestrictions.keySet();
+								boolean flag = false;
+								for (String res : pres) {
+									if (ures.contains(res)) {
+										for (int a = 0; a < postRestrictions.get(res).size(); a++) {
 
-										if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
-											String response = "Posts;:;" + p.getId() + "," + key.getUsername() + ","
-													+ p.getTitle() + "," + p.getContent() + "," + p.getContact() + ","
-													+ p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-													+ p.getDeliveryMode() + "," + p.getLocationName();
-											try {
-												dataOutputStream = new DataOutputStream(s.getOutputStream());
-												dataOutputStream.writeUTF(response);
-												dataOutputStream.flush();
-												System.out.println("WHITE: " + response);
-											} catch (IOException e) {
-												// TODO Auto-generated catch
-												// block
-												e.printStackTrace();
+											if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+												String response = "Posts;:;" + p.getId() + "," + key.getUsername() + ","
+														+ p.getTitle() + "," + p.getContent() + "," + p.getContact()
+														+ "," + p.getCreationDateTime() + "," + p.getLimitDateTime()
+														+ "," + p.getDeliveryMode() + "," + p.getLocationName();
+												try {
+													dataOutputStream = new DataOutputStream(s.getOutputStream());
+													dataOutputStream.writeUTF(response);
+													dataOutputStream.flush();
+													System.out.println("WHITE: " + response);
+												} catch (IOException e) {
+													// TODO Auto-generated catch
+													// block
+													e.printStackTrace();
+												}
+												flag = true;
+												break;
 											}
-											flag = true;
+										}
+										if (flag) {
 											break;
 										}
 									}
-									if (flag) {
-										break;
-									}
 								}
+							} else if (p.getRestrictionPolicy().equals("BLACK")) {
+								// Don't receive the message
 							}
-						} else if (p.getRestrictionPolicy().equals("BLACK")) {
-							// Don't receive the message
 						}
 					}
 				}
@@ -502,6 +521,80 @@ public class User {
 			}
 		}
 		return newW;
+	}
+
+	public void sendPostsWIFI(Socket s) {
+		Set<User> keySet = LocMess.getUserPosts().keySet();
+		DataOutputStream dataOutputStream;
+		for (User key : keySet) {
+			for (int i = 0; i < LocMess.getUserPosts().get(key).size(); i++) {
+				if (!this.equals(key)) {
+					Posts p = LocMess.getUserPosts().get(key).get(i);
+					if (p.getLatitude() == null && p.getLongitude() == null) {
+						
+						//FALTA UM IF PARA GARANTIR QUE É WIFI
+						
+						System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
+
+						if (p.getRestrictionPolicy().equals("EVERYONE")) {
+							String response = "PostsWIFI;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
+									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime()
+									+ "," + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+									+ p.getLocationName();
+							try {
+								dataOutputStream = new DataOutputStream(s.getOutputStream());
+								dataOutputStream.writeUTF(response);
+								dataOutputStream.flush();
+								System.out.println("EVERYONE: " + response);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} else if (p.getRestrictionPolicy().equals("WHITE")) {
+							HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions()
+									.get(this);
+							Set<String> ures = userRestrictions.keySet();
+							String restrictions = p.getRestrictions();
+							HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(
+									restrictions);
+							Set<String> pres = postRestrictions.keySet();
+							boolean flag = false;
+							for (String res : pres) {
+								if (ures.contains(res)) {
+									for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+
+										if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+											String response = "PostsWIFI;:;" + p.getId() + "," + key.getUsername() + ","
+													+ p.getTitle() + "," + p.getContent() + "," + p.getContact()
+													+ "," + p.getCreationDateTime() + "," + p.getLimitDateTime()
+													+ "," + p.getDeliveryMode() + "," + p.getLocationName();
+											try {
+												dataOutputStream = new DataOutputStream(s.getOutputStream());
+												dataOutputStream.writeUTF(response);
+												dataOutputStream.flush();
+												System.out.println("WHITE: " + response);
+											} catch (IOException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											}
+											flag = true;
+											break;
+										}
+									}
+									if (flag) {
+										break;
+									}
+								}
+							}
+						} else if (p.getRestrictionPolicy().equals("BLACK")) {
+							// Don't receive the message
+						}
+						
+					}
+				}
+			}
+		}
 	}
 
 }
