@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.StrictMode;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.LinearLayout;
 
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Post;
@@ -43,6 +46,7 @@ public class LocationService extends Service implements LocationListener {
 
     private WifiManager mainWifi;
     private WifiReceiver receiverWifi;
+    NotificationCompat.Builder mBuilder;
 
     private ArrayList<String> wifiSSIDList = new ArrayList<>();
 
@@ -155,7 +159,20 @@ public class LocationService extends Service implements LocationListener {
         GlobalLocMess global = (GlobalLocMess) getApplicationContext();
         if(global.getPost(postArguments[0] + "" + postArguments[1]) == null) {
             Post newPost = new Post(postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);
+            mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                    .setSmallIcon(android.R.drawable.ic_menu_send)
+                    .setContentTitle("New Post")
+                    .setTicker("Starting uploads");
             global.addPost(postArguments[0] + "" + postArguments[1], newPost);
+
+            Intent notificationIntent = new Intent(this, PostsActivity.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(pendingIntent);
+            mBuilder.setProgress(100, 0, true);
+
+            startForeground(12345, mBuilder.build());
+
             Log.d("ADD_POST", "Post added with id: " + postArguments[0] + "" + postArguments[1]);
         } else {
             Log.d("ADD_POST", "Post already EXISTS with id: " + postArguments[0] + "" + postArguments[1]);
