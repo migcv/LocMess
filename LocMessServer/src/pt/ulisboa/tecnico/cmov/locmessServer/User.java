@@ -68,6 +68,7 @@ public class User {
 		ArrayList<String> current = new ArrayList<>();
 		for (int i = 0; i < aux.length; i++) {
 			current.add(aux[i]);
+			System.out.println(aux[i]);
 		}
 		this.currentWIFI = current;
 
@@ -410,17 +411,15 @@ public class User {
 				if (!this.equals(key)) {
 					Posts p = LocMess.getUserPosts().get(key).get(i);
 
-					System.out.println("RESTRICTION: " + p.getRestrictionPolicy());
+					if (p.getDeliveryMode().equals("GPS")) {
+						if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(),
+								p.getLongitude(), p.getRadius())) {
+							postsToSend(p, s, key);
+						}
+					} else if (p.getDeliveryMode().equals("WIFI")) {
 
-					if (p.getRestrictionPolicy().equals("GPS")) {
-						if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLocation().getLatitude(),
-								p.getLocation().getLongitude(), p.getRadius())) {
-							postsToSend(p, s, key);
-						}
-					} else if (p.getRestrictionPolicy().equals("WIFI")) {
-						if (verifyPostWIFI(this.getCurrentLocation())) {
-							postsToSend(p, s, key);
-						}
+						// postsToSend(p, s, key);
+
 					}
 				}
 			}
@@ -435,11 +434,6 @@ public class User {
 			e.printStackTrace();
 		}
 
-	}
-
-	public boolean verifyPostWIFI(String current) {
-		
-		return false;
 	}
 
 	public boolean verifyPostRange(double currentLat, double currentLong, double lat, double longi, double radius) {
@@ -531,5 +525,4 @@ public class User {
 			// Don't receive the message
 		}
 	}
-
 }

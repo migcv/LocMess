@@ -108,9 +108,7 @@ public class LocMess {
 		Posts p1 = new Posts("Jardim", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
 				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost());
 		u.setNumOfPost();
-		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1545931375100", "1545931375100", "WIFI", "Edurom",
-				"WHITE", "Student (Job)", u.getNumOfPost());
-		u.setNumOfPost();
+		
 
 		ArrayList<Posts> posts1 = new ArrayList<>();
 		u1.setNumOfPost();
@@ -120,9 +118,12 @@ public class LocMess {
 		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
 				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u1.getNumOfPost());
 		u1.setNumOfPost();
+		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1545931375100", "1545931375100", "WIFI", "Edurom",
+				"WHITE", "Student (Job)", u1.getNumOfPost());
+		u.setNumOfPost();
 		posts.add(p);
 		posts.add(p1);
-		posts.add(p4);
+		posts1.add(p4);
 		posts1.add(p2);
 		posts1.add(p3);
 		LocMess.getUserPosts().put(u, posts);
@@ -135,6 +136,7 @@ public class LocMess {
 		ArrayList<String> ssid = new ArrayList<>();
 		ssid.add("ALENTEJO");
 		ssid.add("Eventos-Lusiada");
+		ssid.add("WiredSSID");
 		Locations l4 = new Locations("WIFI", "Edurom", ssid);
 
 		aux3.add(l1);
@@ -142,6 +144,7 @@ public class LocMess {
 		aux3.add(l3);
 		aux3.add(l4);
 		LocMess.getUsersLocations().put(u, aux3);
+		LocMess.getUsersLocations().put(u1, aux3);
 		LocMess.getGlobalLocations().add(l1);
 		LocMess.getGlobalLocations().add(l2);
 		LocMess.getGlobalLocations().add(l3);
