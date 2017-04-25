@@ -8,16 +8,15 @@ public class Posts {
 	private String creationDateTime;
 	private String limitDateTime;
 	private String deliveryMode;
+	private Locations location;
 	private String locationName;
-	private Double latitude;
-	private Double longitude;
 	private Double radius;
 	private Integer id;
 	private String restrictionPolicy;
 	private String restrictions;
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName,String restrictionPolicy, String restrictions, int id) {
+			String deliveryMode, String locationName, String restrictionPolicy, String restrictions, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -31,7 +30,7 @@ public class Posts {
 	}
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName,String restrictionPolicy, int id) {
+			String deliveryMode, String locationName, String restrictionPolicy, int id) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -51,11 +50,7 @@ public class Posts {
 		this.contact = contact;
 		this.creationDateTime = creationDateTime;
 		this.limitDateTime = limitDateTime;
-		this.deliveryMode = deliveryMode;
-		this.locationName = locationName;
-		String[] latlong = coordinates.split(", ");
-		this.latitude = Double.parseDouble(latlong[0]);
-		this.longitude = Double.parseDouble(latlong[1]);
+		this.location = new Locations(deliveryMode, locationName, coordinates);
 		this.radius = Double.parseDouble(radius);
 		this.restrictionPolicy = restrictionPolicy;
 		this.restrictions = restrictions;
@@ -69,11 +64,7 @@ public class Posts {
 		this.contact = contact;
 		this.creationDateTime = creationDateTime;
 		this.limitDateTime = limitDateTime;
-		this.deliveryMode = deliveryMode;
-		this.locationName = locationName;
-		String[] latlong = coordinates.split(", ");
-		this.latitude = Double.parseDouble(latlong[0]);
-		this.longitude = Double.parseDouble(latlong[1]);
+		this.location = new Locations(deliveryMode, locationName, coordinates);
 		this.radius = Double.parseDouble(radius);
 		this.restrictionPolicy = restrictionPolicy;
 		this.id = id;
@@ -115,14 +106,6 @@ public class Posts {
 		return radius;
 	}
 
-	public Double getLatitude() {
-		return latitude;
-	}
-
-	public Double getLongitude() {
-		return longitude;
-	}
-
 	public String getCreationDateTime() {
 		return creationDateTime;
 	}
@@ -133,6 +116,10 @@ public class Posts {
 
 	public String getLocationName() {
 		return locationName;
+	}
+
+	public Locations getLocation() {
+		return location;
 	}
 
 }
