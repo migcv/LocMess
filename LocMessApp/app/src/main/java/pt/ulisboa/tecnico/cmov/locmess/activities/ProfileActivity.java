@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.Mapbox;
@@ -146,6 +147,8 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
                 dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
                 dout.flush();
                 s.close();
+                ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+                expandableListView.setEmptyView(expandableListView);
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 startActivity(intent);
             } catch (IOException e) {
