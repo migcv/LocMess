@@ -2,11 +2,18 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.Manifest;
 import android.animation.TypeEvaluator;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -41,13 +48,20 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Location;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
-public class LocationOptionActivity extends AppCompatActivity {
+public class LocationOptionActivity extends AppCompatActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     private int radius = 250;
     private LatLng userLocation;
@@ -64,11 +78,29 @@ public class LocationOptionActivity extends AppCompatActivity {
 
     private HashMap<String, Location> locationsMap = new HashMap<>();
 
+    private SimWifiP2pBroadcastReceiver mReceiver;
+    private boolean mBound = false;
+    private Messenger mService = null;
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_location_option);
+
+        // initialize the WDSim API
+        SimWifiP2pSocketManager.Init(getApplicationContext());
+
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        mReceiver = new SimWifiP2pBroadcastReceiver(this);
+        registerReceiver(mReceiver, filter);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
 
@@ -102,7 +134,11 @@ public class LocationOptionActivity extends AppCompatActivity {
                     }
                 }
                 else if(radioButtonWifDirect.isChecked()) {
-                    NewPost.deliveryMode = NewPost.WIFI_DIRECT;
+                   // NewPost.deliveryMode = NewPost.WIFI_DIRECT;
+                    Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
+                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                    mBound = true;
+
                 }
 
                 Intent intent = new Intent(getApplicationContext(), RestritionOptionActivity.class);
@@ -303,6 +339,38 @@ public class LocationOptionActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+       // TODO
+    }
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
+        //// TODO: 26/04/2017  
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+            mBound = false;
+        }
+    };
+
+
 
     // Include method in your activity
     private static class LatLngEvaluator implements TypeEvaluator<LatLng> {
