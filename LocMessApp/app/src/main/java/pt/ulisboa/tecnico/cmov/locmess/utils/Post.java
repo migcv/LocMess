@@ -17,7 +17,7 @@ public class Post {
 
     private boolean seen = false;
 
-    public Post(String user, String tittle, String content, String contact, String post_lifetime, String post_time, String type, String location_name) {
+    public Post(String user, String tittle, String content, String contact, String post_time, String post_lifetime, String type, String location_name) {
         this.tittle = tittle;
         this.user = user;
         this.content = content;

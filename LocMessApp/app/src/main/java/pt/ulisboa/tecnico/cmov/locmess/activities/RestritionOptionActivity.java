@@ -69,7 +69,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                NewPost.restrictionList = new ArrayList<String>();
                 if(radioButtonEveryone.isChecked()) {
                     NewPost.restrictionPolicy = NewPost.EVERYONE;
                 }

@@ -100,7 +100,8 @@
                 android:layout_height="wrap_content"
                 android:text="Time: "
                 android:textAlignment="textEnd"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_date"
