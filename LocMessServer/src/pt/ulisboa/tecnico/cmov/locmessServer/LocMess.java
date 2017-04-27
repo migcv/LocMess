@@ -112,13 +112,13 @@ public class LocMess {
 
 		ArrayList<Posts> posts1 = new ArrayList<>();
 		u1.setNumOfPost();
-		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
+		Posts p2 = new Posts("TECNICO", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
 				"38.736151, -9.142168", "100", "EVERYONE", u1.getNumOfPost());
 		u1.setNumOfPost();
-		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS", "Arco do Cego",
+		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
 				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u1.getNumOfPost());
 		u1.setNumOfPost();
-		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1545931375100", "1545931375100", "WIFI", "Edurom",
+		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1493283131847", "1545931375100", "WIFI", "Edurom",
 				"WHITE", "Student (Job)", u1.getNumOfPost());
 		u.setNumOfPost();
 		posts.add(p);
