@@ -30,6 +30,7 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -39,7 +40,7 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
         String date =  this.expandableListDetail.get(listPosition).get(3);
         String time =  this.expandableListDetail.get(listPosition).get(4);
         String deliveryMode =  this.expandableListDetail.get(listPosition).get(5);
-
+        notifyDataSetChanged();
         return "Content: " +content + " \n" +"Contact: "+ contact + "\n" + date + " " + time + "\n" + deliveryMode;
     }
 
@@ -92,6 +93,7 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
         } else if(NewPost.WIFI_DIRECT.equals(this.expandableListDetail.get(listPosition).get(5))) {
 
         }*/
+        notifyDataSetChanged();
         return convertView;
     }
 
@@ -128,6 +130,7 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+        notifyDataSetChanged();
         return convertView;
     }
 

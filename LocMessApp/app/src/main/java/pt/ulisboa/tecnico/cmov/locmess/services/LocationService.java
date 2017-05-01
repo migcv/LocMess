@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.cmov.locmess.services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +49,7 @@ public class LocationService extends Service implements LocationListener {
 
     private WifiManager mainWifi;
     private WifiReceiver receiverWifi;
-    NotificationCompat.Builder mBuilder;
+    private int notificationCounter = 0;
 
     private ArrayList<String> wifiSSIDList = new ArrayList<>();
 
@@ -160,10 +162,12 @@ public class LocationService extends Service implements LocationListener {
         GlobalLocMess global = (GlobalLocMess) getApplicationContext();
         if(global.getPost(postArguments[0] + "" + postArguments[1]) == null) {
             Post newPost = new Post(postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);
-            mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                    .setSmallIcon(android.R.drawable.ic_menu_gallery)
-                    .setContentTitle("New Post");
             global.addPost(postArguments[0] + "" + postArguments[1], newPost);
+
+            notificationCounter = notificationCounter + 1;
+            NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                    .setSmallIcon(android.R.drawable.ic_menu_gallery)
+                    .setContentTitle("New Post: " + postArguments[2]);
 
             Intent notificationIntent = new Intent(this, PostsActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -171,8 +175,9 @@ public class LocationService extends Service implements LocationListener {
             mBuilder.setContentIntent(pendingIntent);
             mBuilder.setAutoCancel(true);
 
-            startForeground(12345, mBuilder.build());
-
+            //startForeground(notificationCounter, mBuilder.build());
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(PostsActivity.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(notificationCounter, mBuilder.build());
             Log.d("ADD_POST", "Post added with id: " + postArguments[0] + "" + postArguments[1]);
         } else {
             Log.d("ADD_POST", "Post already EXISTS with id: " + postArguments[0] + "" + postArguments[1]);

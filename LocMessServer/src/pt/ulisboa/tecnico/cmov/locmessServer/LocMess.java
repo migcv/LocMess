@@ -138,6 +138,7 @@ public class LocMess {
 		Locations l1 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
 		Locations l2 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
 		Locations l3 = new Locations("GPS", "Faro", "37.019355, -7.930440");
+		
 		ArrayList<String> ssid = new ArrayList<>();
 		ssid.add("ALENTEJO");
 		ssid.add("Eventos-Lusiada");
@@ -148,8 +149,17 @@ public class LocMess {
 		aux3.add(l2);
 		aux3.add(l3);
 		aux3.add(l4);
+		
+		ArrayList<Locations> aux6 = new ArrayList<>();
+		Locations l5 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
+		Locations l6 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
+		Locations l7 = new Locations("GPS", "Faro", "37.019355, -7.930440");
+		aux6.add(l5);
+		aux6.add(l6);
+		aux6.add(l7);
+		
 		LocMess.getUsersLocations().put(u, aux3);
-		LocMess.getUsersLocations().put(u1, aux3);
+		LocMess.getUsersLocations().put(u1, aux6);
 		LocMess.getGlobalLocations().add(l1);
 		LocMess.getGlobalLocations().add(l2);
 		LocMess.getGlobalLocations().add(l3);

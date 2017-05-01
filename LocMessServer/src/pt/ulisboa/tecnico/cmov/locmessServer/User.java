@@ -395,6 +395,8 @@ public class User {
 		}
 		for (int i = 0; i < locations.size(); i++) {
 			if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getLocationName().equals(aux[1])) {
+				System.out.println("---------------------------------------- " + locations.get(i).getType());
+				System.out.println("---------------------------------------- " + locations.get(i).getLocationName());
 				LocMess.getUsersLocations().get(this).remove(i);
 				break;
 			}
@@ -495,43 +497,29 @@ public class User {
 			Set<String> pres = postRestrictions.keySet();
 			boolean flag = false;
 			for (String res : pres) {
-				System.out.println("POST1: " + res);
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-						if (verifyRestrictions(userRestrictions.get(res), postRestrictions.get(res))) {
-							// if
-							// (userRestrictions.get(res).contains(postRestrictions.get(res).get(a)))
-							// {
-							System.out.println("POST: " + postRestrictions.get(res));
-							System.out.println("USER: " + userRestrictions.get(res));
+						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+							String response = "PostsWIFI;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
+									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+							try {
+								dataOutputStream = new DataOutputStream(s.getOutputStream());
+								dataOutputStream.writeUTF(response);
+								dataOutputStream.flush();
+								System.out.println("WHITE: " + response);
+							} catch (IOException e) {
+								// TODO Auto-generated catch
+								// block
+								e.printStackTrace();
+							}
 							flag = true;
-						} else {
-							flag = false;
 							break;
 						}
 					}
-					if(!flag){
+					if (flag) {
 						break;
 					}
-				}
-				else{
-					flag = false;
-				}
-				if (flag) {
-					String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
-					try {
-						dataOutputStream = new DataOutputStream(s.getOutputStream());
-						dataOutputStream.writeUTF(response);
-						dataOutputStream.flush();
-						System.out.println("WHITE: " + response);
-					} catch (IOException e) {
-						// TODO Auto-generated catch
-						// block
-						e.printStackTrace();
-					}
-					break;
 				}
 			}
 		} else if (p.getRestrictionPolicy().equals("BLACK")) {
