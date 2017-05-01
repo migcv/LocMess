@@ -44,4 +44,9 @@ public class GlobalLocMess extends Application {
         return postsMap.get(id);
     }
 
+    public void logout() {
+        postsMap = new HashMap<>();
+        ExpandableListDataPump.clean();
+    }
+
 }

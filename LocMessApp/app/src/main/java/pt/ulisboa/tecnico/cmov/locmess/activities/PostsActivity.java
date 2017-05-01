@@ -113,8 +113,7 @@ public class PostsActivity extends AppCompatActivity
                 dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
                 dout.flush();
                 s.close();
-                ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-                expandableListView.setEmptyView(expandableListView);
+                ((GlobalLocMess) getApplicationContext()).logout();
                 Intent intent = new Intent(PostsActivity.this, MainActivity.class);
                 startActivity(intent);
             } catch (IOException e) {
