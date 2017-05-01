@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.utils.ExpandableListDataPump;
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.MyPostsListAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
@@ -131,6 +132,7 @@ public class MyPostsActivity extends AppCompatActivity
                 dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
                 dout.flush();
                 s.close();
+                ((GlobalLocMess) getApplicationContext()).logout();
                 Intent intent = new Intent(MyPostsActivity.this, MainActivity.class);
                 startActivity(intent);
             } catch (IOException e) {

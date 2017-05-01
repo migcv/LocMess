@@ -103,4 +103,9 @@ public class ExpandableListDataPump {
         count = count + 1;
     }
 
+    public static void clean() {
+        posts = new ArrayList<List<String>>();
+        myPosts = new ArrayList<List<String>>();
+    }
+
 }

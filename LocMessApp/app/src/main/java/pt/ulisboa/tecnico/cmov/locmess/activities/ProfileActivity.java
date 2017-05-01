@@ -29,6 +29,7 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileInterestsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
@@ -147,8 +148,7 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
                 dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
                 dout.flush();
                 s.close();
-                ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-                expandableListView.setEmptyView(expandableListView);
+                ((GlobalLocMess) getApplicationContext()).logout();
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 startActivity(intent);
             } catch (IOException e) {
