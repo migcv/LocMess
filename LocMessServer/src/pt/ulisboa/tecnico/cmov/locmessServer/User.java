@@ -309,7 +309,6 @@ public class User {
 				break;
 			}
 		}
-
 	}
 
 	public void sendLocations(Socket s) {
@@ -496,9 +495,56 @@ public class User {
 			Set<String> pres = postRestrictions.keySet();
 			boolean flag = false;
 			for (String res : pres) {
+				System.out.println("POST1: " + res);
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+						if (verifyRestrictions(userRestrictions.get(res), postRestrictions.get(res))) {
+							// if
+							// (userRestrictions.get(res).contains(postRestrictions.get(res).get(a)))
+							// {
+							System.out.println("POST: " + postRestrictions.get(res));
+							System.out.println("USER: " + userRestrictions.get(res));
+							flag = true;
+						} else {
+							flag = false;
+							break;
+						}
+					}
+					if(!flag){
+						break;
+					}
+				}
+				else{
+					flag = false;
+				}
+				if (flag) {
+					String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+					try {
+						dataOutputStream = new DataOutputStream(s.getOutputStream());
+						dataOutputStream.writeUTF(response);
+						dataOutputStream.flush();
+						System.out.println("WHITE: " + response);
+					} catch (IOException e) {
+						// TODO Auto-generated catch
+						// block
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		} else if (p.getRestrictionPolicy().equals("BLACK")) {
+			HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
+			Set<String> ures = userRestrictions.keySet();
+			String restrictions = p.getRestrictions();
+			HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
+			Set<String> pres = postRestrictions.keySet();
+			boolean flag = false;
+			for (String res : pres) {
+				if (ures.contains(res)) {
+					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+						if (!userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
 							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
 									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
 									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
@@ -506,7 +552,7 @@ public class User {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
 								dataOutputStream.writeUTF(response);
 								dataOutputStream.flush();
-								System.out.println("WHITE: " + response);
+								System.out.println("BLACK: " + response);
 							} catch (IOException e) {
 								// TODO Auto-generated catch
 								// block
@@ -519,10 +565,35 @@ public class User {
 					if (flag) {
 						break;
 					}
+				} else {
+					String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+					try {
+						dataOutputStream = new DataOutputStream(s.getOutputStream());
+						dataOutputStream.writeUTF(response);
+						dataOutputStream.flush();
+						System.out.println("BLACK: " + response);
+					} catch (IOException e) {
+						// TODO Auto-generated catch
+						// block
+						e.printStackTrace();
+					}
 				}
 			}
-		} else if (p.getRestrictionPolicy().equals("BLACK")) {
-			// Don't receive the message
 		}
+	}
+
+	public boolean verifyRestrictions(ArrayList<String> user, ArrayList<String> post) {
+		int counter = 0;
+		for (String res : post) {
+			if (user.contains(res)) {
+				counter++;
+			}
+		}
+		if (counter == post.size()) {
+			return true;
+		}
+		return false;
 	}
 }
