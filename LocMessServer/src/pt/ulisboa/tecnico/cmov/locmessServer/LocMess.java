@@ -94,7 +94,7 @@ public class LocMess {
 		aux2.add("Unemployed");
 		aux4.put("Job", aux2);
 
-		LocMess.getUserRestrictions().put(u, aux4);
+		LocMess.getUserRestrictions().put(u, aux);
 		LocMess.getUserRestrictions().put(u1, aux4);
 		LocMess.getGlobalRestrictions().put("Animals", aux1);
 		LocMess.getGlobalRestrictions().put("Jobs", aux2);
@@ -116,16 +116,21 @@ public class LocMess {
 				"38.736151, -9.142168", "100", "EVERYONE", u1.getNumOfPost());
 		u1.setNumOfPost();
 		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
-				"38.736151, -9.142168", "100", "WHITE", "Student (Job)", u1.getNumOfPost());
+				"38.736151, -9.142168", "100", "WHITE", "Student (Jobs),Gorilla (Animals)", u1.getNumOfPost());
 		u1.setNumOfPost();
 		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1493283131847", "1545931375100", "WIFI", "Edurom",
 				"WHITE", "Student (Job)", u1.getNumOfPost());
-		u.setNumOfPost();
+		u1.setNumOfPost();
+		Posts p5 = new Posts("PARVO", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
+				"38.736151, -9.142168", "100", "BLACK", "Employed (Job)", u1.getNumOfPost());
+		u1.setNumOfPost();
+		
 		posts.add(p);
 		posts.add(p1);
 		posts1.add(p4);
 		posts1.add(p2);
 		posts1.add(p3);
+		posts1.add(p5);
 		LocMess.getUserPosts().put(u, posts);
 		LocMess.getUserPosts().put(u1, posts1);
 
@@ -133,6 +138,7 @@ public class LocMess {
 		Locations l1 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
 		Locations l2 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
 		Locations l3 = new Locations("GPS", "Faro", "37.019355, -7.930440");
+		
 		ArrayList<String> ssid = new ArrayList<>();
 		ssid.add("ALENTEJO");
 		ssid.add("Eventos-Lusiada");
@@ -143,8 +149,17 @@ public class LocMess {
 		aux3.add(l2);
 		aux3.add(l3);
 		aux3.add(l4);
+		
+		ArrayList<Locations> aux6 = new ArrayList<>();
+		Locations l5 = new Locations("GPS", "Arco do Cego", "38.736151, -9.142168");
+		Locations l6 = new Locations("GPS", "Portimao", "37.141785, -8.533509");
+		Locations l7 = new Locations("GPS", "Faro", "37.019355, -7.930440");
+		aux6.add(l5);
+		aux6.add(l6);
+		aux6.add(l7);
+		
 		LocMess.getUsersLocations().put(u, aux3);
-		LocMess.getUsersLocations().put(u1, aux3);
+		LocMess.getUsersLocations().put(u1, aux6);
 		LocMess.getGlobalLocations().add(l1);
 		LocMess.getGlobalLocations().add(l2);
 		LocMess.getGlobalLocations().add(l3);

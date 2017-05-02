@@ -80,7 +80,6 @@ public class ExpandableListDataPump {
         aux.add(deliveryMode);
         posts.add(aux);
         setCount();
-
     }
 
     public static void setDataMyPost(String id, String title, String content, String contact, String post_time, String post_lifetime, String deliveryMode ){
@@ -101,6 +100,11 @@ public class ExpandableListDataPump {
 
     public static void setCount() {
         count = count + 1;
+    }
+
+    public static void clean() {
+        posts = new ArrayList<List<String>>();
+        myPosts = new ArrayList<List<String>>();
     }
 
 }

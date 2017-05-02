@@ -2,9 +2,9 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -13,10 +13,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -35,11 +35,15 @@ public class PostsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CREATE_POST = 0;
+    Handler mHandler;
+    ExpandableListView expandableListView;
+    ExpandableListAdapter expandableListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
 
@@ -63,16 +67,39 @@ public class PostsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(PostsActivity.this);
 
-        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         ArrayList<List<String>> expandableList = ExpandableListDataPump.setPost(((GlobalLocMess)getApplicationContext()).getPostsMap());
 
         ArrayList<String> expandableListTitle = new ArrayList<String>();
         for(int i = 0; i < expandableList.size(); i++) {
             expandableListTitle.add(expandableList.get(i).get(0));
         }
-        ExpandableListAdapter expandableListAdapter = new PostsListAdapter(this, expandableListTitle, expandableList);
+        expandableListAdapter = new PostsListAdapter(this, expandableListTitle, expandableList);
         expandableListView.setAdapter(expandableListAdapter);
+
+        this.mHandler = new Handler();
+        m_Runnable.run();
     }
+
+    private final Runnable m_Runnable = new Runnable() {
+        public void run() {
+
+            PostsActivity.this.mHandler.postDelayed(m_Runnable,10000);
+            GlobalLocMess global = (GlobalLocMess) getApplicationContext();
+            if(expandableListAdapter.getGroupCount() != global.getPostsMap().size()){
+                expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+                ArrayList<List<String>> expandableList = ExpandableListDataPump.setPost(((GlobalLocMess)getApplicationContext()).getPostsMap());
+
+                ArrayList<String> expandableListTitle = new ArrayList<String>();
+                for(int i = 0; i < expandableList.size(); i++) {
+                    expandableListTitle.add(expandableList.get(i).get(0));
+                }
+                expandableListAdapter = new PostsListAdapter(getApplicationContext(), expandableListTitle, expandableList);
+                expandableListView.setAdapter(expandableListAdapter);
+                Toast.makeText(PostsActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -113,8 +140,7 @@ public class PostsActivity extends AppCompatActivity
                 dout.writeUTF("SignOut;:;" + SocketHandler.getToken());
                 dout.flush();
                 s.close();
-                ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-                expandableListView.setEmptyView(expandableListView);
+                ((GlobalLocMess) getApplicationContext()).logout();
                 Intent intent = new Intent(PostsActivity.this, MainActivity.class);
                 startActivity(intent);
             } catch (IOException e) {
