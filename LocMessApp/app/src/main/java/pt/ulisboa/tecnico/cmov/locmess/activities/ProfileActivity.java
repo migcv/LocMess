@@ -1,7 +1,13 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,7 +22,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.Mapbox;
@@ -25,11 +33,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.ulisboa.tecnico.cmov.locmess.utils.CollectionPagerAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileInterestsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
@@ -39,8 +52,13 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 public class ProfileActivity extends FragmentActivity  implements NavigationView.OnNavigationItemSelectedListener {
     CollectionPagerAdapter mCollectionPagerAdapter;
     ViewPager mViewPager;
+    private boolean mBound = false;
     private static final int REQUEST_CREATE_POST = 0;
     TabLayout tabLayout;
+    Switch mySwitch;
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +66,20 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.profile_activity_view);
 
+        // initialize the Termite API
+        SimWifiP2pSocketManager.Init(getApplicationContext());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
+        registerReceiver(receiver, filter);
+
         TextView text3 = (TextView) findViewById(R.id.username);
         text3.setText(SocketHandler.getUsername());
 
+        mySwitch = (Switch) findViewById(R.id.termiteSwitch);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         setupViewPager(mViewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -79,7 +108,44 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
             }
         });
 
+        //set the switch to OFF
+        mySwitch.setChecked(false);
+        //attach a listener to check for changes in state
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    Intent intent = new Intent(buttonView.getContext(), SimWifiP2pService.class);
+                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                    mBound = true;
+                }else{
+                    unbindService(mConnection);
+                }
+
+            }
+        });
+
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(),
+                    null);
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+        }
+    };
+
 
     private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager viewPager) {
 

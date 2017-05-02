@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +16,9 @@ import pt.ulisboa.tecnico.cmov.locmess.activities.LocationOptionActivity;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
-    private LocationOptionActivity mActivity;
+    private Activity mActivity;
 
-    public SimWifiP2pBroadcastReceiver(LocationOptionActivity activity) {
+    public SimWifiP2pBroadcastReceiver(Activity activity) {
         super();
         this.mActivity = activity;
     }

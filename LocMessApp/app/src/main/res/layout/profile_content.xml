@@ -39,6 +39,17 @@
             android:adjustViewBounds="true"
             android:src="@drawable/ic_account_circle_black_24dp" />
 
+        <Switch
+            android:id="@+id/termiteSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="250dp"
+            android:text="Wifi - Direct"
+            android:textSize="20dp"/>
+
         <TextView
             android:id="@+id/username"
             android:layout_width="wrap_content"
