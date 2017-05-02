@@ -41,25 +41,31 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Location;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
+import android.widget.Toast;
 
 public class LocationOptionActivity extends AppCompatActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
@@ -83,6 +89,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
     private Messenger mService = null;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
+    private SimWifiP2pSocketServer mSrvSocket = null;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -135,10 +142,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
                 }
                 else if(radioButtonWifDirect.isChecked()) {
                    // NewPost.deliveryMode = NewPost.WIFI_DIRECT;
-                    Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
-                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                    mBound = true;
-
                 }
 
                 Intent intent = new Intent(getApplicationContext(), RestritionOptionActivity.class);
@@ -233,6 +236,70 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
 
         radioButtonLocations = (RadioButton) findViewById(R.id.radioButton_locations);
         radioButtonWifDirect = (RadioButton) findViewById(R.id.radioButton_wifi_direct);
+        radioButtonWifDirect.setOnClickListener(wifi_direct_listener);
+    }
+
+    View.OnClickListener wifi_direct_listener = new View.OnClickListener(){
+        public void onClick(View v) {
+            Log.d("TERMITE", "oi");
+            Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mBound = true;
+
+            if (mBound) {
+                mManager.requestPeers(mChannel, LocationOptionActivity.this);
+            } else {
+                Toast.makeText(v.getContext(), "Service not bound",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+
+    /*
+	 * Asynctasks implementing message exchange
+	 */
+
+    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d("TERMITE", "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    try {
+                        BufferedReader sockIn = new BufferedReader(
+                                new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        publishProgress(st);
+                        sock.getOutputStream().write(("\n").getBytes());
+                    } catch (IOException e) {
+                        Log.d("Error reading socket:", e.getMessage());
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.d("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            //mTextOutput.append(values[0] + "\n");
+        }
     }
 
     private void addContentToLayout(LinearLayout layout, String name, String location) {
@@ -346,8 +413,22 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
     }
 
     @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
-        //// TODO: 26/04/2017  
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        StringBuilder peersStr = new StringBuilder();
+
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            peersStr.append(devstr);
+        }
+
+        LinearLayout peersLayout =  (LinearLayout) findViewById(R.id.layout_wifi_direct);;
+        peersLayout.setId(View.generateViewId());
+
+        TextView tv = new TextView(this.getApplicationContext());
+        tv.setText(peersStr.toString());
+        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+        peersLayout.addView(tv);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -369,6 +450,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             mBound = false;
         }
     };
+
 
 
 

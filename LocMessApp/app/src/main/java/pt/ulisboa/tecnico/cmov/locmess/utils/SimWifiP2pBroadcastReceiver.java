@@ -27,9 +27,6 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if (SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 
-            // This action is triggered when the Termite service changes state:
-            // - creating the service generates the WIFI_P2P_STATE_ENABLED event
-            // - destroying the service generates the WIFI_P2P_STATE_DISABLED event
 
             int state = intent.getIntExtra(SimWifiP2pBroadcast.EXTRA_WIFI_STATE, -1);
             if (state == SimWifiP2pBroadcast.WIFI_P2P_STATE_ENABLED) {
