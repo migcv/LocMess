@@ -247,7 +247,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             mBound = true;
 
             if (mBound) {
-                //mManager.requestPeers(mChannel, LocationOptionActivity.this);
+                mManager.requestPeers(mChannel, LocationOptionActivity.this);
             } else {
                 Toast.makeText(v.getContext(), "Service not bound",
                         Toast.LENGTH_SHORT).show();

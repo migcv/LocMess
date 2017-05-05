@@ -47,7 +47,12 @@
             android:name=".activities.LocationOptionActivity"
             android:label="@string/title_activity_location_option"
             android:theme="@style/AppTheme.NoActionBar"
-            android:title="@string/title_activity_location_option" />
+            android:title="@string/title_activity_location_option">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.RestritionOptionActivity"
             android:label="@string/title_activity_restrition_option"
@@ -57,7 +62,12 @@
         android:name=".activities.ProfileActivity"
         android:label="Profile User"
         android:theme="@style/AppTheme.NoActionBar"
-        android:title="Profile User" />
+        android:title="Profile User">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.MyPostsActivity"
             android:label="My Posts"
