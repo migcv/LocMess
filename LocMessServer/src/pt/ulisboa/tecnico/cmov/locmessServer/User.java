@@ -500,7 +500,7 @@ public class User {
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
 						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
-							String response = "PostsWIFI;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
+							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
 									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
 									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
 							try {
@@ -528,11 +528,15 @@ public class User {
 			String restrictions = p.getRestrictions();
 			HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
 			Set<String> pres = postRestrictions.keySet();
-			boolean flag = false;
+			int counter = 0;
 			for (String res : pres) {
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-						if (!userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+						System.out.println("----------------------" + userRestrictions.get(res));
+						System.out.println("----------------------" + postRestrictions.get(res).get(a));
+						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+							break;
+						} else {
 							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
 									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
 									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
@@ -542,46 +546,28 @@ public class User {
 								dataOutputStream.flush();
 								System.out.println("BLACK: " + response);
 							} catch (IOException e) {
-								// TODO Auto-generated catch
-								// block
 								e.printStackTrace();
 							}
-							flag = true;
-							break;
 						}
 					}
-					if (flag) {
-						break;
-					}
 				} else {
-					String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
-					try {
-						dataOutputStream = new DataOutputStream(s.getOutputStream());
-						dataOutputStream.writeUTF(response);
-						dataOutputStream.flush();
-						System.out.println("BLACK: " + response);
-					} catch (IOException e) {
-						// TODO Auto-generated catch
-						// block
-						e.printStackTrace();
+					counter++;
+					if (counter == pres.size()) {
+						String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+								+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+								+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+						try {
+							dataOutputStream = new DataOutputStream(s.getOutputStream());
+							dataOutputStream.writeUTF(response);
+							dataOutputStream.flush();
+							System.out.println("BLACK: " + response);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public boolean verifyRestrictions(ArrayList<String> user, ArrayList<String> post) {
-		int counter = 0;
-		for (String res : post) {
-			if (user.contains(res)) {
-				counter++;
-			}
-		}
-		if (counter == post.size()) {
-			return true;
-		}
-		return false;
-	}
 }

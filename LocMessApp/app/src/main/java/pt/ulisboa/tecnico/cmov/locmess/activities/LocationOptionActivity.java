@@ -422,7 +422,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             peersStr.append(devstr);
         }
 
-        LinearLayout peersLayout =  (LinearLayout) findViewById(R.id.layout_wifi_direct);;
+        LinearLayout peersLayout =  (LinearLayout) findViewById(R.id.layout_wifi_direct);
         peersLayout.setId(View.generateViewId());
 
         TextView tv = new TextView(this.getApplicationContext());

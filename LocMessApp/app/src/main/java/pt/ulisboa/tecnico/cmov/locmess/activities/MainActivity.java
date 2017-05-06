@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                         StrictMode.setThreadPolicy(policy);
                         String str = "";
                         try {
+
                             Socket s = SocketHandler.getSocket();
                             Log.d("CONNECTION", "Connection successful!");
                             DataOutputStream dout = new DataOutputStream(s.getOutputStream());

@@ -91,7 +91,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if(!error) {
-                    Date post_lifetime = (Date) calendar.getTime();
+                    Date post_lifetime = calendar.getTime();
 
                     NewPost.tittle = ((EditText) findViewById(R.id.input_tittle)).getText().toString();
                     NewPost.content = ((EditText) findViewById(R.id.input_content)).getText().toString();

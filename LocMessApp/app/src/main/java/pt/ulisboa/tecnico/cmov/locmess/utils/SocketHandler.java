@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
 /**
  * Created by dharuqueshil on 09/04/2017.
  */
@@ -10,6 +12,7 @@ public class SocketHandler {
     private static Socket socket;
     private static String token;
     private static String username;
+    private static SSLSocket sslSocket;
 
     public static synchronized Socket getSocket() {
         return socket;
@@ -18,6 +21,10 @@ public class SocketHandler {
     public static synchronized void setSocket(Socket socket) {
         SocketHandler.socket = socket;
     }
+
+    public static SSLSocket getSslSocket() { return sslSocket; }
+
+    public static void setSslSocket(SSLSocket sslSocket) {SocketHandler.sslSocket = sslSocket; }
 
     public static synchronized String getToken() {
         return token;
@@ -30,4 +37,6 @@ public class SocketHandler {
     public static synchronized String getUsername() { return username; }
 
     public static synchronized void setUsername(String username) { SocketHandler.username = username; }
+
+
 }
