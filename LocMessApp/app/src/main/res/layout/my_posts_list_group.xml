@@ -24,12 +24,11 @@
             android:textSize="15dp" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/icon_delivery"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="16dp"
-            android:scaleType="center"
-            app:srcCompat="@drawable/ic_place_black_24dp" />
+            android:scaleType="center" />
 
         <Button
             android:id="@+id/button1"

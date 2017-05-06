@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess.utils;
 import android.app.Application;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Miguel on 20/04/2017.
@@ -14,7 +15,7 @@ public class GlobalLocMess extends Application {
 
     private double longitude = -9.1378972;
 
-    private HashMap<String, Post> postsMap = new HashMap<>();
+    private ConcurrentHashMap<String, Post> postsMap = new ConcurrentHashMap<>();
 
     public double getLatitude() {
         return latitude;
@@ -32,7 +33,7 @@ public class GlobalLocMess extends Application {
         this.longitude = longitude;
     }
 
-    public HashMap<String, Post> getPostsMap() {
+    public ConcurrentHashMap<String, Post> getPostsMap() {
         return this.postsMap;
     }
 
@@ -44,8 +45,21 @@ public class GlobalLocMess extends Application {
         return postsMap.get(id);
     }
 
+    public void removeExpiredPosts() {
+        for(String post_id : postsMap.keySet()) {
+            Post post = postsMap.get(post_id);
+            if(post.isSeen()) {
+                Long postLimitTime = Long.valueOf(post.getPostLifetime());
+                Long currentTime = System.currentTimeMillis();
+                if (postLimitTime - currentTime < 0) {
+                    postsMap.remove(post_id);
+                }
+            }
+        }
+    }
+
     public void logout() {
-        postsMap = new HashMap<>();
+        postsMap = new ConcurrentHashMap<>();
         ExpandableListDataPump.clean();
     }
 

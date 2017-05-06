@@ -23,14 +23,13 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/icon_delivery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="center"
-            android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:paddingRight="16dp"
-            app:srcCompat="@drawable/ic_place_black_24dp" />
+            android:paddingTop="16dp"
+            android:scaleType="center" />
     </LinearLayout>
 
 </LinearLayout>

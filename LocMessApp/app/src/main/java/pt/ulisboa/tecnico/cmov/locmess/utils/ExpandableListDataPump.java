@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ExpandableListDataPump {
 
@@ -18,7 +20,7 @@ public class ExpandableListDataPump {
     private static ArrayList<List<String>> myPosts = new ArrayList<List<String>>();
     private static int count = 0;
 
-    public static ArrayList<List<String>> setPost(HashMap<String, Post> postsMap) {
+    public static ArrayList<List<String>> setPost(Map<String, Post> postsMap) {
         posts = new ArrayList<List<String>>();
 
         for(String id : postsMap.keySet()) {
