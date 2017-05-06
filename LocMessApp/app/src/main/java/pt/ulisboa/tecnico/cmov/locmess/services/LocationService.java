@@ -170,6 +170,14 @@ public class LocationService extends Service implements LocationListener {
                     .setContentTitle("New Post: " + postArguments[2]);
 
             Intent notificationIntent = new Intent(this, PostsActivity.class);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            // Adds the back stack
+            stackBuilder.addParentStack(PostsActivity.class);
+            // Adds the Intent to the top of the stack
+            stackBuilder.addNextIntent(notificationIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(pendingIntent);
