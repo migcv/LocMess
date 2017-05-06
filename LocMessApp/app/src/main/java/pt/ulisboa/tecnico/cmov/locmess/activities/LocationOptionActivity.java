@@ -15,10 +15,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -129,9 +132,13 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if(radioButtonLocations.isChecked()) {
                     NewPost.location_name = ((AutoCompleteTextView) findViewById(R.id.autocomplete_locations)).getText().toString();
+                    if(locationsMap.get(NewPost.location_name) == null) {
+                        Snackbar.make(view, "Location Selected Not Valid", Snackbar.LENGTH_SHORT)
+                                .setAction("Action", null).show();
+                        return;
+                    }
                     if(locationsMap.get(NewPost.location_name).getType().equals("GPS")) {
                         NewPost.deliveryMode = NewPost.GPS;
                         NewPost.location = marker.getPosition();
@@ -168,7 +175,47 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
                 return false;
             }
         });
-        findViewById(R.id.button_set_location).setOnClickListener(new View.OnClickListener() {
+        ((AutoCompleteTextView) findViewById(R.id.autocomplete_locations)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String content = editable.toString();
+                if(content.isEmpty() || locationsMap.get(content) == null) {
+                    map.setCameraPosition(new CameraPosition.Builder()
+                            .target(userLocation)
+                            .build());
+                    marker.setPosition(userLocation);
+                    map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(userLocation, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
+                    map.removePolygon(map.getPolygons().get(0));
+                } else if(locationsMap.get(content).getType().equals("GPS")) {
+                    setLayoutsGone();
+                    findViewById(R.id.layout_gps).setVisibility(View.VISIBLE);
+
+                    Location loc = locationsMap.get(content);
+                    LatLng latlog = new LatLng(loc.getLatitude(), loc.getLongitude());
+                    map.setCameraPosition(new CameraPosition.Builder()
+                            .target(latlog)
+                            .build());
+                    marker.setPosition(latlog);
+                    map.addPolygon(new PolygonOptions().addAll(polygonCircleForCoordinate(latlog, radius)).fillColor(Color.parseColor("#4285F4")).alpha((float) 0.4));
+                    map.removePolygon(map.getPolygons().get(0));
+                } else {
+                    setLayoutsGone();
+                    findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
+                    ((TextView) findViewById(R.id.text_wifi)).setText("" + locationsMap.get(content).getLocation());
+                }
+            }
+        });
+        /*findViewById(R.id.button_set_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String content = autoComplete_locations.getText().toString();
@@ -190,7 +237,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
                     ((TextView) findViewById(R.id.text_wifi)).setText("" + locationsMap.get(content).getLocation());
                 }
             }
-        });
+        });*/
 
         locationEngine = LocationSource.getLocationEngine(this);
         locationEngine.activate();

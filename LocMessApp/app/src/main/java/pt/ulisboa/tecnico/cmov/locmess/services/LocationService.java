@@ -146,6 +146,9 @@ public class LocationService extends Service implements LocationListener {
                             e.printStackTrace();
                         }
                     }
+                    // Removing Expired Posts
+                    Log.d("SERVICE", "Removing expired posts");
+                    ((GlobalLocMess) getApplicationContext()).removeExpiredPosts();
                     // Sleeps for 30 seconds
                     Thread.sleep(30000);
                 }

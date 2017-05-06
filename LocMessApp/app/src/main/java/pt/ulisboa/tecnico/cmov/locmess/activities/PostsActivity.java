@@ -111,8 +111,6 @@ public class PostsActivity extends AppCompatActivity
         }
     }
 
-
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -120,7 +118,6 @@ public class PostsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            Log.d("DEBUG", "TESTE 0");
             Intent intent = new Intent(PostsActivity.this, ProfileActivity.class);
             startActivity(intent);
 

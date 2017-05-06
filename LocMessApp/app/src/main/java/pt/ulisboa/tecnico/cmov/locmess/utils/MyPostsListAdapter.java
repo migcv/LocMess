@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.DataOutputStream;
@@ -177,6 +178,14 @@ public class MyPostsListAdapter extends BaseExpandableListAdapter {
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.text1);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+        ImageView icon_delivery = (ImageView) convertView.findViewById(R.id.icon_delivery);
+        if(this.expandableListDetail.get(listPosition).get(6).equals(NewPost.GPS)) {
+            icon_delivery.setImageResource(R.drawable.ic_gps_black);
+        } else if(this.expandableListDetail.get(listPosition).get(6).equals(NewPost.WIFI)) {
+            icon_delivery.setImageResource(R.drawable.ic_wifi_black);
+        } else {
+            icon_delivery.setImageResource(R.drawable.ic_wifi_direct_black);
+        }
         return convert_view;
     }
 

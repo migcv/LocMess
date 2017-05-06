@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -53,6 +54,7 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+        ((GlobalLocMess) context.getApplicationContext()).getPost(expandableListDetail.get(listPosition).get(8)).setSeen(true);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -126,10 +128,17 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group, null);
         }
-        TextView listTitleTextView = (TextView) convertView
-                .findViewById(R.id.listTitle);
+        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+        ImageView icon_delivery = (ImageView) convertView.findViewById(R.id.icon_delivery);
+        if(this.expandableListDetail.get(listPosition).get(6).equals(NewPost.GPS)) {
+            icon_delivery.setImageResource(R.drawable.ic_gps_black);
+        } else if(this.expandableListDetail.get(listPosition).get(6).equals(NewPost.WIFI)) {
+            icon_delivery.setImageResource(R.drawable.ic_wifi_black);
+        } else {
+            icon_delivery.setImageResource(R.drawable.ic_wifi_direct_black);
+        }
         notifyDataSetChanged();
         return convertView;
     }
