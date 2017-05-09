@@ -52,13 +52,9 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 public class ProfileActivity extends FragmentActivity  implements NavigationView.OnNavigationItemSelectedListener {
     CollectionPagerAdapter mCollectionPagerAdapter;
     ViewPager mViewPager;
-    private boolean mBound = false;
     private static final int REQUEST_CREATE_POST = 0;
     TabLayout tabLayout;
     Switch mySwitch;
-    private SimWifiP2pManager mManager = null;
-    private SimWifiP2pManager.Channel mChannel = null;
-    private Messenger mService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +115,7 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
                 if(isChecked){
                     Intent intent = new Intent(buttonView.getContext(), SimWifiP2pService.class);
                     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                    mBound = true;
+                    ((GlobalLocMess)getApplicationContext()).setmBound(true);
                 }else{
                     unbindService(mConnection);
                 }
@@ -133,16 +129,19 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         // callbacks for service binding, passed to bindService()
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(),
-                    null);
+            ((GlobalLocMess)getApplicationContext()).setmService(new Messenger(service));
+            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(new SimWifiP2pManager(((GlobalLocMess)getApplicationContext()).getmService()));
+            ((GlobalLocMess)getApplicationContext()).setmChannel(((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().initialize(getApplication(), getMainLooper(),
+                    null));
+            ((GlobalLocMess)getApplicationContext()).setmBound(true);
         }
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
+            ((GlobalLocMess)getApplicationContext()).setmService(null);
+            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(null);
+            ((GlobalLocMess)getApplicationContext()).setmChannel(null);
+            ((GlobalLocMess)getApplicationContext()).setmBound(false);
+
         }
     };
 

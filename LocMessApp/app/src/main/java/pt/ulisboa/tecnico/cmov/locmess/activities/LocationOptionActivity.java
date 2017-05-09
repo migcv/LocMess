@@ -88,11 +88,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
     private HashMap<String, Location> locationsMap = new HashMap<>();
 
     private SimWifiP2pBroadcastReceiver mReceiver;
-    private boolean mBound = false;
-    private Messenger mService = null;
-    private SimWifiP2pManager mManager = null;
-    private SimWifiP2pManager.Channel mChannel = null;
-    private SimWifiP2pSocketServer mSrvSocket = null;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -291,10 +286,10 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             Log.d("TERMITE", "oi");
             Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            mBound = true;
 
-            if (mBound) {
-                mManager.requestPeers(mChannel, LocationOptionActivity.this);
+            if (((GlobalLocMess)getApplicationContext()).ismBound() && ((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager() != null) {
+                ((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().requestPeers(((GlobalLocMess)getApplicationContext()).getmChannel(), LocationOptionActivity.this);
+
             } else {
                 Toast.makeText(v.getContext(), "Service not bound",
                         Toast.LENGTH_SHORT).show();
@@ -315,14 +310,13 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             Log.d("TERMITE", "IncommingCommTask started (" + this.hashCode() + ").");
 
             try {
-                mSrvSocket = new SimWifiP2pSocketServer(
-                        Integer.parseInt(getString(R.string.port)));
+                ((GlobalLocMess)getApplicationContext()).setmSrvSocket(new SimWifiP2pSocketServer(Integer.parseInt(getString(R.string.port))));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    SimWifiP2pSocket sock = ((GlobalLocMess)getApplicationContext()).getmSrvSocket().accept();
                     try {
                         BufferedReader sockIn = new BufferedReader(
                                 new InputStreamReader(sock.getInputStream()));
@@ -470,7 +464,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         }
 
         LinearLayout peersLayout =  (LinearLayout) findViewById(R.id.layout_wifi_direct);
-        peersLayout.setId(View.generateViewId());
+
 
         TextView tv = new TextView(this.getApplicationContext());
         tv.setText(peersStr.toString());
@@ -480,21 +474,21 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
 
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mBound = true;
+            ((GlobalLocMess)getApplicationContext()).setmService(new Messenger(service));
+            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(new SimWifiP2pManager(((GlobalLocMess)getApplicationContext()).getmService()));
+            ((GlobalLocMess)getApplicationContext()).setmChannel(((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().initialize(getApplication(), getMainLooper(),
+                    null));
+            ((GlobalLocMess)getApplicationContext()).setmBound(true);
         }
-
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-            mBound = false;
+            ((GlobalLocMess)getApplicationContext()).setmService(null);
+            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(null);
+            ((GlobalLocMess)getApplicationContext()).setmChannel(null);
+            ((GlobalLocMess)getApplicationContext()).setmBound(false);
+
         }
     };
 

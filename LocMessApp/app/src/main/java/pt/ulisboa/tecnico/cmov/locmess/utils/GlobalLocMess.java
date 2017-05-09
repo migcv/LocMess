@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 import android.app.Application;
+import android.os.Messenger;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 
 /**
  * Created by Miguel on 20/04/2017.
@@ -61,6 +65,52 @@ public class GlobalLocMess extends Application {
     public void logout() {
         postsMap = new ConcurrentHashMap<>();
         ExpandableListDataPump.clean();
+    }
+
+    private SimWifiP2pManager mManager;
+    private SimWifiP2pManager.Channel mChannel;
+    private Messenger mService;
+    private boolean mBound = false;
+    private SimWifiP2pSocketServer mSrvSocket;
+
+    public SimWifiP2pSocketServer getmSrvSocket() {
+        return mSrvSocket;
+    }
+
+    public void setmSrvSocket(SimWifiP2pSocketServer mSrvSocket) {
+        this.mSrvSocket = mSrvSocket;
+    }
+
+    public SimWifiP2pManager getSimWifiP2pManager() {
+        return mManager;
+    }
+
+    public void setSimWifiP2pManager(SimWifiP2pManager mManager){
+        this.mManager = mManager;
+    }
+
+    public SimWifiP2pManager.Channel getmChannel() {
+        return mChannel;
+    }
+
+    public void setmChannel(SimWifiP2pManager.Channel mChannel) {
+        this.mChannel = mChannel;
+    }
+
+    public Messenger getmService() {
+        return mService;
+    }
+
+    public void setmService(Messenger mService) {
+        this.mService = mService;
+    }
+
+    public boolean ismBound() {
+        return mBound;
+    }
+
+    public void setmBound(boolean mBound) {
+        this.mBound = mBound;
     }
 
 }
