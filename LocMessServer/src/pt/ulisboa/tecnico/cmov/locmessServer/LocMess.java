@@ -118,7 +118,7 @@ public class LocMess {
 		Posts p3 = new Posts("Macaco", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
 				"38.736151, -9.142168", "100", "WHITE", "Student (Jobs),Gorilla (Animals)", u1.getNumOfPost());
 		u1.setNumOfPost();
-		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1493283131847", "1545931375100", "WIFI", "Edurom",
+		Posts p4 = new Posts("Monkey", "adsadsd", "1213243", "1493283131847", "1545931375100", "WIFI", "Edurom, ALENTEJO",
 				"WHITE", "Student (Job)", u1.getNumOfPost());
 		u1.setNumOfPost();
 		Posts p5 = new Posts("PARVO", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS", "Arco do Cego",
