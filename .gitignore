@@ -14,18 +14,8 @@ local.properties
 .signing/
 
 # User-specific configurations
- LocMessApp/.idea/libraries/
- LocMessApp/.idea/workspace.xml
- LocMessApp/.idea/tasks.xml
- LocMessApp/.idea/.name
- LocMessApp/.idea/compiler.xml
- LocMessApp/.idea/copyright/profiles_settings.xml
- LocMessApp/.idea/encodings.xml
- LocMessApp/.idea/misc.xml
- LocMessApp/.idea/modules.xml
- LocMessApp/.idea/scopes/scope_settings.xml
- LocMessApp/.idea/vcs.xml
- LocMessApp/*.iml
+ /LocMessApp/.idea/*
+ /LocMessApp/*.iml
 
 # OS-specific files
 .DS_Store
@@ -38,3 +28,6 @@ Thumbs.db
 
 Java Files
 *.class
+
+Bin File
+/LocMessServer/bin/*
