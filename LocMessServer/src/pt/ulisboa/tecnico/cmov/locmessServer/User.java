@@ -418,9 +418,9 @@ public class User {
 							postsToSend(p, s, key);
 						}
 					} else if (p.getDeliveryMode().equals("WIFI")) {
-
-						// postsToSend(p, s, key);
-
+						if (verifyPostWIFI(this.getCurrentWIFI(), p.getLocationName())) {
+							postsToSend(p, s, key);
+						}
 					}
 				}
 			}
@@ -431,7 +431,6 @@ public class User {
 			dataOutputStream.flush();
 			System.out.println("END");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -449,6 +448,28 @@ public class User {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean verifyPostWIFI(ArrayList<String> currentWIFI, String postWIFI) {
+		ArrayList<String> postWIFIArr = getLocationsWIFIFromPost(postWIFI);
+		for (int k = 0; k < currentWIFI.size(); k++) {
+			for (int j = 0; j < postWIFIArr.size(); j++) {
+				if (currentWIFI.get(k).equals(postWIFIArr.get(j))) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public ArrayList<String> getLocationsWIFIFromPost(String postWIFI) {
+		ArrayList<String> post = new ArrayList<>();
+		String[] aux = postWIFI.split(",");
+		for (String a : aux) {
+			post.add(a);
+		}
+		return post;
 	}
 
 	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {

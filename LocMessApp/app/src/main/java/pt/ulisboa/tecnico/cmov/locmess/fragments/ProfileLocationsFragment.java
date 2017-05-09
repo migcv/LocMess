@@ -111,16 +111,17 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
         mReceiver = new SimWifiP2pBroadcastReceiver(this.getActivity());
         getContext().registerReceiver(mReceiver, filter);
 
-        final RadioButton radioButtonLocation = (RadioButton) view.findViewById(R.id.radioButton_GPS);
-        radioButtonLocation.setOnClickListener(new View.OnClickListener() {
+        radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
+        radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
+
+        radioButtonGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setLayoutsGone();
                 getView().findViewById(R.id.layout_GPS).setVisibility(View.VISIBLE);
             }
         });
-        RadioButton radioButtonWifDirect = (RadioButton) view.findViewById(R.id.radioButton_wifi);
-        radioButtonWifDirect.setOnClickListener(new View.OnClickListener() {
+        radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setLayoutsGone();
@@ -132,7 +133,6 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
 
                 if (globalLM.ismBound() && globalLM.getSimWifiP2pManager() != null) {
                     globalLM.getSimWifiP2pManager().requestPeers(globalLM.getmChannel(), ProfileLocationsFragment.this);
-
                 } else {
                     Toast.makeText(view.getContext(), "Service not bound",
                             Toast.LENGTH_SHORT).show();
@@ -249,11 +249,12 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
                                 dout.flush();
                                 //dout.close();
                                 Log.d("NEW_LOCATION_WIFI", toSend);
+
+                                addLocationToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), "WIFI", locationName, ssids);
+                                locationDialog.dismiss();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            addLocationToLayout((LinearLayout) getView().findViewById(R.id.layout_locations), "WIFI", locationName, "Wifi");
-                            locationDialog.dismiss();
                         }
                     });
                 }
@@ -283,8 +284,6 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
 
         populateLocations();
 
-        radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
-        radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
 
         /*radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -314,10 +313,17 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        // Restart/Clean all elements
+        wifiSSIDList = new ArrayList<>();
+        if(((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).getChildCount() > 0) {
+            ((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).removeAllViews();
+        }
+        // Insert elements in List and Layout
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String devstr = "" + device.deviceName + "\n";
-            addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), devstr);
-            Log.d("MACACOOOOOOOOOOOOOO", devstr);
+            String wifiSSID = device.deviceName + "";
+            wifiSSIDList.add(wifiSSID);
+            addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), wifiSSID);
+
         }
     }
 
@@ -346,7 +352,6 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
     private class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
             ArrayList<String> connections=new ArrayList<String>();
-            ArrayList<Float> Signal_Strenth= new ArrayList<Float>();
 
             List<ScanResult> wifiList;
             wifiList = mainWifi.getScanResults();
