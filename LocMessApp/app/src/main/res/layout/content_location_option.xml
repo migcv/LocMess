@@ -28,7 +28,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="true"
-                android:text="Locations" />
+                android:text="Centralized" />
+
+            <RadioButton
+                android:id="@+id/radioButton_wifi_direct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:text="Decentralized" />
+
 
             <LinearLayout
                 android:id="@+id/layout_locations"
@@ -112,16 +121,10 @@
                     android:id="@+id/text_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="TextView" />
+                    android:text="TextView"
+                    android:visibility="gone" />
             </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/radioButton_wifi_direct"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:text="@string/wifi_direct" />
 
             <LinearLayout
                 android:id="@+id/layout_wifi_direct"

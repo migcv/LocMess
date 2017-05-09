@@ -22,7 +22,7 @@ import javax.net.ssl.TrustManager;
 
 public class CreateConnection extends AsyncTask<String, Void, Void> {
 
-    private static final String ip = "194.210.230.107";
+    private static final String ip = "194.210.159.144";
     private static final int port = 10000;
     private static SSLSocketFactory sslSocketFactory;
     public Context c;
@@ -41,7 +41,7 @@ public class CreateConnection extends AsyncTask<String, Void, Void> {
             Log.d("CONNECTION", "Connection successful!");
 
             // Create an instance of SSLSocket (TRUST ONLY OUR CERT)
-            SSLSocketFactory sslSocketFactory = getSocketFactory();
+            /*SSLSocketFactory sslSocketFactory = getSocketFactory();
             SSLSocket sslsocket = (SSLSocket) sslSocketFactory.createSocket(ip, port);
 
 
@@ -55,7 +55,7 @@ public class CreateConnection extends AsyncTask<String, Void, Void> {
                 }
             }
 
-            SocketHandler.setSslSocket(sslsocket);
+            SocketHandler.setSslSocket(sslsocket);*/
 
         } catch (Exception e) {
             Log.d("CONNECTION", "Error connecting to server!");

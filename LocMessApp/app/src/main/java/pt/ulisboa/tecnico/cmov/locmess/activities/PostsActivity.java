@@ -96,7 +96,7 @@ public class PostsActivity extends AppCompatActivity
                 }
                 expandableListAdapter = new PostsListAdapter(getApplicationContext(), expandableListTitle, expandableList);
                 expandableListView.setAdapter(expandableListAdapter);
-                Toast.makeText(PostsActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(PostsActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
             }
         }
     };
