@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="multi-level-listview-1.0.1">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/971c3a15da60ab01b9a310cd5f946add1196ec73/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/971c3a15da60ab01b9a310cd5f946add1196ec73/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pl.openrnd.android/multi-level-listview/1.0.1/c2521782b90586e75a02a91478175b21237a945c/multi-level-listview-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
