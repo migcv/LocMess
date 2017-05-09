@@ -7,14 +7,18 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -27,6 +31,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -48,15 +53,26 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.LocationOptionActivity;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
+
+import static android.os.Looper.getMainLooper;
 
 /**
  * Created by Rafael Barreira on 03/04/2017.
  */
 
-public class ProfileLocationsFragment extends Fragment {
+public class ProfileLocationsFragment extends Fragment implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     View view;
 
@@ -76,10 +92,24 @@ public class ProfileLocationsFragment extends Fragment {
     private RadioButton radioButtonGPS;
     private RadioButton radioButtonWIFI;
 
+    private SimWifiP2pBroadcastReceiver mReceiver;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
         view = inflater.inflate(R.layout.profile_fragment_locations, container, false);
+
+        // initialize the WDSim API
+        SimWifiP2pSocketManager.Init(view.getContext());
+
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        mReceiver = new SimWifiP2pBroadcastReceiver(this.getActivity());
+        getContext().registerReceiver(mReceiver, filter);
 
         final RadioButton radioButtonLocation = (RadioButton) view.findViewById(R.id.radioButton_GPS);
         radioButtonLocation.setOnClickListener(new View.OnClickListener() {
@@ -244,8 +274,62 @@ public class ProfileLocationsFragment extends Fragment {
         radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
         radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
 
+        radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
+                Log.d("TERMITE", "oi");
+                Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
+                view.getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+                if (globalLM.ismBound() && globalLM.getSimWifiP2pManager() != null) {
+                    globalLM.getSimWifiP2pManager().requestPeers(globalLM.getmChannel(), ProfileLocationsFragment.this);
+
+                } else {
+                    Toast.makeText(view.getContext(), "Service not bound",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         return view;
     }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+        // TODO
+    }
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = "" + device.deviceName + "\n";
+            addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), devstr);
+        }
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
+            globalLM.setmService(new Messenger(service));
+            globalLM.setSimWifiP2pManager(new SimWifiP2pManager(globalLM.getmService()));
+            globalLM.setmChannel(globalLM.getSimWifiP2pManager().initialize(view.getContext().getApplicationContext(), getMainLooper(),
+                    null));
+            globalLM.setmBound(true);
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
+            globalLM.setmService(null);
+            globalLM.setSimWifiP2pManager(null);
+            globalLM.setmChannel(null);
+            globalLM.setmBound(false);
+
+        }
+    };
 
     private class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {

@@ -492,9 +492,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         }
     };
 
-
-
-
     // Include method in your activity
     private static class LatLngEvaluator implements TypeEvaluator<LatLng> {
         private LatLng latLng = new LatLng();
