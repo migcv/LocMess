@@ -125,6 +125,18 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
             public void onClick(View view) {
                 setLayoutsGone();
                 getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
+                GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
+                Log.d("TERMITE", "oi");
+                Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
+                view.getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+                if (globalLM.ismBound() && globalLM.getSimWifiP2pManager() != null) {
+                    globalLM.getSimWifiP2pManager().requestPeers(globalLM.getmChannel(), ProfileLocationsFragment.this);
+
+                } else {
+                    Toast.makeText(view.getContext(), "Service not bound",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -253,7 +265,7 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
                 locationDialog.show();
             }
         });
-        try {
+        /*try {
             mainWifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
             receiverWifi = new WifiReceiver();
@@ -267,14 +279,14 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
             mainWifi.startScan();
         } catch (SecurityException e) {
             e.printStackTrace();
-        }
+        }*/
 
         populateLocations();
 
         radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
         radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
 
-        radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
+        /*radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
@@ -290,7 +302,7 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
                             Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });*/
 
         return view;
     }
@@ -302,10 +314,10 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             String devstr = "" + device.deviceName + "\n";
             addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), devstr);
+            Log.d("MACACOOOOOOOOOOOOOO", devstr);
         }
     }
 
