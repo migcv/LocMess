@@ -11,7 +11,7 @@ public class Login {
 		
 		System.out.println("USERNAME: " + username);
 		System.out.println("PASSWORD: " + password);
-		if (LocMess.getUsers().isEmpty()) {
+		if (LocMess.getUsers().isEmpty() || LocMess.getUsers().get(username) == null) {
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF("WRONG");

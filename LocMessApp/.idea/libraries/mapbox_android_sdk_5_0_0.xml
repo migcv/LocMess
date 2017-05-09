@@ -1,8 +1,13 @@
 <component name="libraryTable">
   <library name="mapbox-android-sdk-5.0.0">
     <CLASSES>
+<<<<<<< HEAD
+      <root url="file://$USER_HOME$/.android/build-cache/9aafff6469c394413681c6db0b4396cbd2cf58da/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/9aafff6469c394413681c6db0b4396cbd2cf58da/output/jars/classes.jar!/" />
+=======
       <root url="file://$USER_HOME$/.android/build-cache/5fc37260ba7af6cf0175addeec5b38c0b16bc40b/output/res" />
       <root url="jar://$USER_HOME$/.android/build-cache/5fc37260ba7af6cf0175addeec5b38c0b16bc40b/output/jars/classes.jar!/" />
+>>>>>>> 3fb5397e0ef79e288fba474a81718a1f8e81cd9f
     </CLASSES>
     <JAVADOC />
     <SOURCES>
