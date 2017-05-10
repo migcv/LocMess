@@ -72,7 +72,7 @@ import static android.os.Looper.getMainLooper;
  * Created by Rafael Barreira on 03/04/2017.
  */
 
-public class ProfileLocationsFragment extends Fragment implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
+public class ProfileLocationsFragment extends Fragment {
 
     View view;
 
@@ -97,27 +97,6 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
         view = inflater.inflate(R.layout.profile_fragment_locations, container, false);
-
-
-        radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
-        radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
-
-        radioButtonGPS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setLayoutsGone();
-                getView().findViewById(R.id.layout_GPS).setVisibility(View.VISIBLE);
-            }
-        });
-        radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setLayoutsGone();
-                getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
-                Log.d("TERMITE", "oi");
-
-            }
-        });
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -263,50 +242,39 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
 
         populateLocations();
 
+        radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
+        radioButtonWIFI = (RadioButton) view.findViewById(R.id.radioButton_wifi);
 
-        /*radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
+        radioButtonGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
-                Log.d("TERMITE", "oi");
-                Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
-                view.getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-                if (globalLM.ismBound() && globalLM.getSimWifiP2pManager() != null) {
-                    globalLM.getSimWifiP2pManager().requestPeers(globalLM.getmChannel(), ProfileLocationsFragment.this);
-
-                } else {
-                    Toast.makeText(view.getContext(), "Service not bound",
-                            Toast.LENGTH_SHORT).show();
-                }
+                setLayoutsGone();
+                getView().findViewById(R.id.layout_GPS).setVisibility(View.VISIBLE);
             }
-        });*/
+        });
+        radioButtonWIFI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setLayoutsGone();
+
+                // Restart/Clean all elements
+                wifiSSIDList = new ArrayList<>();
+                if(((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).getChildCount() > 0) {
+                    ((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).removeAllViews();
+                }
+                // Insert elements in List and Layout
+                for (String ssid : ((GlobalLocMess) getContext().getApplicationContext()).getCurrentWifis()) {
+                    wifiSSIDList.add(ssid);
+                    Log.d("WIFI", ssid);
+                    addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), ssid);
+
+                }
+                getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
+            }
+        });
 
         return view;
     }
-
-    @Override
-    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
-        // TODO
-    }
-
-    @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        // Restart/Clean all elements
-        wifiSSIDList = new ArrayList<>();
-        if(((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).getChildCount() > 0) {
-            ((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).removeAllViews();
-        }
-        // Insert elements in List and Layout
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String wifiSSID = device.deviceName + "";
-            wifiSSIDList.add(wifiSSID);
-            addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), wifiSSID);
-
-        }
-    }
-
-
 
     private class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {

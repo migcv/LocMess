@@ -73,7 +73,7 @@ import android.widget.Toast;
 
 import static android.os.Looper.getMainLooper;
 
-public class LocationOptionActivity extends AppCompatActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
+public class LocationOptionActivity extends AppCompatActivity {
 
     private int radius = 250;
     private LatLng userLocation;
@@ -175,6 +175,8 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             public void afterTextChanged(Editable editable) {
                 String content = editable.toString();
                 if(content.isEmpty() || locationsMap.get(content) == null) {
+                    setLayoutsGone();
+                    findViewById(R.id.layout_gps).setVisibility(View.VISIBLE);
                     map.setCameraPosition(new CameraPosition.Builder()
                             .target(userLocation)
                             .build());
@@ -196,7 +198,12 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
                 } else {
                     setLayoutsGone();
                     findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.text_wifi)).setText("" + locationsMap.get(content).getLocation());
+                    if(((LinearLayout) findViewById(R.id.layout_wifi)).getChildCount() > 0) {
+                        ((LinearLayout) findViewById(R.id.layout_wifi)).removeAllViews();
+                    }
+                    for(String wifi : locationsMap.get(content).getWifi()) {
+                        addContentToLayout((LinearLayout) findViewById(R.id.layout_wifi), wifi);
+                    }
                 }
             }
         });
@@ -277,66 +284,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         }
     };
 
-
-    /*
-	 * Asynctasks implementing message exchange
-	 */
-
-    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            Log.d("TERMITE", "IncommingCommTask started (" + this.hashCode() + ").");
-            SimWifiP2pSocketServer sockSer = null;
-            try {
-               sockSer = new SimWifiP2pSocketServer(Integer.parseInt(getString(R.string.port)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    SimWifiP2pSocket sock = sockSer.accept();
-                    try {
-                        BufferedReader sockIn = new BufferedReader(
-                                new InputStreamReader(sock.getInputStream()));
-                        String st = sockIn.readLine();
-                        publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());
-                    } catch (IOException e) {
-                        Log.d("Error reading socket:", e.getMessage());
-                    } finally {
-                        sock.close();
-                    }
-                } catch (IOException e) {
-                    Log.d("Error socket:", e.getMessage());
-                    break;
-                    //e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            //mTextOutput.append(values[0] + "\n");
-        }
-    }
-
-    private void addContentToLayout(LinearLayout layout, String name, String location) {
-        final LinearLayout ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.HORIZONTAL);
-        ll.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
-
-        LinearLayout ll_text = new LinearLayout(this);
-        ll_text.setOrientation(LinearLayout.VERTICAL);
-        ll_text.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1.0f));
-
+    private void addContentToLayout(LinearLayout layout, String name) {
         TextView text_name = new TextView(this);
         text_name.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -346,20 +294,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         text_name.setTextSize(14);
         text_name.setText("" + name);
 
-        ll_text.addView(text_name);
-
-        TextView text_location = new TextView(this);
-        text_location.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                1.0f));
-        text_location.setText("" + location);
-
-        ll_text.addView(text_location);
-
-        ll.addView(ll_text);
-
-        layout.addView(ll);
+        layout.addView(text_name);
     }
 
     private void populateLocations() {
@@ -376,7 +311,7 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
                 if(locations[0].equals("GPS")) { // GPS
                     locationsMap.put(locations[1], new Location(locations[0], locations[2]));
                 } else { // WIFI
-                    locationsMap.put(locations[1], new Location(locations[0], locations[2]));
+                    locationsMap.put(locations[1], new Location(locations[0], locations[2].split(",")));
                 }
                 str = dis.readUTF();
                 locations = str.split(";:;");
@@ -427,31 +362,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
-
-    @Override
-    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
-       // TODO
-    }
-
-    @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        StringBuilder peersStr = new StringBuilder();
-
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-        }
-
-        LinearLayout peersLayout =  (LinearLayout) findViewById(R.id.layout_wifi_direct);
-
-
-        TextView tv = new TextView(this.getApplicationContext());
-        tv.setText(peersStr.toString());
-        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
-        peersLayout.addView(tv);
-    }
-
 
     // Include method in your activity
     private static class LatLngEvaluator implements TypeEvaluator<LatLng> {

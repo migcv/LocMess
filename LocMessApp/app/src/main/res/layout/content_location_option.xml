@@ -40,12 +40,20 @@
 
 
             <LinearLayout
-                android:id="@+id/layout_locations"
+                android:id="@+id/layout_location"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chose where to send your Post"
+                    android:textColor="@color/common_google_signin_btn_text_dark_focused"
+                    android:textSize="20sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -117,23 +125,8 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/text_wifi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:visibility="gone" />
             </LinearLayout>
 
-
-            <LinearLayout
-                android:id="@+id/layout_wifi_direct"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-            </LinearLayout>
 
         </RadioGroup>
 

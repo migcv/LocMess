@@ -65,7 +65,6 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         TextView text3 = (TextView) findViewById(R.id.username);
         text3.setText(SocketHandler.getUsername());
 
-        mySwitch = (Switch) findViewById(R.id.termiteSwitch);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         setupViewPager(mViewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -94,21 +93,6 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
             }
         });
 
-        //set the switch to OFF
-        mySwitch.setChecked(false);
-        //attach a listener to check for changes in state
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-
-                } else {
-
-                }
-            }
-        });
     }
 
 

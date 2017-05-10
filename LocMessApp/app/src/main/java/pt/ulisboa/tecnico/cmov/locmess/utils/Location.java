@@ -12,7 +12,7 @@ public class Location {
     private String location;
     private double latitude;
     private double longitude;
-    private ArrayList<String> wifi;
+    private String[] wifi;
 
     public Location(String type, String location) {
         this.type = type;
@@ -27,7 +27,7 @@ public class Location {
         }
     }
 
-    public Location(String type, ArrayList<String> wifi) {
+    public Location(String type, String[] wifi) {
         this.type = type;
         this.wifi = wifi;
     }
@@ -36,7 +36,7 @@ public class Location {
         return type;
     }
 
-    public ArrayList<String> getWifi() {
+    public String[] getWifi() {
         return wifi;
     }
 
