@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
+import javax.tools.DocumentationTool.Location;
+
 public class Posts {
 
 	private String title;
@@ -15,6 +17,7 @@ public class Posts {
 	private Integer id;
 	private String restrictionPolicy;
 	private String restrictions;
+	private Locations loc;
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
 			String deliveryMode, String locationName,String restrictionPolicy, String restrictions, int id) {
@@ -39,6 +42,33 @@ public class Posts {
 		this.limitDateTime = limitDateTime;
 		this.deliveryMode = deliveryMode;
 		this.locationName = locationName;
+		this.restrictionPolicy = restrictionPolicy;
+		this.id = id;
+	}
+	
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, Locations loc,String restrictionPolicy, String restrictions, int id) {
+		this.title = title;
+		this.content = content;
+		this.contact = contact;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
+		this.deliveryMode = deliveryMode;
+		this.loc = loc;
+		this.restrictionPolicy = restrictionPolicy;
+		this.restrictions = restrictions;
+		this.id = id;
+	}
+	
+	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, Locations loc ,String restrictionPolicy, int id) {
+		this.title = title;
+		this.content = content;
+		this.contact = contact;
+		this.creationDateTime = creationDateTime;
+		this.limitDateTime = limitDateTime;
+		this.deliveryMode = deliveryMode;
+		this.loc = loc;
 		this.restrictionPolicy = restrictionPolicy;
 		this.id = id;
 	}
@@ -133,6 +163,10 @@ public class Posts {
 
 	public String getLocationName() {
 		return locationName;
+	}
+
+	public Locations getLoc() {
+		return loc;
 	}
 
 }

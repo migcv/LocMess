@@ -142,7 +142,6 @@ public class Connection implements Runnable {
 			dataOutputStream.writeUTF(response);
 			dataOutputStream.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -172,7 +171,6 @@ public class Connection implements Runnable {
 				dataOutputStream.flush();
 				response = "";
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -181,7 +179,6 @@ public class Connection implements Runnable {
 			dataOutputStream.writeUTF("END");
 			dataOutputStream.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -210,7 +207,6 @@ public class Connection implements Runnable {
 		try {
 			s.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

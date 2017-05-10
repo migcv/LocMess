@@ -17,7 +17,6 @@ public class Login {
 				dataOutputStream.writeUTF("WRONG");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -31,7 +30,6 @@ public class Login {
 				dataOutputStream.writeUTF("OK;:;" + token);
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -41,7 +39,6 @@ public class Login {
 				dataOutputStream.writeUTF("WRONG");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
