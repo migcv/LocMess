@@ -108,7 +108,7 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        mReceiver = new SimWifiP2pBroadcastReceiver(this.getActivity());
+        mReceiver = new SimWifiP2pBroadcastReceiver();
         getContext().registerReceiver(mReceiver, filter);
 
         radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);

@@ -69,7 +69,7 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver();
         registerReceiver(receiver, filter);
 
         TextView text3 = (TextView) findViewById(R.id.username);

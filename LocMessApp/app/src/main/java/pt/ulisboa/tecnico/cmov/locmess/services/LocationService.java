@@ -6,9 +6,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,10 +20,12 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Messenger;
 import android.os.StrictMode;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -29,11 +34,19 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.LocationOptionActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
-import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Post;
+import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 /**
@@ -55,6 +68,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public IBinder onBind(Intent intent) {
+
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -66,9 +80,19 @@ public class LocationService extends Service implements LocationListener {
     }
 
 
-    public class UserLocation implements Runnable {
+    public class UserLocation implements Runnable, SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
         public void run(){
             Looper.prepare();
+
+            // initialize the Termite API
+            SimWifiP2pSocketManager.Init(getApplicationContext());
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+            SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver();
+            registerReceiver(receiver, filter);
 
             Log.d("LOCATION_ SERVICE", "Thread started!");
             try {
@@ -105,17 +129,26 @@ public class LocationService extends Service implements LocationListener {
                         }
                     }
                     try {
-                        mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                        Log.d("CURRENT_WIFI", "OFF Wifi");
+                        Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
+                        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                        ((GlobalLocMess)getApplicationContext()).setmBound(true);
+
+                        ((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().requestPeers(((GlobalLocMess)getApplicationContext()).getmChannel(), this);
+
+
+                        /*mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
                         receiverWifi = new WifiReceiver();
                         getApplicationContext().registerReceiver(receiverWifi, new IntentFilter(
                                 WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                         if (mainWifi.isWifiEnabled() == false) {
                             mainWifi.setWifiEnabled(true);
-                        }
+                        }*/
+
                         Log.d("CURRENT_WIFI", "Enable Wifi");
 
-                        mainWifi.startScan();
+                        //mainWifi.startScan();
                     } catch (SecurityException e) {
                         e.printStackTrace();
                     }
@@ -158,6 +191,45 @@ public class LocationService extends Service implements LocationListener {
                 e.printStackTrace();
             }
         }
+
+
+        @Override
+        public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+            // TODO
+        }
+
+        @Override
+        public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+            StringBuilder peersStr = new StringBuilder();
+
+            // compile list of devices in range
+            for (SimWifiP2pDevice device : peers.getDeviceList()) {
+                String wifiSSID = device.deviceName + "";
+                wifiSSIDList.add(wifiSSID);
+            }
+
+        }
+
+        private ServiceConnection mConnection = new ServiceConnection() {
+            // callbacks for service binding, passed to bindService()
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                Log.d("SERVICE CONNECTED" , "LIGUEI");
+                ((GlobalLocMess)getApplicationContext()).setmService(new Messenger(service));
+                ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(new SimWifiP2pManager(((GlobalLocMess)getApplicationContext()).getmService()));
+                ((GlobalLocMess)getApplicationContext()).setmChannel(((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().initialize(getApplication(), getMainLooper(),
+                        null));
+                ((GlobalLocMess)getApplicationContext()).setmBound(true);
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName arg0) {
+                ((GlobalLocMess)getApplicationContext()).setmService(null);
+                ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(null);
+                ((GlobalLocMess)getApplicationContext()).setmChannel(null);
+                ((GlobalLocMess)getApplicationContext()).setmBound(false);
+
+            }
+        };
     }
 
     public void addPost(String str) {

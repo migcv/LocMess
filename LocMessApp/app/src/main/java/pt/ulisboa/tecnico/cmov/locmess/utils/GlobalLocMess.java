@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.os.Messenger;
 
 import java.util.HashMap;
