@@ -63,12 +63,15 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Location;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 import android.widget.Toast;
+
+import static android.os.Looper.getMainLooper;
 
 public class LocationOptionActivity extends AppCompatActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
@@ -87,7 +90,10 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
 
     private HashMap<String, Location> locationsMap = new HashMap<>();
 
-    private SimWifiP2pBroadcastReceiver mReceiver;
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
+    private boolean mBound = false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -95,17 +101,15 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_location_option);
 
-        // initialize the WDSim API
+        // initialize the Termite API
         SimWifiP2pSocketManager.Init(getApplicationContext());
-
-        // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        mReceiver = new SimWifiP2pBroadcastReceiver();
-        registerReceiver(mReceiver, filter);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
+        registerReceiver(receiver, filter);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
 
@@ -287,12 +291,10 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
             Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-            if (((GlobalLocMess)getApplicationContext()).ismBound() && ((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager() != null) {
-                ((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().requestPeers(((GlobalLocMess)getApplicationContext()).getmChannel(), LocationOptionActivity.this);
-
+            if (mBound && mManager != null) {
+                mManager.requestPeers(mChannel, LocationOptionActivity.this);
             } else {
-                Toast.makeText(v.getContext(), "Service not bound",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Service not bound", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -308,15 +310,15 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         protected Void doInBackground(Void... params) {
 
             Log.d("TERMITE", "IncommingCommTask started (" + this.hashCode() + ").");
-
+            SimWifiP2pSocketServer sockSer = null;
             try {
-                ((GlobalLocMess)getApplicationContext()).setmSrvSocket(new SimWifiP2pSocketServer(Integer.parseInt(getString(R.string.port))));
+               sockSer = new SimWifiP2pSocketServer(Integer.parseInt(getString(R.string.port)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    SimWifiP2pSocket sock = ((GlobalLocMess)getApplicationContext()).getmSrvSocket().accept();
+                    SimWifiP2pSocket sock = sockSer.accept();
                     try {
                         BufferedReader sockIn = new BufferedReader(
                                 new InputStreamReader(sock.getInputStream()));
@@ -476,19 +478,17 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         // callbacks for service binding, passed to bindService()
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            ((GlobalLocMess)getApplicationContext()).setmService(new Messenger(service));
-            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(new SimWifiP2pManager(((GlobalLocMess)getApplicationContext()).getmService()));
-            ((GlobalLocMess)getApplicationContext()).setmChannel(((GlobalLocMess)getApplicationContext()).getSimWifiP2pManager().initialize(getApplication(), getMainLooper(),
-                    null));
-            ((GlobalLocMess)getApplicationContext()).setmBound(true);
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mBound = false;
         }
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            ((GlobalLocMess)getApplicationContext()).setmService(null);
-            ((GlobalLocMess)getApplicationContext()).setSimWifiP2pManager(null);
-            ((GlobalLocMess)getApplicationContext()).setmChannel(null);
-            ((GlobalLocMess)getApplicationContext()).setmBound(false);
-
+            mService = null;
+            mManager = null;
+            mChannel = null;
+            mBound = false;
         }
     };
 

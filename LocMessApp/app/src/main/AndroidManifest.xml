@@ -85,6 +85,6 @@
             android:value="AIzaSyByIqMmc8ovTFNQsiTS_reKsoZBw29RJuk"/>
 
         <service android:name=".services.LocationService" android:enabled="true" />
-        <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
+        <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService"/>
     </application>
 </manifest>

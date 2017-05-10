@@ -14,7 +14,7 @@ public class User {
 	private String email;
 	private int numOfPost;
 	private String currentGPS;
-	private ArrayList<String> currentWIFI;
+	private ArrayList<String> currentWIFI = new ArrayList<>();
 	private Double currentLatitude;
 	private Double currentLongitude;
 
@@ -22,6 +22,7 @@ public class User {
 		this.username = username;
 		this.password = password;
 		this.email = email;
+		this.currentWIFI = new ArrayList<>();
 	}
 
 	public String getUsername() {

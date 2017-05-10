@@ -92,7 +92,10 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
     private RadioButton radioButtonGPS;
     private RadioButton radioButtonWIFI;
 
-    private SimWifiP2pBroadcastReceiver mReceiver;
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
+    private boolean mBound = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,7 +111,7 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        mReceiver = new SimWifiP2pBroadcastReceiver();
+        SimWifiP2pBroadcastReceiver mReceiver = new SimWifiP2pBroadcastReceiver(this.getActivity());
         getContext().registerReceiver(mReceiver, filter);
 
         radioButtonGPS = (RadioButton) view.findViewById(R.id.radioButton_GPS);
@@ -126,16 +129,14 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
             public void onClick(View view) {
                 setLayoutsGone();
                 getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);
-                GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
                 Log.d("TERMITE", "oi");
                 Intent intent = new Intent(view.getContext(), SimWifiP2pService.class);
                 view.getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-                if (globalLM.ismBound() && globalLM.getSimWifiP2pManager() != null) {
-                    globalLM.getSimWifiP2pManager().requestPeers(globalLM.getmChannel(), ProfileLocationsFragment.this);
+                if (mBound && mManager != null) {
+                    mManager.requestPeers(mChannel, ProfileLocationsFragment.this);
                 } else {
-                    Toast.makeText(view.getContext(), "Service not bound",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), "Service not bound", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -331,23 +332,20 @@ public class ProfileLocationsFragment extends Fragment implements SimWifiP2pMana
         // callbacks for service binding, passed to bindService()
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
-            globalLM.setmService(new Messenger(service));
-            globalLM.setSimWifiP2pManager(new SimWifiP2pManager(globalLM.getmService()));
-            globalLM.setmChannel(globalLM.getSimWifiP2pManager().initialize(view.getContext().getApplicationContext(), getMainLooper(),
-                    null));
-            globalLM.setmBound(true);
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(view.getContext().getApplicationContext(), getMainLooper(), null);
+            mBound = false;
         }
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            GlobalLocMess globalLM = ((GlobalLocMess)view.getContext().getApplicationContext());
-            globalLM.setmService(null);
-            globalLM.setSimWifiP2pManager(null);
-            globalLM.setmChannel(null);
-            globalLM.setmBound(false);
-
+            mService = null;
+            mManager = null;
+            mChannel = null;
+            mBound = false;
         }
     };
+
 
     private class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
