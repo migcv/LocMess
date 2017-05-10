@@ -90,7 +90,7 @@ public class LocationService extends Service implements LocationListener, SimWif
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(null);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver();
         registerReceiver(receiver, filter);
 
         Thread thread = new Thread(new UserLocation());
@@ -106,7 +106,7 @@ public class LocationService extends Service implements LocationListener, SimWif
             Log.d("SERVICE CONNECTED" , "LIGUEI");
             mService = new Messenger(service);
             mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mChannel = mManager.initialize(getApplication().getApplicationContext(), getMainLooper(), null);
             mBound = true;
         }
         @Override
@@ -130,6 +130,7 @@ public class LocationService extends Service implements LocationListener, SimWif
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             String wifiSSID = device.deviceName + "";
             wifiSSIDList.add(wifiSSID);
+            Log.d("SSID" , wifiSSID);
         }
 
     }
@@ -175,14 +176,16 @@ public class LocationService extends Service implements LocationListener, SimWif
                         }
                     }
                     try {
-                        Log.d("CURRENT_WIFI", "OFF Wifi");
-
-                        if(!mBound && mManager != null){
+                        if(mManager == null){
+                            Log.d("CURRENT_WIFI", "OFF Wifi");
                             Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
                             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                            mManager.requestPeers(mChannel, LocationService.this);
-                            Log.d("CURRENT_WIFI", "ON Wifi");
                         }
+                        if(mManager != null) {
+                            mManager.requestPeers(mChannel, LocationService.this);
+                            Log.d("CURRENT_WIFI", "Enable Wifi");
+                        }
+
 
                         /*mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -193,7 +196,6 @@ public class LocationService extends Service implements LocationListener, SimWif
                             mainWifi.setWifiEnabled(true);
                         }*/
 
-                        Log.d("CURRENT_WIFI", "Enable Wifi");
 
                         //mainWifi.startScan();
                     } catch (SecurityException e) {

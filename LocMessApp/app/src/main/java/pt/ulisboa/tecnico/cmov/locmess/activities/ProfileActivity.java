@@ -56,26 +56,11 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
     TabLayout tabLayout;
     Switch mySwitch;
 
-    private SimWifiP2pManager mManager = null;
-    private SimWifiP2pManager.Channel mChannel = null;
-    private Messenger mService = null;
-    private boolean mBound = false;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.profile_activity_view);
-
-        // initialize the Termite API
-        SimWifiP2pSocketManager.Init(getApplicationContext());
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
-        registerReceiver(receiver, filter);
 
         TextView text3 = (TextView) findViewById(R.id.username);
         text3.setText(SocketHandler.getUsername());
@@ -117,35 +102,14 @@ public class ProfileActivity extends FragmentActivity  implements NavigationView
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(isChecked){
-                    Intent intent = new Intent(buttonView.getContext(), SimWifiP2pService.class);
-                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                    mBound = true;
-                }else{
-                    unbindService(mConnection);
+                if (isChecked) {
+
+                } else {
+
                 }
             }
         });
-
     }
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mBound = false;
-        }
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-            mBound = false;
-        }
-    };
 
 
     private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager viewPager) {

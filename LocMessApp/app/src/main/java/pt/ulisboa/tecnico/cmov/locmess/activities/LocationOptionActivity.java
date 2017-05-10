@@ -90,26 +90,12 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
 
     private HashMap<String, Location> locationsMap = new HashMap<>();
 
-    private SimWifiP2pManager mManager = null;
-    private SimWifiP2pManager.Channel mChannel = null;
-    private Messenger mService = null;
-    private boolean mBound = false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_location_option);
-
-        // initialize the Termite API
-        SimWifiP2pSocketManager.Init(getApplicationContext());
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
-        registerReceiver(receiver, filter);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
 
@@ -288,14 +274,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
     View.OnClickListener wifi_direct_listener = new View.OnClickListener(){
         public void onClick(View v) {
             Log.d("TERMITE", "oi");
-            Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-            if (mBound && mManager != null) {
-                mManager.requestPeers(mChannel, LocationOptionActivity.this);
-            } else {
-                Toast.makeText(getApplicationContext(), "Service not bound", Toast.LENGTH_SHORT).show();
-            }
         }
     };
 
@@ -474,23 +452,6 @@ public class LocationOptionActivity extends AppCompatActivity implements SimWifi
         peersLayout.addView(tv);
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mBound = false;
-        }
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-            mBound = false;
-        }
-    };
 
     // Include method in your activity
     private static class LatLngEvaluator implements TypeEvaluator<LatLng> {
