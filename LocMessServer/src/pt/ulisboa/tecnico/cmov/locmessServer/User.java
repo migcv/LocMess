@@ -69,7 +69,6 @@ public class User {
 		ArrayList<String> current = new ArrayList<>();
 		for (int i = 0; i < aux.length; i++) {
 			current.add(aux[i]);
-			System.out.println(aux[i]);
 		}
 		this.currentWIFI = current;
 
@@ -140,7 +139,6 @@ public class User {
 				dataOutputStream.writeUTF("WRONG");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -157,7 +155,6 @@ public class User {
 					dataOutputStream.writeUTF("WRONG");
 					dataOutputStream.flush();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -167,7 +164,6 @@ public class User {
 				dataOutputStream.writeUTF(response);
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -182,7 +178,6 @@ public class User {
 				dataOutputStream.writeUTF("END");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -196,7 +191,6 @@ public class User {
 					dataOutputStream.writeUTF(response);
 					dataOutputStream.flush();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -205,7 +199,6 @@ public class User {
 				dataOutputStream.writeUTF("END");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -260,7 +253,9 @@ public class User {
 	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
 			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+		ArrayList<String> ssid = getSSIDfromLocation(locationName);
+		Locations l = new Locations(deliveryMode, locationName, ssid);
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
 				restrictionPolicy, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
@@ -275,7 +270,9 @@ public class User {
 			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy,
 			String restrictions) {
 		setNumOfPost();
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+		ArrayList<String> ssid = getSSIDfromLocation(locationName);
+		Locations l = new Locations(deliveryMode, locationName, ssid);
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
 				restrictionPolicy, restrictions, getNumOfPost());
 		if (LocMess.getUserPosts().get(this) != null)
 			LocMess.getUserPosts().get(this).add(p);
@@ -322,7 +319,6 @@ public class User {
 				dataOutputStream.writeUTF("END");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -349,7 +345,6 @@ public class User {
 					dataOutputStream.flush();
 					toSend = "";
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -358,7 +353,6 @@ public class User {
 				dataOutputStream.writeUTF("END");
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -396,8 +390,6 @@ public class User {
 		}
 		for (int i = 0; i < locations.size(); i++) {
 			if (locations.get(i).getType().equals(aux[0]) && locations.get(i).getLocationName().equals(aux[1])) {
-				System.out.println("---------------------------------------- " + locations.get(i).getType());
-				System.out.println("---------------------------------------- " + locations.get(i).getLocationName());
 				LocMess.getUsersLocations().get(this).remove(i);
 				break;
 			}
@@ -413,14 +405,16 @@ public class User {
 				if (!this.equals(key)) {
 					Posts p = LocMess.getUserPosts().get(key).get(i);
 
-					if (p.getDeliveryMode().equals("GPS")) {
+					if (p.getDeliveryMode().equals("GPS") && this.currentLatitude != null
+							&& this.currentLongitude != null) {
 						if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(),
 								p.getLongitude(), p.getRadius())) {
-							postsToSend(p, s, key);
+							postsToSend(p, s, key, p.getDeliveryMode());
 						}
-					} else if (p.getDeliveryMode().equals("WIFI")) {
-						if (verifyPostWIFI(this.getCurrentWIFI(), p.getLocationName())) {
-							postsToSend(p, s, key);
+					}
+					if (p.getDeliveryMode().equals("WIFI") && !this.getCurrentWIFI().isEmpty()) {
+						if (verifyPostWIFI(this.getCurrentWIFI(), p.getLoc().getSSId())) {
+							postsToSend(p, s, key, p.getDeliveryMode());
 						}
 					}
 				}
@@ -451,26 +445,15 @@ public class User {
 		return false;
 	}
 
-	public boolean verifyPostWIFI(ArrayList<String> currentWIFI, String postWIFI) {
-		ArrayList<String> postWIFIArr = getLocationsWIFIFromPost(postWIFI);
+	public boolean verifyPostWIFI(ArrayList<String> currentWIFI, ArrayList<String> postWIFI) {
 		for (int k = 0; k < currentWIFI.size(); k++) {
-			for (int j = 0; j < postWIFIArr.size(); j++) {
-				if (currentWIFI.get(k).equals(postWIFIArr.get(j))) {
+			for (int j = 0; j < postWIFI.size(); j++) {
+				if (currentWIFI.get(k).equals(postWIFI.get(j))) {
 					return true;
 				}
 			}
 		}
-
 		return false;
-	}
-
-	public ArrayList<String> getLocationsWIFIFromPost(String postWIFI) {
-		ArrayList<String> post = new ArrayList<>();
-		String[] aux = postWIFI.split(",");
-		for (String a : aux) {
-			post.add(a);
-		}
-		return post;
 	}
 
 	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {
@@ -496,19 +479,38 @@ public class User {
 		return newW;
 	}
 
-	public void postsToSend(Posts p, Socket s, User key) {
+	public ArrayList<String> getSSIDfromLocation(String locationName) {
+		ArrayList<Locations> allLoc = LocMess.getGlobalLocations();
+		ArrayList<String> ssid = new ArrayList<>();
+		for (int i = 0; i < allLoc.size(); i++) {
+			if (allLoc.get(i).getType().equals("WIFI") && allLoc.get(i).getLocationName().equals(locationName)) {
+				ssid = allLoc.get(i).getSSId();
+				return ssid;
+			}
+		}
+		return null;
+
+	}
+
+	public void postsToSend(Posts p, Socket s, User key, String type) {
 		DataOutputStream dataOutputStream;
 		if (p.getRestrictionPolicy().equals("EVERYONE")) {
-			String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-					+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime()
-					+ "," + p.getDeliveryMode() + "," + p.getLocationName();
+			String response = null;
+			if (type.equals("WIFI")) {
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
+						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+						+ p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+			} else if (type.equals("GPS")) {
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
+						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+						+ p.getDeliveryMode() + "," + p.getLocationName();
+			}
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF(response);
 				dataOutputStream.flush();
 				System.out.println("EVERYONE: " + response);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else if (p.getRestrictionPolicy().equals("WHITE")) {
@@ -522,17 +524,23 @@ public class User {
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
 						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
-							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
-									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+							String response = null;
+							if (type.equals("WIFI")) {
+								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+										+ p.getLoc().getLocationName();
+							} else if (type.equals("GPS")) {
+								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+							}
 							try {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
 								dataOutputStream.writeUTF(response);
 								dataOutputStream.flush();
 								System.out.println("WHITE: " + response);
 							} catch (IOException e) {
-								// TODO Auto-generated catch
-								// block
 								e.printStackTrace();
 							}
 							flag = true;
@@ -554,14 +562,20 @@ public class User {
 			for (String res : pres) {
 				if (ures.contains(res)) {
 					for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-						System.out.println("----------------------" + userRestrictions.get(res));
-						System.out.println("----------------------" + postRestrictions.get(res).get(a));
 						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
 							break;
 						} else {
-							String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle()
-									+ "," + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+							String response = null;
+							if (type.equals("WIFI")) {
+								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+										+ p.getLoc().getLocationName();
+							} else if (type.equals("GPS")) {
+								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+							}
 							try {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
 								dataOutputStream.writeUTF(response);
@@ -575,9 +589,17 @@ public class User {
 				} else {
 					counter++;
 					if (counter == pres.size()) {
-						String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-								+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-								+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+						String response = null;
+						if (type.equals("WIFI")) {
+							response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+									+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+									+ p.getLoc().getLocationName();
+						} else if (type.equals("GPS")) {
+							response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+									+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+						}
 						try {
 							dataOutputStream = new DataOutputStream(s.getOutputStream());
 							dataOutputStream.writeUTF(response);
