@@ -75,16 +75,15 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
         Log.d("MY_POST", "Post Time: " + formatter.format(new Date(post_time)));
         text_post_time.setText(formatter.format(new Date(post_time)));
 
-        TextView text_post_lifetime = (TextView) convertView.findViewById(R.id.text_post_lifetime);
-        long post_lifetime = Long.parseLong(this.expandableListDetail.get(listPosition).get(5));
-        Log.d("MY_POST", "Post LifeTime: " + formatter.format(new Date(post_lifetime)));
+        TextView text_post_deadline = (TextView) convertView.findViewById(R.id.text_post_deadline);
+        long post_deadline = Long.parseLong(this.expandableListDetail.get(listPosition).get(5));
+        formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+        Log.d("MY_POST", "Post LifeTime: " + formatter.format(new Date(post_deadline)));
         Log.d("MY_POST", "Current Time: " + formatter.format(new Date(System.currentTimeMillis())));
-        DateFormat dayFormatter = new SimpleDateFormat("d");
-        DateFormat timeFormatter = new SimpleDateFormat("HH:mm");
-        if(post_lifetime - System.currentTimeMillis() > 0) {
-            text_post_lifetime.setText(dayFormatter.format(new Date(post_lifetime - System.currentTimeMillis())) + " days, " + timeFormatter.format(new Date(post_lifetime - System.currentTimeMillis())));
+        if(post_deadline - System.currentTimeMillis() > 0) {
+            text_post_deadline.setText(formatter.format(new Date(post_deadline)));
         } else {
-            text_post_lifetime.setText("EXPIRED!");
+            text_post_deadline.setText("EXPIRED!");
         }
 
         TextView text_location_name = (TextView) convertView.findViewById(R.id.text_location_name);

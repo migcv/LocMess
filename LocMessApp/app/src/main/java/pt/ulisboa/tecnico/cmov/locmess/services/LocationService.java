@@ -15,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
@@ -23,9 +24,11 @@ import android.os.StrictMode;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,10 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
+import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Post;
@@ -47,7 +53,9 @@ import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
  * Created by Miguel on 18/04/2017.
  */
 
-public class LocationService extends Service implements LocationListener, SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener{
+public class LocationService extends Service implements LocationListener, SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
+
+    private static final int PORT = 10001;
 
     Location location;
     LocationManager locationManager;
@@ -59,13 +67,18 @@ public class LocationService extends Service implements LocationListener, SimWif
 
     private int notificationCounter = 0;
 
-    SimWifiP2pBroadcastReceiver receiver;
+    private SimWifiP2pBroadcastReceiver receiver;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private Messenger mService = null;
     private boolean mBound = false;
 
+
+    private SimWifiP2pSocket mCliSocket = null;
+    private SimWifiP2pSocketServer mSrvSocket = null;
+
     private boolean stop = false;
+    private boolean send = true;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -95,6 +108,9 @@ public class LocationService extends Service implements LocationListener, SimWif
         receiver = new SimWifiP2pBroadcastReceiver();
         registerReceiver(receiver, filter);
 
+        // spawn the chat server background task
+        new IncommingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
         Thread thread = new Thread(new UserLocation());
         thread.start();
     }
@@ -103,10 +119,12 @@ public class LocationService extends Service implements LocationListener, SimWif
 
         public void run(){
             Looper.prepare();
-
             Log.d("LOCATION_ SERVICE", "Thread started!");
             while(!stop) {
                 try {
+                    /*
+                     * SEND_CURRENT_GPS
+                     */
                     getLocation();
                     Log.d("LOCATION_ SERVICE", location == null ? "Location Null" : "Location " + latitude + ", " + longitude);
                     if(location != null) {
@@ -117,34 +135,26 @@ public class LocationService extends Service implements LocationListener, SimWif
                         StrictMode.setThreadPolicy(policy);
                         String toSend = "CurrentGPS;:;" + SocketHandler.getToken() + ";:;" + latitude + ", " + longitude;
                         Socket s = SocketHandler.getSocket();
-                        Log.d("CONNECTION", "Connection successful!");
                         // Sending to Server
                         DataOutputStream dout = new DataOutputStream(s.getOutputStream());
                         dout.writeUTF(toSend);
                         dout.flush();
-                        Log.d("CURRENT_GPS", toSend);
                         // Receiving from Server
                         DataInputStream dis = new DataInputStream(s.getInputStream());
                         String str = dis.readUTF();
-                        Log.d("CURRENT_GPS", str);
                         while (!str.equals("END")) {
                             addPost(str);
                             dis = new DataInputStream(s.getInputStream());
                             str = dis.readUTF();
-                            Log.d("CURRENT_GPS", str);
                         }
-
                     }
                     if (mManager == null){
-                        Log.d("CURRENT_WIFI", "OFF Wifi");
                         Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
                         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
                     } else {
                         mManager.requestPeers(mChannel, LocationService.this);
-                        Log.d("CURRENT_WIFI", "Enable Wifi");
+                        mManager.requestGroupInfo(mChannel, LocationService.this);
                     }
-
-
                     /*mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
                     receiverWifi = new WifiReceiver();
@@ -154,34 +164,47 @@ public class LocationService extends Service implements LocationListener, SimWif
                         mainWifi.setWifiEnabled(true);
                     }
                     mainWifi.startScan();*/
-
-
+                    /*
+                     * SEND_CURRENT_WIFI
+                     */
                     if(!((GlobalLocMess)getApplicationContext()).getCurrentWifis().isEmpty()) {
                         String toSend = "CurrentWIFI;:;" + SocketHandler.getToken() + ";:;";
-                        for(String ssid : ((GlobalLocMess)getApplicationContext()).getCurrentWifis()) {
-                            toSend = toSend + "" + ssid + ",";
+                        String wifis = "";
+                        for(SimWifiP2pDevice device : ((GlobalLocMess)getApplicationContext()).getCurrentWifis()) {
+                            wifis = wifis + device.deviceName + ",";
                         }
+                        Log.d("CURRENT_WIFI", wifis);
+                        toSend = toSend + wifis;
                         Socket s = SocketHandler.getSocket();
-                        Log.d("CONNECTION", "Connection successful!");
                         // Sending to Server
                         DataOutputStream dout = new DataOutputStream(s.getOutputStream());
                         dout.writeUTF(toSend);
                         dout.flush();
-                        Log.d("CURRENT_GPS", toSend);
                         // Receiving from Server
                         DataInputStream dis = new DataInputStream(s.getInputStream());
                         String str = dis.readUTF();
-                        Log.d("CURRENT_GPS", str);
                         while (!str.equals("END")) {
                             addPost(str);
                             dis = new DataInputStream(s.getInputStream());
                             str = dis.readUTF();
-                            Log.d("CURRENT_GPS", str);
                         }
                     }
                     // Removing Expired Posts
-                    Log.d("SERVICE", "Removing expired posts");
                     ((GlobalLocMess) getApplicationContext()).removeExpiredPosts();
+                    /*
+                     * SEND_POSTS_WIFI_P2P
+                     */
+                    if(send && !((GlobalLocMess) getApplicationContext()).getDevicesToDelivery().isEmpty()) {
+                        Log.d("CLIENT_SOCKET", "Preparing to send message");
+                        send = false;
+                        for (SimWifiP2pDevice device : ((GlobalLocMess) getApplicationContext()).getDevicesToDelivery()) {
+                            Log.d("CLIENT_SOCKET", "Sending message > " + device.deviceName);
+                            mCliSocket = new SimWifiP2pSocket(device.virtDeviceAddress.split(":")[0], PORT);
+                            mCliSocket.getOutputStream().write(("HELLO!").getBytes());
+                            mCliSocket.close();
+                        }
+                    }
+                    mCliSocket = null;
                     // Sleeps for 10 seconds
                     Thread.sleep(10000);
                 } catch (SecurityException e) {
@@ -228,8 +251,6 @@ public class LocationService extends Service implements LocationListener, SimWif
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(PostsActivity.NOTIFICATION_SERVICE);
             mNotificationManager.notify(notificationCounter, mBuilder.build());
             Log.d("ADD_POST", "Post added with id: " + postArguments[0] + "" + postArguments[1]);
-        } else {
-            Log.d("ADD_POST", "Post already EXISTS with id: " + postArguments[0] + "" + postArguments[1]);
         }
     }
     /*
@@ -239,7 +260,6 @@ public class LocationService extends Service implements LocationListener, SimWif
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("SERVICE CONNECTED" , "LIGUEI");
             mService = new Messenger(service);
             mManager = new SimWifiP2pManager(mService);
             mChannel = mManager.initialize(getApplication().getApplicationContext(), getMainLooper(), null);
@@ -256,13 +276,63 @@ public class LocationService extends Service implements LocationListener, SimWif
 
     @Override
     public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+        ((GlobalLocMess)getApplicationContext()).cleanDevicesToDelivery();
+        for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
+            ((GlobalLocMess)getApplicationContext()).addDeviceToDelivery(device);
+            Log.d("GROUP_INFO_AVAILABLE", "Device Name: " + device.deviceName + " Device Address: " + device.realDeviceAddress);
+        }
     }
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         ((GlobalLocMess)getApplicationContext()).cleanCurrentWifis();
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            ((GlobalLocMess)getApplicationContext()).addCurrentWifi(device.deviceName);
+            ((GlobalLocMess)getApplicationContext()).addCurrentWifi(device);
+            Log.d("PEERS_AVAILABLE", "Device Name: " + device.deviceName + " Device Address: " + device.realDeviceAddress);
+        }
+    }
+
+    /*
+	 * Asynctasks implementing message exchange
+	 */
+
+    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Started Task");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(PORT);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Listenning " + PORT);
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Accepted Connection");
+                    try {
+                        BufferedReader sockIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        Log.d("SOCKET_SERVER", "Received Message > " + st);
+                    } catch (IOException e) {
+                        Log.e("Error reading socket:", e.getMessage());
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.e("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
         }
     }
     /*

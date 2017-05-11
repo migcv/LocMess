@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -26,12 +25,13 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
+import pt.ulisboa.tecnico.cmov.locmess.utils.Post;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
 public class RestritionOptionActivity extends AppCompatActivity {
@@ -92,9 +92,9 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 ((TextView)postDialog.findViewById(R.id.text_content)).setText(NewPost.content);
                 ((TextView)postDialog.findViewById(R.id.text_contact)).setText(NewPost.contact);
                 ((TextView)postDialog.findViewById(R.id.text_date)).setText(lifetime_str);
-                ((TextView)postDialog.findViewById(R.id.text_delivery_mode)).setText(NewPost.deliveryMode);
+                ((TextView)postDialog.findViewById(R.id.text_delivery_mode)).setText(NewPost.locationMode);
 
-                if(NewPost.deliveryMode.equals("GPS")) {
+                if(NewPost.locationMode.equals("GPS")) {
                     ((TextView) postDialog.findViewById(R.id.text_location)).setText(String.format(" %.4f, %.4f %d", NewPost.location.getLatitude(), NewPost.location.getLongitude(), NewPost.radius));
                 }
                 else{
@@ -116,36 +116,47 @@ public class RestritionOptionActivity extends AppCompatActivity {
 
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
+                            Log.d("NEW_POST", "Delivery Mode > " + NewPost.deliveryMode);
+                            if(NewPost.deliveryMode.equals(NewPost.CENTRALIZED)) {
+                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                StrictMode.setThreadPolicy(policy);
+                                try {
+                                    DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
 
-                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                            StrictMode.setThreadPolicy(policy);
-                            try {
-                                DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
-                                Log.d("NEW_POST", "CurrentTime " + formatter.format(new Date(System.currentTimeMillis())));
-                                Log.d("NEW_POST", "LifeTime " + formatter.format(new Date(NewPost.lifetime)));
-
-
-                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;"+ NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
-                                StringBuilder restrictions = new StringBuilder();
-                                for (Object str : NewPost.restrictionList ) {
-                                    restrictions.append(str.toString() + ",");
+                                    String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;" + NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
+                                    StringBuilder restrictions = new StringBuilder();
+                                    for (Object str : NewPost.restrictionList) {
+                                        restrictions.append(str.toString() + ",");
+                                    }
+                                    if (NewPost.locationMode.equals("GPS")) {
+                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    } else if (NewPost.locationMode.equals("WIFI")) {
+                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    } else {
+                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    }
+                                    Socket s = SocketHandler.getSocket();
+                                    Log.d("CONNECTION", "Connection successful!");
+                                    DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                                    dout.writeUTF(toSend);
+                                    dout.flush();
+                                    //dout.close();
+                                    Log.d("NEW POST", toSend);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                if(NewPost.deliveryMode.equals("GPS")){
-                                    toSend = toSend + NewPost.deliveryMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                } else if(NewPost.deliveryMode.equals("WIFI")) {
-                                    toSend = toSend + NewPost.deliveryMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                } else {
-                                    toSend = toSend + NewPost.deliveryMode+ ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                }
-                                Socket s = SocketHandler.getSocket();
-                                Log.d("CONNECTION", "Connection successful!");
-                                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-                                dout.writeUTF(toSend);
-                                dout.flush();
-                                //dout.close();
-                                Log.d("NEW POST", toSend);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } else if(NewPost.deliveryMode.equals(NewPost.DECENTRALIZED)) {
+                                Post post = new Post(
+                                        SocketHandler.getUsername(),
+                                        NewPost.tittle,
+                                        NewPost.content,
+                                        NewPost.contact,
+                                        Long.toString(System.currentTimeMillis()),
+                                        Long.toString(NewPost.lifetime),
+                                        NewPost.locationMode,
+                                        NewPost.location_name
+                                );
+                                ((GlobalLocMess) getApplicationContext()).addNewPostToDelivery(post);
                             }
                             Intent activity = new Intent(getApplicationContext(), PostsActivity.class);
                             startActivity(activity);
