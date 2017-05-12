@@ -26,6 +26,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -116,7 +118,6 @@ public class MainActivity extends AppCompatActivity{
                         StrictMode.setThreadPolicy(policy);
                         String str = "";
                         try {
-
                             Socket s = SocketHandler.getSocket();
                             Log.d("CONNECTION", "Connection successful!");
                             DataOutputStream dout = new DataOutputStream(s.getOutputStream());

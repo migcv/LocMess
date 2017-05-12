@@ -3,13 +3,24 @@ package pt.ulisboa.tecnico.cmov.locmessServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLServerSocket;
 
 public class LocMess {
 
 	private static final int port = 10000;
 	private static ServerSocket ss;
+	private static SSLServerSocket sslServer;
+
 	private static HashMap<String, User> users = new HashMap<>();
 	private static HashMap<User, ArrayList<Posts>> userPosts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
@@ -26,17 +37,68 @@ public class LocMess {
 		}
 		try {
 			ss = new ServerSocket(port);
+
+			System.out.println("Starting server...");
+
+			/*KeyStore ks = KeyStore.getInstance("JCEKS");
+			FileInputStream fis = new FileInputStream("keystoreserver.jks");
+			ks.load(fis, "testing".toCharArray());
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			kmf.init(ks, "testing".toCharArray());
+			SSLContext sslcontext = SSLContext.getInstance("TLSv1.2");
+			sslcontext.init(kmf.getKeyManagers(), null, new SecureRandom());
+			ServerSocketFactory ssf = sslcontext.getServerSocketFactory();
+			sslServer = (SSLServerSocket) ssf.createServerSocket(port);
+
+			// Set protocol (we want TLSv1.2)
+			String[] protocols = sslServer.getEnabledProtocols();
+			for (String a : protocols) {
+				if (a.equalsIgnoreCase("TLSv1.2")) {
+					sslServer.setEnabledProtocols(new String[] { a });
+				}
+			}
+
+			for (String a : sslServer.getEnabledProtocols()) {
+				System.out.println("PROTOCOL: " + a);
+			}
+
+			// Set protocol (we want
+			// TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256)
+			String[] ciphers = sslServer.getEnabledCipherSuites();
+			for (String a : ciphers) {
+				if (a.equalsIgnoreCase("TLS_RSA_WITH_AES_128_CBC_SHA")) {
+					sslServer.setEnabledCipherSuites(new String[] { a });
+				}
+			}
+
+			for (String a : sslServer.getEnabledCipherSuites()) {
+				System.out.println("CIPHER: " + a);
+			}*/
+
 			System.out.println("Server Up " + ss.getLocalPort());
+
 			while (true) {
 				System.out.println("Listening!");
+
 				Socket s = ss.accept();// establishes connection
+
+				//Socket s = sslServer.accept(); // establishes connection
+
 				System.out.println("Accepted: " + s.getInetAddress());
+
 				new Thread(new Connection(s)).start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
+	/*class MyHandshakeListener implements HandshakeCompletedListener {
+		public void handshakeCompleted(HandshakeCompletedEvent e) {
+			System.out.println("Handshake succesful!");
+			System.out.println("Using cipher suite: " + e.getCipherSuite());
+		}
+	}*/
 
 	public static HashMap<String, User> getUsers() {
 		return users;

@@ -182,10 +182,18 @@ public class User {
 			}
 		} else {
 			for (int i = 0; i < aux.size(); i++) {
-				String response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-						+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
-						+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-						+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName();
+				String response = null;
+				if (aux.get(i).getDeliveryMode().equals("GPS")) {
+					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
+							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
+							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName();
+				}else if(aux.get(i).getDeliveryMode().equals("WIFI")){
+					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
+							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
+							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName();
+				}
 				try {
 					dataOutputStream = new DataOutputStream(s.getOutputStream());
 					dataOutputStream.writeUTF(response);

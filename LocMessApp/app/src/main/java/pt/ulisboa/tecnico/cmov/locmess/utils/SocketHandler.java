@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
+
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
@@ -14,17 +15,8 @@ public class SocketHandler {
     private static String username;
     private static SSLSocket sslSocket;
 
-    public static synchronized Socket getSocket() {
-        return socket;
-    }
-
-    public static synchronized void setSocket(Socket socket) {
-        SocketHandler.socket = socket;
-    }
-
-    public static SSLSocket getSslSocket() { return sslSocket; }
-
-    public static void setSslSocket(SSLSocket sslSocket) {SocketHandler.sslSocket = sslSocket; }
+    public static synchronized Socket getSocket() { return socket; }
+    public static synchronized void setSocket(Socket socket) { SocketHandler.socket = socket; }
 
     public static synchronized String getToken() {
         return token;
