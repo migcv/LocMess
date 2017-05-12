@@ -263,10 +263,10 @@ public class ProfileLocationsFragment extends Fragment {
                     ((LinearLayout) getView().findViewById(R.id.layout_wifi_list)).removeAllViews();
                 }
                 // Insert elements in List and Layout
-                for (String ssid : ((GlobalLocMess) getContext().getApplicationContext()).getCurrentWifis()) {
-                    wifiSSIDList.add(ssid);
-                    Log.d("WIFI", ssid);
-                    addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), ssid);
+                for (SimWifiP2pDevice device : ((GlobalLocMess) getContext().getApplicationContext()).getCurrentWifis()) {
+                    wifiSSIDList.add(device.deviceName);
+                    Log.d("WIFI", device.deviceName);
+                    addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), device.deviceName);
 
                 }
                 getView().findViewById(R.id.layout_wifi).setVisibility(View.VISIBLE);

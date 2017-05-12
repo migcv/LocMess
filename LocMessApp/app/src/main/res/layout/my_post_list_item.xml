@@ -84,15 +84,38 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time Remaining: "
+            android:text="Post Deadline: "
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_post_lifetime"
+            android:id="@+id/text_post_deadline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TIME_REMAINING"
+            android:text="POST_DEADLINE"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+        android:paddingTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location: "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_post_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LOCATION"
             android:textSize="16sp" />
     </LinearLayout>
 

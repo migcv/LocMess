@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
+import java.util.ArrayList;
+
 /**
  * Created by Miguel on 22/04/2017.
  */
@@ -17,15 +19,25 @@ public class Post {
 
     private boolean seen = false;
 
+    private ArrayList<String> deliveryList = new ArrayList<>();
+
     public Post(String user, String tittle, String content, String contact, String post_time, String post_lifetime, String type, String location_name) {
-        this.tittle = tittle;
         this.user = user;
+        this.tittle = tittle;
         this.content = content;
         this.contact = contact;
         this.post_lifetime = post_lifetime;
         this.post_time = post_time;
         this.type = type;
         this.location_name = location_name;
+    }
+
+    public void addNewDelivery(String peer) {
+        deliveryList.add(peer);
+    }
+
+    public boolean alreadyDelivered(String peer) {
+        return deliveryList.contains(peer);
     }
 
     public String getTittle() {

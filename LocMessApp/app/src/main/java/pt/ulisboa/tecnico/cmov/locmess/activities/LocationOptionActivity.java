@@ -2,18 +2,11 @@ package pt.ulisboa.tecnico.cmov.locmess.activities;
 
 import android.Manifest;
 import android.animation.TypeEvaluator;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -44,34 +37,18 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
-import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
-import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
-import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
-import pt.inesc.termite.wifidirect.SimWifiP2pManager;
-import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.fragments.ProfileLocationsFragment;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Location;
 import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
-import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
-import android.widget.Toast;
-
-import static android.os.Looper.getMainLooper;
 
 public class LocationOptionActivity extends AppCompatActivity {
 
@@ -118,22 +95,23 @@ public class LocationOptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(radioButtonLocations.isChecked()) {
-                    NewPost.location_name = ((AutoCompleteTextView) findViewById(R.id.autocomplete_locations)).getText().toString();
-                    if(locationsMap.get(NewPost.location_name) == null) {
-                        Snackbar.make(view, "Location Selected Not Valid", Snackbar.LENGTH_SHORT)
-                                .setAction("Action", null).show();
-                        return;
-                    }
-                    if(locationsMap.get(NewPost.location_name).getType().equals("GPS")) {
-                        NewPost.deliveryMode = NewPost.GPS;
-                        NewPost.location = marker.getPosition();
-                        NewPost.radius = radius;
-                    } else if(locationsMap.get(NewPost.location_name).getType().equals("WIFI")) {
-                        NewPost.deliveryMode = NewPost.WIFI;
-                    }
+                    NewPost.deliveryMode = NewPost.CENTRALIZED;
                 }
                 else if(radioButtonWifDirect.isChecked()) {
-                   // NewPost.deliveryMode = NewPost.WIFI_DIRECT;
+                    NewPost.deliveryMode = NewPost.DECENTRALIZED;
+                }
+                NewPost.location_name = ((AutoCompleteTextView) findViewById(R.id.autocomplete_locations)).getText().toString();
+                if(locationsMap.get(NewPost.location_name) == null) {
+                    Snackbar.make(view, "Location Selected Not Valid", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                    return;
+                }
+                if(locationsMap.get(NewPost.location_name).getType().equals("GPS")) {
+                    NewPost.locationMode = NewPost.GPS;
+                    NewPost.location = marker.getPosition();
+                    NewPost.radius = radius;
+                } else if(locationsMap.get(NewPost.location_name).getType().equals("WIFI")) {
+                    NewPost.locationMode = NewPost.WIFI;
                 }
 
                 Intent intent = new Intent(getApplicationContext(), RestritionOptionActivity.class);

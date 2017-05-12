@@ -17,9 +17,19 @@
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="How to delivery your Post?"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="20sp" />
+
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
             android:layout_weight="1" >
 
             <RadioButton
@@ -28,16 +38,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="true"
-                android:text="Centralized" />
+                android:text="Centralized Delivery"
+                android:textColor="@color/place_autocomplete_prediction_secondary_text"
+                android:textSize="18sp" />
 
             <RadioButton
                 android:id="@+id/radioButton_wifi_direct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:text="Decentralized" />
+                android:text="Decentralized Delivery"
+                android:textColor="@color/place_autocomplete_prediction_secondary_text"
+                android:textSize="18sp" />
 
+        </RadioGroup>
 
             <LinearLayout
                 android:id="@+id/layout_location"
@@ -51,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Chose where to send your Post"
+                    android:text="Where to send your Post?"
                     android:textColor="@color/common_google_signin_btn_text_dark_focused"
                     android:textSize="20sp" />
 
@@ -126,9 +140,6 @@
                 android:orientation="vertical">
 
             </LinearLayout>
-
-
-        </RadioGroup>
 
     </LinearLayout>
 

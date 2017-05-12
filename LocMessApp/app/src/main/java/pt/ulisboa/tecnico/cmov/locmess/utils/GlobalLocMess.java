@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.services.LocationService;
@@ -26,7 +27,67 @@ public class GlobalLocMess extends Application {
 
     private ConcurrentHashMap<String, Post> postsMap = new ConcurrentHashMap<>();
 
-    private ArrayList<String> currentWifis = new ArrayList<>();
+    private ArrayList<SimWifiP2pDevice> currentWifis = new ArrayList<>();
+
+    private ArrayList<SimWifiP2pDevice> devicesToDelivery = new ArrayList<>();
+    private ArrayList<Post> postsToDelivery = new ArrayList<>();
+
+    public void removeExpiredPosts() {
+        for(String post_id : postsMap.keySet()) {
+            Post post = postsMap.get(post_id);
+            if(post.isSeen()) {
+                Long postLimitTime = Long.valueOf(post.getPostLifetime());
+                Long currentTime = System.currentTimeMillis();
+                if (postLimitTime - currentTime < 0) {
+                    postsMap.remove(post_id);
+                }
+            }
+        }
+    }
+
+    public void logout() {
+        getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
+        postsMap = new ConcurrentHashMap<>();
+        currentWifis = new ArrayList<>();
+        postsToDelivery = new ArrayList<>();
+        ExpandableListDataPump.clean();
+    }
+
+    public void addNewPostToDelivery(Post post) {
+        this.postsToDelivery.add(post);
+    }
+
+    public Post getPostToDelivery(int index) {
+        return this.postsToDelivery.get(index);
+    }
+
+    public void removePostToDelivery(int index) {
+        this.postsToDelivery.remove(index);
+    }
+
+    public void addDeviceToDelivery(SimWifiP2pDevice device) {
+        this.devicesToDelivery.add(device);
+    }
+
+    public ArrayList<SimWifiP2pDevice> getDevicesToDelivery() {
+        return this.devicesToDelivery;
+    }
+
+    public void cleanDevicesToDelivery() {
+        this.devicesToDelivery = new ArrayList<>();
+    }
+
+    public void addCurrentWifi(SimWifiP2pDevice ssid) {
+        this.currentWifis.add(ssid);
+    }
+
+    public ArrayList<SimWifiP2pDevice> getCurrentWifis() {
+        return this.currentWifis;
+    }
+
+    public void cleanCurrentWifis() {
+        this.currentWifis = new ArrayList<>();
+    }
 
     public double getLatitude() {
         return latitude;
@@ -54,37 +115,6 @@ public class GlobalLocMess extends Application {
 
     public Post getPost(String id) {
         return postsMap.get(id);
-    }
-
-    public void removeExpiredPosts() {
-        for(String post_id : postsMap.keySet()) {
-            Post post = postsMap.get(post_id);
-            if(post.isSeen()) {
-                Long postLimitTime = Long.valueOf(post.getPostLifetime());
-                Long currentTime = System.currentTimeMillis();
-                if (postLimitTime - currentTime < 0) {
-                    postsMap.remove(post_id);
-                }
-            }
-        }
-    }
-
-    public void logout() {
-        getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
-        postsMap = new ConcurrentHashMap<>();
-        ExpandableListDataPump.clean();
-    }
-
-    public void addCurrentWifi(String ssid) {
-        this.currentWifis.add(ssid);
-    }
-
-    public ArrayList<String> getCurrentWifis() {
-        return this.currentWifis;
-    }
-
-    public void cleanCurrentWifis() {
-        this.currentWifis = new ArrayList<>();
     }
 
 }

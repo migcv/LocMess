@@ -12,7 +12,9 @@ public class NewPost {
 
     public static final String GPS = "GPS";
     public static final String WIFI = "WIFI";
-    public static final String WIFI_DIRECT = "WIFI_DIRECT";
+
+    public static final String CENTRALIZED = "CENTRALIZED";
+    public static final String DECENTRALIZED = "DECENTRALIZED";
 
     public static final String EVERYONE = "EVERYONE";
     public static final String WHITE = "WHITE";
@@ -24,13 +26,15 @@ public class NewPost {
 
     public static long lifetime;
 
-    public static String deliveryMode;
+    public static String deliveryMode;  // CENTRALIZED or DECENTRALIZED
+
+    public static String locationMode;  // GPS or WIFI
     public static String location_name;
 
     public static LatLng location;
     public static int radius;
 
-    public static String restrictionPolicy;
+    public static String restrictionPolicy; // EVERYONE or WHITE or BLACK
     public static ArrayList<String> restrictionList = new ArrayList<>();
 
 }
