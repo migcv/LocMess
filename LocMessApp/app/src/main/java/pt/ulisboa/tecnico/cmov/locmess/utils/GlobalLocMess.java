@@ -34,7 +34,7 @@ public class GlobalLocMess extends Application {
     private ArrayList<SimWifiP2pDevice> currentWifis = new ArrayList<>();
 
     private ArrayList<SimWifiP2pDevice> devicesToDelivery = new ArrayList<>();
-    private ArrayList<Post> postsToDelivery = new ArrayList<>();
+    private ConcurrentHashMap<String, Post> postsToDelivery = new ConcurrentHashMap<>();
 
     public void removeExpiredPosts() {
         // POSTS RECEIVED
@@ -163,7 +163,7 @@ public class GlobalLocMess extends Application {
         getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
         postsMap = new ConcurrentHashMap<>();
         currentWifis = new ArrayList<>();
-        postsToDelivery = new ArrayList<>();
+        postsToDelivery = new ConcurrentHashMap<>();
         userInterests = new HashMap<>();
         ExpandableListDataPump.clean();
     }
@@ -172,11 +172,11 @@ public class GlobalLocMess extends Application {
         return userInterests;
     }
 
-    public void addNewPostToDelivery(Post post) {
-        this.postsToDelivery.add(post);
+    public void addPostToDelivary(String id, Post post) {
+        postsToDelivery.put(id, post);
     }
 
-    public ArrayList<Post> getPostsToDelivery() {
+    public ConcurrentHashMap<String,Post> getPostsToDelivery() {
         return this.postsToDelivery;
     }
 

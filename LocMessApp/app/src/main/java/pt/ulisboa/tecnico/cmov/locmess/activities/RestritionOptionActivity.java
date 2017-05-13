@@ -122,17 +122,20 @@ public class RestritionOptionActivity extends AppCompatActivity {
                             try {
                                 DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
 
-                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;" + NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
+                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;" + NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime;
                                 StringBuilder restrictions = new StringBuilder();
                                 for (Object str : NewPost.restrictionList) {
                                     restrictions.append(str.toString() + ",");
                                 }
                                 if (NewPost.locationMode.equals("GPS")) {
-                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    toSend = toSend + ";:;" + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy;
                                 } else if (NewPost.locationMode.equals("WIFI")) {
-                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    toSend = toSend + ";:;" + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy;
                                 } else {
-                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                    toSend = toSend + ";:;" + NewPost.locationMode + ";:;" + NewPost.restrictionPolicy;
+                                }
+                                if(!NewPost.restrictionList.isEmpty()) {
+                                    toSend = toSend + ";:;" + restrictions;
                                 }
                                 toSend = toSend + ";:;" + NewPost.deliveryMode;
                                 Socket s = SocketHandler.getSocket();
@@ -155,7 +158,7 @@ public class RestritionOptionActivity extends AppCompatActivity {
                                         NewPost.locationMode,
                                         NewPost.location_name
                                 );
-                                ((GlobalLocMess) getApplicationContext()).addNewPostToDelivery(post);
+                                //((GlobalLocMess) getApplicationContext()).addNewPostToDelivery(post);
                             }
                             Intent activity = new Intent(getApplicationContext(), PostsActivity.class);
                             startActivity(activity);

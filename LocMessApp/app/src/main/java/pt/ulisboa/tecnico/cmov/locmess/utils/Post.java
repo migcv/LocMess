@@ -24,7 +24,7 @@ public class Post {
 
     private double latitude;
     private double longitude;
-    private Integer radius;
+    private double radius;
 
     private ArrayList<String> ssids = new ArrayList<>();
 
@@ -42,13 +42,19 @@ public class Post {
         this.location_name = location_name;
         if(decentralizedArguments.length > 0) {
             if(type.equals("GPS")) {
-                radius = (Integer) decentralizedArguments[0];
+                latitude = (double) decentralizedArguments[0];
+                longitude = (double) decentralizedArguments[1];
+                radius = (double) decentralizedArguments[2];
+                restrictionPolicy = (String) decentralizedArguments[3];
+                if(!restrictionPolicy.equals(NewPost.EVERYONE)) {
+                    restrictions = (HashMap) decentralizedArguments[4];
+                }
             } else if(type.equals("WIFI")) {
                 ssids = (ArrayList) decentralizedArguments[0];
-            }
-            restrictionPolicy = (String) decentralizedArguments[1];
-            if(!restrictionPolicy.equals(NewPost.EVERYONE)) {
-                restrictions = (HashMap) decentralizedArguments[2];
+                restrictionPolicy = (String) decentralizedArguments[1];
+                if(!restrictionPolicy.equals(NewPost.EVERYONE)) {
+                    restrictions = (HashMap) decentralizedArguments[2];
+                }
             }
         }
     }
@@ -61,7 +67,7 @@ public class Post {
         return longitude;
     }
 
-    public Integer getRadius() {
+    public double getRadius() {
         return radius;
     }
 

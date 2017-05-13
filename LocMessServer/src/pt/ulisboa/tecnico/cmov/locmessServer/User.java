@@ -295,6 +295,41 @@ public class User {
 			}
 		}
 	}
+	
+	public void sendDecentralizedPosts(Socket s) {
+		try {
+			DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
+			
+			for (Posts post : LocMess.getUserPosts().get(this)) {
+				if(post.isFlag().equals("DECENTRALIZED")) {
+					String response = "Posts;:;" + post.getId() + ";:;" + username + ";:;" + post.getTitle() + ";:;" + post.getContent()
+					+ ";:;" + post.getContact() + ";:;" + post.getCreationDateTime() + ";:;" + post.getLimitDateTime();
+					if (post.getDeliveryMode().equals("WIFI")) {
+						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLoc().getLocationName() + ";:;";
+						for(String ssid : post.getLoc().getSSId()) {
+							response += ssid + ",";
+						}
+					} else if (post.getDeliveryMode().equals("GPS")) {
+						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLocationName() + ";:;" 
+								+ post.getLatitude() + "," + post.getLongitude() + "," + post.getRadius();
+					}
+					response += ";:;" + post.getRestrictionPolicy() + ";:;";
+					if(!post.getRestrictionPolicy().equals("EVERYONE")) {
+						response += post.getRestrictions();
+					}
+					dataOutputStream = new DataOutputStream(s.getOutputStream());
+					dataOutputStream.writeUTF(response);
+					dataOutputStream.flush();
+					System.out.println(response);
+				}
+			}
+			dataOutputStream.writeUTF("END");
+			dataOutputStream.flush();
+			System.out.println("END");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void sendLocations(Socket s) {
 		ArrayList<Locations> locations = LocMess.getUsersLocations().get(this);
@@ -415,7 +450,6 @@ public class User {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public boolean verifyPostRange(double currentLat, double currentLong, double lat, double longi, double radius) {

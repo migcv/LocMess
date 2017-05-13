@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -192,6 +193,8 @@ public class LocationService extends Service implements LocationListener, SimWif
                     }
                     // Removing Expired Posts
                     ((GlobalLocMess) getApplicationContext()).removeExpiredPosts();
+                    // GET DECENTRALIZED POSTS (FROM SERVER)
+                    getDecentralizedPosts();
                     /*
                      * SEND_POSTS_WIFI_P2P
                      */
@@ -199,7 +202,7 @@ public class LocationService extends Service implements LocationListener, SimWif
                         Log.d("CLIENT_SOCKET", "Preparing to send message");
                         send = false;
                         for (SimWifiP2pDevice device : ((GlobalLocMess) getApplicationContext()).getDevicesToDelivery()) {
-                            for(Post post : ((GlobalLocMess) getApplicationContext()).getPostsToDelivery()) {
+                            for(Post post : ((GlobalLocMess) getApplicationContext()).getPostsToDelivery().values()) {
                                 String toSend = post.getUser() + ";:;" + post.getTittle() + ";:;" + post.getContent() + ";:;" +
                                     post.getContact() + ";:;" + post.getPostTime() + ";:;" + post.getPostLifetime() + ";:;" +
                                     post.getType();
@@ -274,6 +277,86 @@ public class LocationService extends Service implements LocationListener, SimWif
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(PostsActivity.NOTIFICATION_SERVICE);
             mNotificationManager.notify(notificationCounter, mBuilder.build());
             Log.d("ADD_POST", "Post added with id: " + postArguments[0] + "" + postArguments[1]);
+        }
+    }
+
+    public void addPostToSend(String str) {
+        String[] postArguments = str.split(";:;");
+        GlobalLocMess global = (GlobalLocMess) getApplicationContext();
+        if(global.getPostsToDelivery().get(postArguments[1] + "" + postArguments[2]) == null) {
+            String user = postArguments[2];
+            String tittle = postArguments[3];
+            String content = postArguments[4];
+            String contact = postArguments[5];
+            String post_time =  postArguments[6];
+            String post_lifetime =  postArguments[7];
+            String location_type =  postArguments[8];
+            String location_name =  postArguments[9];
+            double latitude = 0, longitude = 0, radius = 0;
+            ArrayList<String> ssids = new ArrayList<>();
+            if(location_type.equals("GPS")) {
+                latitude = Double.parseDouble(postArguments[10].split(",")[0]);
+                longitude = Double.parseDouble(postArguments[10].split(",")[1]);
+                radius = Double.parseDouble(postArguments[10].split(",")[2]);
+            } else if(location_type.equals("WIFI")) {
+                for(String ssid : postArguments[10].split(",")) {
+                    ssids.add(ssid);
+                }
+            }
+            String restrictions_policy = postArguments[11];
+            HashMap<String, ArrayList<String>> restrictions = new HashMap<>();
+            if(!restrictions_policy.equals(NewPost.EVERYONE)) {
+                for(String restriction : postArguments[12].split(",")) {
+                    String value = restriction.split("\\(")[0];
+                    String key = restriction.split("\\(")[1];
+                    if(restrictions.get(key) == null) {
+                        ArrayList<String> list = new ArrayList<String>();
+                        list.add(value);
+                        restrictions.put(key, list);
+                    } else {
+                        restrictions.get(key).add(value);
+                    }
+                }
+            }
+            Post newPost = null;
+            if(location_type.equals(NewPost.GPS)) {
+                newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
+                        latitude, longitude, radius, restrictions_policy, restrictions);
+            } else {
+                newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
+                        ssids, restrictions_policy, restrictions);
+            }
+            global.addPostToDelivary(postArguments[1] + "" + postArguments[2], newPost);
+
+            notificationCounter = notificationCounter + 1;
+            NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                    .setSmallIcon(android.R.drawable.ic_menu_gallery)
+                    .setContentTitle("New Post: " + postArguments[2]);
+
+            Log.d("ADD_POST", "Post added with id: " + postArguments[1] + "" + postArguments[2]);
+        }
+    }
+
+    public void getDecentralizedPosts() {
+        String toSend = "GetDecentralizedPosts;:;" + SocketHandler.getToken() + ";:;";
+        Socket s =SocketHandler.getSocket();
+        try {
+            // Sending request to Server
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            Log.d("GET_DECENTRALIZED_POSTS", "Resquest > " + toSend);
+            dout.writeUTF(toSend);
+            dout.flush();
+            // Receiving response from Server
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            String str = dis.readUTF();
+            while (!str.equals("END")) {
+                Log.d("GET_DECENTRALIZED_POSTS", "Response > " + str);
+                addPostToSend(str);
+                dis = new DataInputStream(s.getInputStream());
+                str = dis.readUTF();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
     /*

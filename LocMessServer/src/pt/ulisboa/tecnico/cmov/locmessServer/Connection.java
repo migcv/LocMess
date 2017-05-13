@@ -97,6 +97,10 @@ public class Connection implements Runnable {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
 				u.sendLocations(s);
 			}
+			if (res[0].equals("GetDecentralizedPosts")) {
+				User u = LocMess.getSession().getUserFromSession(res[1]);
+				u.sendDecentralizedPosts(s);
+			}
 			if (res[0].equals("GetAllLocations")) {
 				sendAllLocations();
 			}
