@@ -27,6 +27,8 @@ public class GlobalLocMess extends Application {
     private double latitude = 38.7378954;
     private double longitude = -9.1378972;
 
+    private HashMap<String, ArrayList<String>> userInterests = new HashMap<>();
+
     private ConcurrentHashMap<String, Post> postsMap = new ConcurrentHashMap<>();
 
     private ArrayList<SimWifiP2pDevice> currentWifis = new ArrayList<>();
@@ -35,6 +37,7 @@ public class GlobalLocMess extends Application {
     private ArrayList<Post> postsToDelivery = new ArrayList<>();
 
     public void removeExpiredPosts() {
+        // POSTS RECEIVED
         for(String post_id : postsMap.keySet()) {
             Post post = postsMap.get(post_id);
             if(post.isSeen()) {
@@ -45,9 +48,18 @@ public class GlobalLocMess extends Application {
                 }
             }
         }
+        // POSTS TO DELIVERY
+        for(int i = 0; postsToDelivery.size() < i; i++) {
+            Post post = postsToDelivery.get(i);
+            Long postLimitTime = Long.valueOf(post.getPostLifetime());
+            Long currentTime = System.currentTimeMillis();
+            if (postLimitTime - currentTime < 0) {
+                removePostToDelivery(i);
+            }
+        }
     }
 
-    public void postsToSend(SimWifiP2pSocket mCliSocket) {
+    /*public void postsToSend(SimWifiP2pSocket mCliSocket) {
         for(Post p : postsToDelivery){
         DataOutputStream dataOutputStream;
         if (p.getRestrictionPolicy().equals("EVERYONE")) {
@@ -145,22 +157,27 @@ public class GlobalLocMess extends Application {
                 }
             }
         }
-    }}
+    }} */
 
     public void logout() {
         getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
         postsMap = new ConcurrentHashMap<>();
         currentWifis = new ArrayList<>();
         postsToDelivery = new ArrayList<>();
+        userInterests = new HashMap<>();
         ExpandableListDataPump.clean();
+    }
+
+    public HashMap<String, ArrayList<String>> getUserInterests() {
+        return userInterests;
     }
 
     public void addNewPostToDelivery(Post post) {
         this.postsToDelivery.add(post);
     }
 
-    public Post getPostToDelivery(int index) {
-        return this.postsToDelivery.get(index);
+    public ArrayList<Post> getPostsToDelivery() {
+        return this.postsToDelivery;
     }
 
     public void removePostToDelivery(int index) {

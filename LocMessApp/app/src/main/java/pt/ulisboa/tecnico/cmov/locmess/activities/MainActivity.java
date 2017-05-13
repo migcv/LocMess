@@ -24,7 +24,10 @@ import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.net.ssl.SSLSocket;
 
@@ -178,6 +181,8 @@ public class MainActivity extends AppCompatActivity{
         Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
         startActivityForResult(intent, RESULT_OK);
 
+        populateInterest();
+
         startService(new Intent(this, LocationService.class));
         Log.d("SERVICE", "Starting Service!");
     }
@@ -208,6 +213,35 @@ public class MainActivity extends AppCompatActivity{
             _passwordText.setError(null);
         }
         return valid;
+    }
+
+    public void populateInterest() {
+        String str;
+        HashMap<String, ArrayList<String>> userInterests = ((GlobalLocMess) getApplicationContext()).getUserInterests();
+        try {
+            Socket s = SocketHandler.getSocket();
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+            dout.writeUTF("MYRestrictions;:;" + SocketHandler.getToken());
+            dout.flush();
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            str = dis.readUTF();
+            if(str.equals("WRONG")){
+                return;
+            }
+            String[] aux1 = str.split(";:;");
+
+            for(int i = 0; i< aux1.length;i++) {
+                String[] aux2 = aux1[i].split(",");
+                if(!(userInterests.containsKey(aux2[0]))){
+                    userInterests.put(aux2[0], new ArrayList<String>());
+                    userInterests.get(aux2[0]).add(aux2[1]);
+                }else if(userInterests.containsKey(aux2[0]) &&!(userInterests.get(aux2[0]).contains(aux2[1]))){
+                    userInterests.get(aux2[0]).add(aux2[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

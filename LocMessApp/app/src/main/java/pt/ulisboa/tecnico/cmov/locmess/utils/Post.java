@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Miguel on 22/04/2017.
@@ -19,9 +20,18 @@ public class Post {
 
     private boolean seen = false;
 
-    private ArrayList<String> deliveryList = new ArrayList<>();
+    // FOR DECENTRALIZED POSTS
 
-    public Post(String user, String tittle, String content, String contact, String post_time, String post_lifetime, String type, String location_name) {
+    private double latitude;
+    private double longitude;
+    private Integer radius;
+
+    private ArrayList<String> ssids = new ArrayList<>();
+
+    private String restrictionPolicy;
+    private HashMap<String, ArrayList<String>> restrictions = new HashMap<>();
+
+    public Post(String user, String tittle, String content, String contact, String post_time, String post_lifetime, String type, String location_name, Object... decentralizedArguments) {
         this.user = user;
         this.tittle = tittle;
         this.content = content;
@@ -30,14 +40,41 @@ public class Post {
         this.post_time = post_time;
         this.type = type;
         this.location_name = location_name;
+        if(decentralizedArguments.length > 0) {
+            if(type.equals("GPS")) {
+                radius = (Integer) decentralizedArguments[0];
+            } else if(type.equals("WIFI")) {
+                ssids = (ArrayList) decentralizedArguments[0];
+            }
+            restrictionPolicy = (String) decentralizedArguments[1];
+            if(!restrictionPolicy.equals(NewPost.EVERYONE)) {
+                restrictions = (HashMap) decentralizedArguments[2];
+            }
+        }
     }
 
-    public void addNewDelivery(String peer) {
-        deliveryList.add(peer);
+    public double getLatitude() {
+        return latitude;
     }
 
-    public boolean alreadyDelivered(String peer) {
-        return deliveryList.contains(peer);
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public Integer getRadius() {
+        return radius;
+    }
+
+    public ArrayList<String> getSsids() {
+        return ssids;
+    }
+
+    public String getRestrictionPolicy() {
+        return restrictionPolicy;
+    }
+
+    public HashMap<String, ArrayList<String>> getRestrictions() {
+        return this.restrictions;
     }
 
     public String getTittle() {

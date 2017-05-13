@@ -86,9 +86,7 @@ public class MyPostsActivity extends AppCompatActivity
 
         expandableListTitle = new ArrayList<String>();
         for(int i = 0; i < expandableMap.size(); i++) {
-            Log.d("MY_POSTS", expandableMap.get(i) == null ? "NULL" : "" + expandableMap.get(i).get(0));
             expandableListTitle.add(expandableMap.get(i).get(1));
-            Log.d("MY_POSTS", expandableListTitle.get(i) == null ? "NULL" : i + "" + expandableListTitle.get(i));
         }
         expandableListAdapter = new MyPostsListAdapter(this, expandableListTitle, expandableMap);
         expandableListView.setAdapter(expandableListAdapter);

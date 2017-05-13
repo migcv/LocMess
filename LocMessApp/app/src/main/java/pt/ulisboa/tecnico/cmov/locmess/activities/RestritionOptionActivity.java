@@ -117,35 +117,34 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 postDialog.findViewById(R.id.button_post).setOnClickListener( new View.OnClickListener() {
                         public void onClick(View v) {
                             Log.d("NEW_POST", "Delivery Mode > " + NewPost.deliveryMode);
-                            if(NewPost.deliveryMode.equals(NewPost.CENTRALIZED)) {
-                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                                StrictMode.setThreadPolicy(policy);
-                                try {
-                                    DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                            StrictMode.setThreadPolicy(policy);
+                            try {
+                                DateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
 
-                                    String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;" + NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
-                                    StringBuilder restrictions = new StringBuilder();
-                                    for (Object str : NewPost.restrictionList) {
-                                        restrictions.append(str.toString() + ",");
-                                    }
-                                    if (NewPost.locationMode.equals("GPS")) {
-                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                    } else if (NewPost.locationMode.equals("WIFI")) {
-                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                    } else {
-                                        toSend = toSend + NewPost.locationMode + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
-                                    }
-                                    Socket s = SocketHandler.getSocket();
-                                    Log.d("CONNECTION", "Connection successful!");
-                                    DataOutputStream dout = new DataOutputStream(s.getOutputStream());
-                                    dout.writeUTF(toSend);
-                                    dout.flush();
-                                    //dout.close();
-                                    Log.d("NEW POST", toSend);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                String toSend = "NewPosts;:;" + SocketHandler.getToken() + ";:;" + NewPost.tittle + ";:;" + NewPost.content + ";:;" + NewPost.contact + ";:;" + System.currentTimeMillis() + ";:;" + NewPost.lifetime + ";:;";
+                                StringBuilder restrictions = new StringBuilder();
+                                for (Object str : NewPost.restrictionList) {
+                                    restrictions.append(str.toString() + ",");
                                 }
-                            } else if(NewPost.deliveryMode.equals(NewPost.DECENTRALIZED)) {
+                                if (NewPost.locationMode.equals("GPS")) {
+                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + String.format(Locale.US, "%f, %f", NewPost.location.getLatitude(), NewPost.location.getLongitude()) + ";:;" + NewPost.radius + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                } else if (NewPost.locationMode.equals("WIFI")) {
+                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.location_name + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                } else {
+                                    toSend = toSend + NewPost.locationMode + ";:;" + NewPost.restrictionPolicy + ";:;" + restrictions;
+                                }
+                                toSend = toSend + ";:;" + NewPost.deliveryMode;
+                                Socket s = SocketHandler.getSocket();
+                                DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+                                dout.writeUTF(toSend);
+                                dout.flush();
+                                //dout.close();
+                                Log.d("NEW POST", toSend);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if(NewPost.deliveryMode.equals(NewPost.DECENTRALIZED)) {
                                 Post post = new Post(
                                         SocketHandler.getUsername(),
                                         NewPost.tittle,
@@ -207,7 +206,6 @@ public class RestritionOptionActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         try {
             Socket s = SocketHandler.getSocket();
-            Log.d("CONNECTION", "Connection successful!");
             DataOutputStream dout = new DataOutputStream(s.getOutputStream());
             dout.writeUTF(toSend);
             dout.flush();

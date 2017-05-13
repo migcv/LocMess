@@ -52,17 +52,9 @@ public class ExpandableListDataPump {
 
             while(!responseSplitted[0].equals("END")) {
                 String[] postArguments = responseSplitted[1].split(",");
-                setDataMyPost(postArguments[0], postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6]);
-
+                setDataMyPost(postArguments[0], postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);
                 response = dis.readUTF();
                 Log.d("GET_MY_POSTS", response);
-                Log.d("POSTS_ARGUMENTS", postArguments[0]);
-                Log.d("POSTS_ARGUMENTS", postArguments[1]);
-                Log.d("POSTS_ARGUMENTS", postArguments[2]);
-                Log.d("POSTS_ARGUMENTS", postArguments[3]);
-                Log.d("POSTS_ARGUMENTS", postArguments[4]);
-                Log.d("POSTS_ARGUMENTS", postArguments[5]);
-
                 responseSplitted = response.split(";:;");
             }
         } catch (IOException e) {
@@ -84,7 +76,7 @@ public class ExpandableListDataPump {
         setCount();
     }
 
-    public static void setDataMyPost(String id, String title, String content, String contact, String post_time, String post_lifetime, String deliveryMode ){
+    public static void setDataMyPost(String id, String title, String content, String contact, String post_time, String post_lifetime, String locationMode, String location, String deliveryMode ){
         List<String> aux = new ArrayList<String>();
         aux.add(id);
         aux.add(title);
@@ -92,6 +84,8 @@ public class ExpandableListDataPump {
         aux.add(contact);
         aux.add(post_time);
         aux.add(post_lifetime);
+        aux.add(locationMode);
+        aux.add(location);
         aux.add(deliveryMode);
         myPosts.add(aux);
     }

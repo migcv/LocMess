@@ -45,6 +45,7 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.PostsActivity;
 import pt.ulisboa.tecnico.cmov.locmess.utils.GlobalLocMess;
+import pt.ulisboa.tecnico.cmov.locmess.utils.NewPost;
 import pt.ulisboa.tecnico.cmov.locmess.utils.Post;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
@@ -198,9 +199,31 @@ public class LocationService extends Service implements LocationListener, SimWif
                         Log.d("CLIENT_SOCKET", "Preparing to send message");
                         send = false;
                         for (SimWifiP2pDevice device : ((GlobalLocMess) getApplicationContext()).getDevicesToDelivery()) {
-                            Log.d("CLIENT_SOCKET", "Sending message > " + device.deviceName);
-                            mCliSocket = new SimWifiP2pSocket(device.virtDeviceAddress.split(":")[0], PORT);
-                            mCliSocket.getOutputStream().write(("HELLO!").getBytes());
+                            for(Post post : ((GlobalLocMess) getApplicationContext()).getPostsToDelivery()) {
+                                String toSend = post.getUser() + ";:;" + post.getTittle() + ";:;" + post.getContent() + ";:;" +
+                                    post.getContact() + ";:;" + post.getPostTime() + ";:;" + post.getPostLifetime() + ";:;" +
+                                    post.getType();
+                                if(post.getType().equals("GPS")) {
+                                    toSend = toSend + ";:;" + post.getLatitude() + "," + post.getLongitude();
+                                } else if(post.getType().equals("WIFI")) {
+                                    toSend = toSend + ";:;";
+                                    for(String ssid : post.getSsids()) {
+                                        toSend = toSend + ssid + ",";
+                                    }
+                                }
+                                toSend = toSend + ";:;" + post.getRestrictionPolicy();
+                                if(!post.getRestrictionPolicy().equals(NewPost.EVERYONE)) {
+                                    toSend = toSend + ";:;";
+                                    for(String key : post.getRestrictions().keySet()) {
+                                        for(String restriction : post.getRestrictions().get(key))
+                                        toSend = toSend + restriction + "(" + key + "),";
+                                    }
+                                }
+                                Log.d("CLIENT_SOCKET", "Sending message > " + device.deviceName + ", " + device.virtDeviceAddress);
+                                Log.d("CLIENT_SOCKET", "Message > " + toSend);
+                                mCliSocket = new SimWifiP2pSocket(device.virtDeviceAddress.split(":")[0], PORT);
+                                mCliSocket.getOutputStream().write((toSend).getBytes());
+                            }
                             mCliSocket.close();
                         }
                     }
