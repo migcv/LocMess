@@ -7,12 +7,14 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Messenger;
 
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.services.LocationService;
 
@@ -44,6 +46,106 @@ public class GlobalLocMess extends Application {
             }
         }
     }
+
+    public void postsToSend(SimWifiP2pSocket mCliSocket) {
+        for(Post p : postsToDelivery){
+        DataOutputStream dataOutputStream;
+        if (p.getRestrictionPolicy().equals("EVERYONE")) {
+            String response = "Posts;:;" + p.getId() + "," + p.getUser() + "," + p.getTitle() + "," + p.getContent()
+                        + "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+                        + p.getDeliveryMode() + "," + p.getLocationName();
+
+            try {
+                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
+                dataOutputStream.writeUTF(response);
+                dataOutputStream.flush();
+                System.out.println("EVERYONE: " + response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (p.getRestrictionPolicy().equals("WHITE")) {
+            HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
+            Set<String> ures = userRestrictions.keySet();
+            String restrictions = p.getRestrictions();
+            HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
+            Set<String> pres = postRestrictions.keySet();
+            boolean flag = false;
+            for (String res : pres) {
+                if (ures.contains(res)) {
+                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+                        if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+
+                            String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+                                        + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+                                        + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+                                        + p.getLoc().getLocationName();
+
+                            try {
+                                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
+                                dataOutputStream.writeUTF(response);
+                                dataOutputStream.flush();
+                                System.out.println("WHITE: " + response);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        break;
+                    }
+                }
+            }
+        } else if (p.getRestrictionPolicy().equals("BLACK")) {
+            HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
+            Set<String> ures = userRestrictions.keySet();
+            String restrictions = p.getRestrictions();
+            HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
+            Set<String> pres = postRestrictions.keySet();
+            int counter = 0;
+            for (String res : pres) {
+                if (ures.contains(res)) {
+                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+                        if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
+                            break;
+                        } else {
+                            String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+                                        + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+                                        + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+                                        + p.getLoc().getLocationName();
+
+                            try {
+                                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
+                                dataOutputStream.writeUTF(response);
+                                dataOutputStream.flush();
+                                System.out.println("BLACK: " + response);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else {
+                    counter++;
+                    if (counter == pres.size()) {
+                        String response  = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+                                    + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+                                    + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
+                                    + p.getLoc().getLocationName();
+                        
+                        try {
+                            dataOutputStream = new DataOutputStream(s.getOutputStream());
+                            dataOutputStream.writeUTF(response);
+                            dataOutputStream.flush();
+                            System.out.println("BLACK: " + response);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }}
 
     public void logout() {
         getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
