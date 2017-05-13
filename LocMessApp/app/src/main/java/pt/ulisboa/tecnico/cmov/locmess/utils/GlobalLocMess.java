@@ -132,7 +132,7 @@ public class GlobalLocMess extends Application {
                                     + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
                                     + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
                                     + p.getLoc().getLocationName();
-                        
+
                         try {
                             dataOutputStream = new DataOutputStream(s.getOutputStream());
                             dataOutputStream.writeUTF(response);

@@ -3,23 +3,14 @@ package pt.ulisboa.tecnico.cmov.locmessServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLServerSocket;
 
 public class LocMess {
 
 	private static final int port = 10000;
 	private static ServerSocket ss;
-	private static SSLServerSocket sslServer;
+	//private static SSLServerSocket sslServer;
 
 	private static HashMap<String, User> users = new HashMap<>();
 	private static HashMap<User, ArrayList<Posts>> userPosts = new HashMap<>();
@@ -164,20 +155,20 @@ public class LocMess {
 		ArrayList<Posts> posts = new ArrayList<>();
 		u.setNumOfPost();
 		Posts p = new Posts("Procuro colega de casa", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS",
-				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost());
+				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost(), "CENTRALIZED");
 		u.setNumOfPost();
 		Posts p1 = new Posts("Beber uma cerveja", "adsadsd", "1213243", "1545931375100", "1545931375100", "GPS",
-				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost());
+				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Job)", u.getNumOfPost(), "DECENTRALIZED");
 		u.setNumOfPost();
 
 		ArrayList<Posts> posts1 = new ArrayList<>();
 		u1.setNumOfPost();
 		Posts p2 = new Posts("Procuro alunos do Tecnico", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
-				"Arco do Cego", "38.736151, -9.142168", "100", "EVERYONE", u1.getNumOfPost());
+				"Arco do Cego", "38.736151, -9.142168", "100", "EVERYONE", u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
 		Posts p3 = new Posts("Beber um copo de vinho", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
 				"Arco do Cego", "38.736151, -9.142168", "100", "WHITE", "Student (Jobs),Gorilla (Animals)",
-				u1.getNumOfPost());
+				u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
 
 		ArrayList<String> ssids = new ArrayList<>();
@@ -187,10 +178,10 @@ public class LocMess {
 		Locations l10 = new Locations("WIFI", "Edurom", ssids);
 
 		Posts p4 = new Posts("Pessoas que utilizem o facebook", "adsadsd", "1213243", "1493283131847", "1545931375100",
-				"WIFI", l10, "EVERYONE", u1.getNumOfPost());
+				"WIFI", l10, "EVERYONE", u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
 		Posts p5 = new Posts("Pessoas giras", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
-				"Arco do Cego", "38.736151, -9.142168", "100", "BLACK", "Employed (Job)", u1.getNumOfPost());
+				"Arco do Cego", "38.736151, -9.142168", "100", "BLACK", "Employed (Job)", u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
 
 		posts.add(p);

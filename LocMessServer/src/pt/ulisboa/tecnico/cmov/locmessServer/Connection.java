@@ -68,30 +68,22 @@ public class Connection implements Runnable {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);
 				ux.removeRestriction(res[2]);
 			}
-			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && !(res[9].equals("EVERYONE"))) {
-				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI_DIRECT(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
-			}
-			if (res[0].equals("NewPosts") && res[7].equals("WIFI_DIRECT") && res[9].equals("EVERYONE")) {
-				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI_DIRECT(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[10]);
-			}
 			if (res[0].equals("NewPosts") && res[7].equals("GPS") && !(res[11].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
 				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11],
-						res[12]);
+						res[12], res[13]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("GPS") && res[11].equals("EVERYONE")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11]);
+				u.addPostsGPS(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI") && !(res[9].equals("EVERYONE"))) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11]);
 			}
 			if (res[0].equals("NewPosts") && res[7].equals("WIFI") && res[9].equals("EVERYONE")) {
 				User u = LocMess.getSession().getUserFromSession(res[1]);
-				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9]);
+				u.addPostsWIFI(res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10]);
 			}
 			if (res[0].equals("MYPosts")) {
 				User ux = LocMess.getSession().getUserFromSession(res[1]);

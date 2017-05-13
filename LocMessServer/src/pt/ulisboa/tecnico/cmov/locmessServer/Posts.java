@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmessServer;
 
-import javax.tools.DocumentationTool.Location;
-
 public class Posts {
 
 	private String title;
@@ -18,36 +16,10 @@ public class Posts {
 	private String restrictionPolicy;
 	private String restrictions;
 	private Locations loc;
+	private String flag;
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName,String restrictionPolicy, String restrictions, int id) {
-		this.title = title;
-		this.content = content;
-		this.contact = contact;
-		this.creationDateTime = creationDateTime;
-		this.limitDateTime = limitDateTime;
-		this.deliveryMode = deliveryMode;
-		this.locationName = locationName;
-		this.restrictionPolicy = restrictionPolicy;
-		this.restrictions = restrictions;
-		this.id = id;
-	}
-
-	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName,String restrictionPolicy, int id) {
-		this.title = title;
-		this.content = content;
-		this.contact = contact;
-		this.creationDateTime = creationDateTime;
-		this.limitDateTime = limitDateTime;
-		this.deliveryMode = deliveryMode;
-		this.locationName = locationName;
-		this.restrictionPolicy = restrictionPolicy;
-		this.id = id;
-	}
-	
-	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, Locations loc,String restrictionPolicy, String restrictions, int id) {
+			String deliveryMode, Locations loc, String restrictionPolicy, String restrictions, int id, String flag) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -58,10 +30,11 @@ public class Posts {
 		this.restrictionPolicy = restrictionPolicy;
 		this.restrictions = restrictions;
 		this.id = id;
+		this.flag = flag;
 	}
-	
+
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, Locations loc ,String restrictionPolicy, int id) {
+			String deliveryMode, Locations loc, String restrictionPolicy, int id, String flag) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -71,11 +44,12 @@ public class Posts {
 		this.loc = loc;
 		this.restrictionPolicy = restrictionPolicy;
 		this.id = id;
+		this.flag = flag;
 	}
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
 			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
-			String restrictions, int id) {
+			String restrictions, int id, String flag) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -90,10 +64,12 @@ public class Posts {
 		this.restrictionPolicy = restrictionPolicy;
 		this.restrictions = restrictions;
 		this.id = id;
+		this.flag = flag;
 	}
 
 	public Posts(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy, int id) {
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
+			int id, String flag) {
 		this.title = title;
 		this.content = content;
 		this.contact = contact;
@@ -107,6 +83,7 @@ public class Posts {
 		this.radius = Double.parseDouble(radius);
 		this.restrictionPolicy = restrictionPolicy;
 		this.id = id;
+		this.flag = flag;
 	}
 
 	public String getTitle() {
@@ -167,6 +144,10 @@ public class Posts {
 
 	public Locations getLoc() {
 		return loc;
+	}
+
+	public String isFlag() {
+		return flag;
 	}
 
 }
