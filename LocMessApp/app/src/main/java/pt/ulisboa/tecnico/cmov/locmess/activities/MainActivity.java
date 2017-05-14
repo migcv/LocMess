@@ -1,13 +1,17 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity{
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+
         Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
         startActivityForResult(intent, RESULT_OK);
 

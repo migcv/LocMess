@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Messenger;
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -24,8 +26,8 @@ import pt.ulisboa.tecnico.cmov.locmess.services.LocationService;
 
 public class GlobalLocMess extends Application {
 
-    private double latitude = 38.7378954;
-    private double longitude = -9.1378972;
+    private double latitude;
+    private double longitude;
 
     private HashMap<String, ArrayList<String>> userInterests = new HashMap<>();
 
@@ -59,105 +61,93 @@ public class GlobalLocMess extends Application {
         }
     }
 
-    /*public void postsToSend(SimWifiP2pSocket mCliSocket) {
-        for(Post p : postsToDelivery){
-        DataOutputStream dataOutputStream;
-        if (p.getRestrictionPolicy().equals("EVERYONE")) {
-            String response = "Posts;:;" + p.getId() + "," + p.getUser() + "," + p.getTitle() + "," + p.getContent()
-                        + "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-                        + p.getDeliveryMode() + "," + p.getLocationName();
-
-            try {
-                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
-                dataOutputStream.writeUTF(response);
-                dataOutputStream.flush();
-                System.out.println("EVERYONE: " + response);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (p.getRestrictionPolicy().equals("WHITE")) {
-            HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
-            Set<String> ures = userRestrictions.keySet();
-            String restrictions = p.getRestrictions();
-            HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
-            Set<String> pres = postRestrictions.keySet();
-            boolean flag = false;
-            for (String res : pres) {
-                if (ures.contains(res)) {
-                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-                        if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
-
-                            String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-                                        + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-                                        + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-                                        + p.getLoc().getLocationName();
-
-                            try {
-                                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
-                                dataOutputStream.writeUTF(response);
-                                dataOutputStream.flush();
-                                System.out.println("WHITE: " + response);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            flag = true;
-                            break;
+    public void checkPostToSend() {
+        GlobalLocMess globalLocMess = ((GlobalLocMess) getApplicationContext());
+        for(String id : globalLocMess.getPostsToDelivery().keySet()) {
+            if(globalLocMess.getPost(id) == null && !postsToDelivery.get(id).getUser().equals(SocketHandler.getUsername())) {
+                Post post = postsToDelivery.get(id);
+                if (post.getType().equals("GPS")) {
+                    if(verifyPostRange(getLatitude(), getLongitude(), post.getLatitude(), post.getLongitude(), post.getRadius())) {
+                        if(verifyRestrictions(post)) {
+                            addPost(id, post);
                         }
                     }
-                    if (flag) {
-                        break;
-                    }
-                }
-            }
-        } else if (p.getRestrictionPolicy().equals("BLACK")) {
-            HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
-            Set<String> ures = userRestrictions.keySet();
-            String restrictions = p.getRestrictions();
-            HashMap<String, ArrayList<String>> postRestrictions = getRestrictionsFromPost(restrictions);
-            Set<String> pres = postRestrictions.keySet();
-            int counter = 0;
-            for (String res : pres) {
-                if (ures.contains(res)) {
-                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
-                        if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
-                            break;
-                        } else {
-                            String response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-                                        + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-                                        + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-                                        + p.getLoc().getLocationName();
-
-                            try {
-                                dataOutputStream = new DataOutputStream(mCliSocket.getOutputStream());
-                                dataOutputStream.writeUTF(response);
-                                dataOutputStream.flush();
-                                System.out.println("BLACK: " + response);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                } else {
-                    counter++;
-                    if (counter == pres.size()) {
-                        String response  = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-                                    + p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-                                    + p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-                                    + p.getLoc().getLocationName();
-
-                        try {
-                            dataOutputStream = new DataOutputStream(s.getOutputStream());
-                            dataOutputStream.writeUTF(response);
-                            dataOutputStream.flush();
-                            System.out.println("BLACK: " + response);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                } else if (post.getType().equals("WIFI")) {
+                    if(verifyPostWIFI(getCurrentWifis(),post.getSsids())) {
+                        if(verifyRestrictions(post)) {
+                            addPost(id, post);
                         }
                     }
                 }
             }
         }
-    }} */
+    }
+
+    public boolean verifyRestrictions(Post p) {
+        if (p.getRestrictionPolicy().equals("EVERYONE")) {
+            return true;
+        } else if (p.getRestrictionPolicy().equals("WHITE")) {
+            Set<String> ures = userInterests.keySet();
+            HashMap<String, ArrayList<String>> postRestrictions = p.getRestrictions();
+            Set<String> pres = postRestrictions.keySet();
+            for (String res : pres) {
+                if (ures.contains(res)) {
+                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+                        if (userInterests.get(res).contains(postRestrictions.get(res).get(a))) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else if (p.getRestrictionPolicy().equals("BLACK")) {
+            Set<String> ures = userInterests.keySet();
+            HashMap<String, ArrayList<String>> postRestrictions = p.getRestrictions();
+            Set<String> pres = postRestrictions.keySet();
+            int counter = 0;
+            for (String res : pres) {
+                if (ures.contains(res)) {
+                    for (int a = 0; a < postRestrictions.get(res).size(); a++) {
+                        if (userInterests.get(res).contains(postRestrictions.get(res).get(a))) {
+                            return false;
+                        } else {
+                            counter++;
+                        }
+                    }
+                } else if (!ures.contains(res)) {
+                    counter++;
+                }
+            }
+            if (counter == pres.size()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean verifyPostRange(double currentLat, double currentLong, double lat, double longi, double radius) {
+        double earthRadius = 6371000; // meters
+        double dLat = Math.toRadians(lat - currentLat);
+        double dLng = Math.toRadians(longi - currentLong);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat))
+                * Math.cos(Math.toRadians(currentLat)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        float dist = (float) (earthRadius * c);
+        if (dist <= radius) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean verifyPostWIFI(ArrayList<SimWifiP2pDevice> currentWIFI, ArrayList<String> postWIFI) {
+        for (int k = 0; k < currentWIFI.size(); k++) {
+            for (int j = 0; j < postWIFI.size(); j++) {
+                if (currentWIFI.get(k).deviceName.equals(postWIFI.get(j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public void logout() {
         getApplicationContext().stopService(new Intent(getApplicationContext(), LocationService.class));
@@ -174,6 +164,10 @@ public class GlobalLocMess extends Application {
 
     public void addPostToDelivary(String id, Post post) {
         postsToDelivery.put(id, post);
+    }
+
+    public Post getPostToDelivery(String id) {
+        return this.postsToDelivery.get(id);
     }
 
     public ConcurrentHashMap<String,Post> getPostsToDelivery() {

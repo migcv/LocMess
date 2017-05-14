@@ -84,9 +84,6 @@ public class ProfileLocationsFragment extends Fragment {
     private Marker marker ;
     private LocationEngine locationEngine;
 
-    private WifiManager mainWifi;
-    private WifiReceiver receiverWifi;
-
     private ArrayList<String> wifiSSIDList = new ArrayList<>();
 
     private RadioButton radioButtonGPS;
@@ -224,21 +221,6 @@ public class ProfileLocationsFragment extends Fragment {
                 locationDialog.show();
             }
         });
-        /*try {
-            mainWifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-            receiverWifi = new WifiReceiver();
-            getContext().registerReceiver(receiverWifi, new IntentFilter(
-                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-            if (mainWifi.isWifiEnabled() == false) {
-                mainWifi.setWifiEnabled(true);
-            }
-            Log.d("LOCATIONS_WIFI", "Enable Wifi");
-
-            mainWifi.startScan();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }*/
 
         populateLocations();
 
@@ -274,23 +256,6 @@ public class ProfileLocationsFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private class WifiReceiver extends BroadcastReceiver {
-        public void onReceive(Context c, Intent intent) {
-            ArrayList<String> connections=new ArrayList<String>();
-
-            List<ScanResult> wifiList;
-            wifiList = mainWifi.getScanResults();
-            for(int i = 0; i < wifiList.size(); i++) {
-                connections.add(wifiList.get(i).SSID);
-                Log.d("LOCATION_WIFI", i + " " + wifiList.get(i).SSID);
-                if(!wifiSSIDList.contains(wifiList.get(i).SSID)) {
-                    wifiSSIDList.add(wifiList.get(i).SSID);
-                    addWifiToLayout((LinearLayout) getView().findViewById(R.id.layout_wifi_list), wifiList.get(i).SSID);
-                }
-            }
-        }
     }
 
     private void populateLocations() {

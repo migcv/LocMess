@@ -1,8 +1,12 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -21,6 +25,7 @@ import java.net.Socket;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.services.LocationService;
 import pt.ulisboa.tecnico.cmov.locmess.utils.CreateConnection;
 import pt.ulisboa.tecnico.cmov.locmess.utils.SocketHandler;
 
@@ -132,6 +137,9 @@ public class SignupActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), PostsActivity.class);
         startActivityForResult(intent, RESULT_OK);
+
+        startService(new Intent(this, LocationService.class));
+        Log.d("SERVICE", "Starting Service!");
     }
 
     public void onSignupFailed() {

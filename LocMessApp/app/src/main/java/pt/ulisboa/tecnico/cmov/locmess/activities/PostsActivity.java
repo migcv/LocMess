@@ -1,10 +1,14 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -47,6 +51,11 @@ public class PostsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
 
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +93,7 @@ public class PostsActivity extends AppCompatActivity
     private final Runnable m_Runnable = new Runnable() {
         public void run() {
 
-            PostsActivity.this.mHandler.postDelayed(m_Runnable,10000);
+            PostsActivity.this.mHandler.postDelayed(m_Runnable,5000);
             GlobalLocMess global = (GlobalLocMess) getApplicationContext();
             if(expandableListAdapter.getGroupCount() != global.getPostsMap().size()){
                 expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
@@ -96,7 +105,6 @@ public class PostsActivity extends AppCompatActivity
                 }
                 expandableListAdapter = new PostsListAdapter(getApplicationContext(), expandableListTitle, expandableList);
                 expandableListView.setAdapter(expandableListAdapter);
-                //Toast.makeText(PostsActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
             }
         }
     };

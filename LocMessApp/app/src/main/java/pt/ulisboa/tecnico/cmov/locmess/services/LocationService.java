@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,6 +31,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,8 +63,6 @@ public class LocationService extends Service implements LocationListener, SimWif
 
     Location location;
     LocationManager locationManager;
-    double latitude;
-    double longitude;
 
     //private WifiManager mainWifi;
     //private WifiReceiver receiverWifi;
@@ -111,8 +111,7 @@ public class LocationService extends Service implements LocationListener, SimWif
         receiver = new SimWifiP2pBroadcastReceiver();
         registerReceiver(receiver, filter);
 
-        Thread serverThread = new Thread(new WifiP2pSocketServer());
-        serverThread.start();
+        new IncommingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         Thread locationThread = new Thread(new UserLocation());
         locationThread.start();
@@ -128,15 +127,16 @@ public class LocationService extends Service implements LocationListener, SimWif
                     /*
                      * SEND_CURRENT_GPS
                      */
-                    getLocation();
-                    Log.d("LOCATION_ SERVICE", location == null ? "Location Null" : "Location " + latitude + ", " + longitude);
+                    getLocationNew();
+                    //getLocation();
+                    Log.d("LOCATION_ SERVICE", location == null ? "Location Null" : "Location " + location.getLatitude() + ", " + location.getLongitude());
                     if(location != null) {
-                        ((GlobalLocMess) getApplicationContext()).setLatitude(latitude);
-                        ((GlobalLocMess) getApplicationContext()).setLongitude(longitude);
+                        ((GlobalLocMess) getApplicationContext()).setLatitude(location.getLatitude());
+                        ((GlobalLocMess) getApplicationContext()).setLongitude(location.getLongitude());
 
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
-                        String toSend = "CurrentGPS;:;" + SocketHandler.getToken() + ";:;" + latitude + ", " + longitude;
+                        String toSend = "CurrentGPS;:;" + SocketHandler.getToken() + ";:;" + location.getLatitude() + ", " + location.getLongitude();
                         Socket s = SocketHandler.getSocket();
                         // Sending to Server
                         DataOutputStream dout = new DataOutputStream(s.getOutputStream());
@@ -151,6 +151,9 @@ public class LocationService extends Service implements LocationListener, SimWif
                             str = dis.readUTF();
                         }
                     }
+                    /*
+                     * TERMITE STUFF
+                     */
                     if (mManager == null){
                         Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
                         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -158,15 +161,6 @@ public class LocationService extends Service implements LocationListener, SimWif
                         mManager.requestPeers(mChannel, LocationService.this);
                         mManager.requestGroupInfo(mChannel, LocationService.this);
                     }
-                    /*mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-                    receiverWifi = new WifiReceiver();
-                    getApplicationContext().registerReceiver(receiverWifi, new IntentFilter(
-                            WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                    if (mainWifi.isWifiEnabled() == false) {
-                        mainWifi.setWifiEnabled(true);
-                    }
-                    mainWifi.startScan();*/
                     /*
                      * SEND_CURRENT_WIFI
                      */
@@ -199,11 +193,10 @@ public class LocationService extends Service implements LocationListener, SimWif
                     /*
                      * SEND_POSTS_WIFI_P2P
                      */
-                    Log.d("CLIENT_SOCKET", "Post to send > " + ((GlobalLocMess) getApplicationContext()).getPostsToDelivery().size());
                     if(!((GlobalLocMess) getApplicationContext()).getPostsToDelivery().isEmpty() ) {
                         for (SimWifiP2pDevice device : ((GlobalLocMess) getApplicationContext()).getDevicesToDelivery()) {
                             for(String id : ((GlobalLocMess) getApplicationContext()).getPostsToDelivery().keySet()) {
-                                Log.d("CLIENT_SOCKET", "Preparing to send Post > " + id);
+                                Log.d("SOCKET_CLIENT", "Preparing to send Post > " + id);
                                 Post post = ((GlobalLocMess) getApplicationContext()).getPostsToDelivery().get(id);
                                 String toSend = "DecentralizedPost;:;" + id + ";:;" + post.getUser() + ";:;" + post.getTittle() + ";:;" +
                                         post.getContent() + ";:;" + post.getContact() + ";:;" + post.getPostTime() + ";:;"
@@ -224,18 +217,16 @@ public class LocationService extends Service implements LocationListener, SimWif
                                         toSend = toSend + restriction + "(" + key + "),";
                                     }
                                 }
-                                Log.d("CLIENT_SOCKET", "Sending message > " + device.deviceName + ", " + device.virtDeviceAddress);
-                                Log.d("CLIENT_SOCKET", "Message > " + toSend);
-                                mCliSocket = new SimWifiP2pSocket(device.virtDeviceAddress.split(":")[0], PORT);
-                                mCliSocket.getOutputStream().write((toSend).getBytes());
-                                mCliSocket.getOutputStream().flush();
-                                Log.d("CLIENT_SOCKET", "Message Sent");
-                                //mCliSocket.close();
+                                new SendCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, device.virtDeviceAddress.split(":")[0], toSend);
                             }
                         }
                     }
+                    /*
+                     * ADD_POST_DECENTRALIZED
+                     */
+                    ((GlobalLocMess) getApplicationContext()).checkPostToSend();
                     // Sleeps for 10 seconds
-                    Thread.sleep(30000);
+                    Thread.sleep(10000);
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -310,8 +301,8 @@ public class LocationService extends Service implements LocationListener, SimWif
             HashMap<String, ArrayList<String>> restrictions = new HashMap<>();
             if(!restrictions_policy.equals(NewPost.EVERYONE)) {
                 for(String restriction : postArguments[12].split(",")) {
-                    String value = restriction.split("\\(")[0];
-                    String key = restriction.split("\\(")[1];
+                    String value = restriction.split(" \\(")[0];
+                    String key = restriction.split("\\(")[1].split("\\)")[0];
                     if(restrictions.get(key) == null) {
                         ArrayList<String> list = new ArrayList<String>();
                         list.add(value);
@@ -335,6 +326,58 @@ public class LocationService extends Service implements LocationListener, SimWif
         }
     }
 
+    public void addPostToSendP2P(String str) {
+        String[] postArguments = str.split(";:;");
+        GlobalLocMess global = (GlobalLocMess) getApplicationContext();
+        if(global.getPostsToDelivery().get(postArguments[1]) == null) {
+            String user = postArguments[2];
+            String tittle = postArguments[3];
+            String content = postArguments[4];
+            String contact = postArguments[5];
+            String post_time =  postArguments[6];
+            String post_lifetime =  postArguments[7];
+            String location_type =  postArguments[8];
+            String location_name =  postArguments[9];
+            double latitude = 0, longitude = 0, radius = 0;
+            ArrayList<String> ssids = new ArrayList<>();
+            if(location_type.equals("GPS")) {
+                latitude = Double.parseDouble(postArguments[10].split(",")[0]);
+                longitude = Double.parseDouble(postArguments[10].split(",")[1]);
+                radius = Double.parseDouble(postArguments[10].split(",")[2]);
+            } else if(location_type.equals("WIFI")) {
+                for(String ssid : postArguments[10].split(",")) {
+                    ssids.add(ssid);
+                }
+            }
+            String restrictions_policy = postArguments[11];
+            HashMap<String, ArrayList<String>> restrictions = new HashMap<>();
+            if(!restrictions_policy.equals(NewPost.EVERYONE)) {
+                for(String restriction : postArguments[12].split(",")) {
+                    String value = restriction.split("\\(")[0];
+                    String key = restriction.split("\\(")[1].split("\\)")[0];
+                    if(restrictions.get(key) == null) {
+                        ArrayList<String> list = new ArrayList<String>();
+                        list.add(value);
+                        restrictions.put(key, list);
+                    } else {
+                        restrictions.get(key).add(value);
+                    }
+                }
+            }
+            Post newPost = null;
+            if(location_type.equals(NewPost.GPS)) {
+                newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
+                        latitude, longitude, radius, restrictions_policy, restrictions);
+            } else {
+                newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
+                        ssids, restrictions_policy, restrictions);
+            }
+            global.addPostToDelivary(postArguments[1], newPost);
+
+            Log.d("ADD_POST_TO_SEND", "Post added with id: " + postArguments[1]);
+        }
+    }
+
     public void getDecentralizedPosts() {
         String toSend = "GetDecentralizedPosts;:;" + SocketHandler.getToken() + ";:;";
         Socket s =SocketHandler.getSocket();
@@ -353,7 +396,7 @@ public class LocationService extends Service implements LocationListener, SimWif
                 dis = new DataInputStream(s.getInputStream());
                 str = dis.readUTF();
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -382,7 +425,7 @@ public class LocationService extends Service implements LocationListener, SimWif
     public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
         ((GlobalLocMess)getApplicationContext()).cleanDevicesToDelivery();
         for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
-            if(!device.deviceName.equals(simWifiP2pInfo.getDeviceName())) {
+            if(!device.deviceName.equals(simWifiP2pInfo.getDeviceName()) && !device.virtDeviceAddress.startsWith("0.0.0.0")) {
                 ((GlobalLocMess) getApplicationContext()).addDeviceToDelivery(device);
                 Log.d("GROUP_INFO_AVAILABLE", "Device Name: " + device.deviceName + " Device Address: " + device.virtDeviceAddress);
             }
@@ -397,92 +440,77 @@ public class LocationService extends Service implements LocationListener, SimWif
             Log.d("PEERS_AVAILABLE", "Device Name: " + device.deviceName + " Device Address: " + device.realDeviceAddress);
         }
     }
-
     /*
-	 * Asynctasks implementing message exchange
-	 */
+     * Asynctasks implementing Client
+     */
+    public class SendCommTask extends AsyncTask<String, String, Void> {
 
-    public class WifiP2pSocketServer implements Runnable {
-
-        public void run() {
-
-            Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Started Thread");
-
+        @Override
+        protected Void doInBackground(String... params) {
             try {
-                mSrvSocket = new SimWifiP2pSocketServer(PORT);
-
-                Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Listenning " + PORT);
-                while (true) {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-                    Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Accepted Connection");
-                    BufferedReader sockIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                    Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Reading");
-                    String st = sockIn.readLine();
-                    while(st == null) {
-                        st = sockIn.readLine();
-                    }
-                    Log.d("SOCKET_SERVER", "Received Message > " + st);
-                    sockIn.close();
-                    sock.close();
-
-                    //this.addPostToSend(st);
-                    //Log.d("SOCKET_SERVER", "Post Added");
-                }
+                Log.d("SOCKET_CLIENT", "SimWifiP2pSocket > Connecting to " + params[0] + ":" + PORT);
+                mCliSocket = new SimWifiP2pSocket(params[0], PORT);
+                Log.d("SOCKET_CLIENT", "SimWifiP2pSocket > Sending " + params[1]);
+                mCliSocket.getOutputStream().write((params[1] + "\n").getBytes());
+                BufferedReader sockIn = new BufferedReader(new InputStreamReader(mCliSocket.getInputStream()));
+                sockIn.readLine();
+                Log.d("SOCKET_CLIENT", "SimWifiP2pSocket > Sent, closing socket");
+                //mCliSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //mCliSocket = null;
+            return null;
         }
 
-        public void addPostToSend(String str) {
-            String[] postArguments = str.split(";:;");
-            GlobalLocMess global = (GlobalLocMess) getApplicationContext();
-            if(global.getPostsToDelivery().get(postArguments[1]) == null) {
-                String user = postArguments[2];
-                String tittle = postArguments[3];
-                String content = postArguments[4];
-                String contact = postArguments[5];
-                String post_time =  postArguments[6];
-                String post_lifetime =  postArguments[7];
-                String location_type =  postArguments[8];
-                String location_name =  postArguments[9];
-                double latitude = 0, longitude = 0, radius = 0;
-                ArrayList<String> ssids = new ArrayList<>();
-                if(location_type.equals("GPS")) {
-                    latitude = Double.parseDouble(postArguments[10].split(",")[0]);
-                    longitude = Double.parseDouble(postArguments[10].split(",")[1]);
-                    radius = Double.parseDouble(postArguments[10].split(",")[2]);
-                } else if(location_type.equals("WIFI")) {
-                    for(String ssid : postArguments[10].split(",")) {
-                        ssids.add(ssid);
-                    }
-                }
-                String restrictions_policy = postArguments[11];
-                HashMap<String, ArrayList<String>> restrictions = new HashMap<>();
-                if(!restrictions_policy.equals(NewPost.EVERYONE)) {
-                    for(String restriction : postArguments[12].split(",")) {
-                        String value = restriction.split("\\(")[0];
-                        String key = restriction.split("\\(")[1];
-                        if(restrictions.get(key) == null) {
-                            ArrayList<String> list = new ArrayList<String>();
-                            list.add(value);
-                            restrictions.put(key, list);
-                        } else {
-                            restrictions.get(key).add(value);
-                        }
-                    }
-                }
-                Post newPost = null;
-                if(location_type.equals(NewPost.GPS)) {
-                    newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
-                            latitude, longitude, radius, restrictions_policy, restrictions);
-                } else {
-                    newPost = new Post(user, tittle, content, contact, post_time, post_lifetime, location_type, location_name,
-                            ssids, restrictions_policy, restrictions);
-                }
-                global.addPostToDelivary(postArguments[1] + "" + postArguments[2], newPost);
+        @Override
+        protected void onPostExecute(Void result) {
 
-                Log.d("ADD_POST_TO_SEND", "Post added with id: " + postArguments[1] + "" + postArguments[2]);
+        }
+    }
+    /*
+	 * Asynctasks implementing Server
+	 */
+    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Started AsyncTask");
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(PORT);
+                Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Listenning " + PORT);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    Log.d("SOCKET_SERVER", "SimWifiP2pSocketServer > Accepted ");
+                    try {
+                        BufferedReader sockIn = new BufferedReader(
+                                new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        publishProgress(st);
+                        sock.getOutputStream().write(("\n").getBytes());
+                    } catch (IOException e) {
+                        Log.d("Error reading socket:", e.getMessage());
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.d("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            Log.d("SOCKET_SERVER", "Received Message > " + values[0] + "\n");
+            addPostToSendP2P(values[0]);
+            Log.d("SOCKET_SERVER", "Post Added");
         }
     }
     /*
@@ -493,43 +521,15 @@ public class LocationService extends Service implements LocationListener, SimWif
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             // getting GPS status
             boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            // getting network status
-            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
+            if (!isGPSEnabled) {
+                Log.d("LOCATION_ SERVICE", "GPS Disabled");
             } else {
-                if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            5000,
-                            10, this);
-                    Log.d("LOCATION_ SERVICE", "Network Enabled");
+                if (location == null) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
+                    Log.d("LOCATION_ SERVICE", "GPS Enabled");
                     if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                5000,
-                                10, this);
-                        Log.d("LOCATION_ SERVICE", "GPS Enabled");
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
-                        }
+                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     }
                 }
             }
@@ -539,6 +539,29 @@ public class LocationService extends Service implements LocationListener, SimWif
             e.printStackTrace();
         }
         return location;
+    }
+
+    public Location getLocationNew() {
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            String provider = locationManager.getBestProvider(criteria, false);
+            if(provider != null) {
+                locationManager.requestLocationUpdates(provider, 1000, 10, this);
+                location = locationManager.getLastKnownLocation(provider);
+                if (location != null) {
+                    Log.d("NEW_LOCATION", "lat: " + location.getLatitude() + " : log: " + location.getLongitude());
+
+                    ((GlobalLocMess) getApplicationContext()).setLatitude(location.getLatitude());
+                    ((GlobalLocMess) getApplicationContext()).setLongitude(location.getLongitude());
+                    return location;
+                }
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

@@ -27,7 +27,7 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 
 public class CreateConnection extends AsyncTask<String, Void, Void> {
 
-    private static final String ip = "192.168.1.73";
+    private static final String ip = "192.168.1.108";
     private static final int port = 10000;
     public Context c;
     private Socket s;
