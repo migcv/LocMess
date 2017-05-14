@@ -188,6 +188,7 @@ public class Connection implements Runnable {
 		Set<User> users = aux.keySet();
 		for (User u : users) {
 			ArrayList<Posts> posts = aux.get(u);
+			if(posts == null){return;}
 			for (int i = 0; i < posts.size(); i++) {
 				Long postLimitTime = Long.valueOf(posts.get(i).getLimitDateTime());
 				Long currentTime = System.currentTimeMillis();
