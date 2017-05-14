@@ -15,9 +15,9 @@ public class LocMess {
 	private static HashMap<String, User> users = new HashMap<>();
 	private static HashMap<User, ArrayList<Posts>> userPosts = new HashMap<>();
 	private static HashMap<User, HashMap<String, ArrayList<String>>> userRestrictions = new HashMap<>();
+	private static HashMap<User, ArrayList<Locations>> usersLocations = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> globalRestrictions = new HashMap<>();
 	private static HashMap<String, String> userSessions = new HashMap<>();
-	private static HashMap<User, ArrayList<Locations>> usersLocations = new HashMap<>();
 	private static ArrayList<Locations> globalLocations = new ArrayList<>();
 	private static Session session = new Session();
 
@@ -175,13 +175,20 @@ public class LocMess {
 		ssids.add("C");
 		ssids.add("B");
 		ssids.add("WiredSSID");
+		ssids.add("Wifi");
 		Locations l10 = new Locations("WIFI", "Edurom", ssids);
 
 		Posts p4 = new Posts("Pessoas que utilizem o facebook", "adsadsd", "1213243", "1493283131847", "1545931375100",
 				"WIFI", l10, "EVERYONE", u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
-		Posts p5 = new Posts("Pessoas giras", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
+		Posts p5 = new Posts("Pessoas giras SIM Employed", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
 				"Arco do Cego", "38.736151, -9.142168", "100", "BLACK", "Employed (Job)", u1.getNumOfPost(), "CENTRALIZED");
+		u1.setNumOfPost();
+		Posts p6 = new Posts("Pessoas giras NAO GORILLA", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
+				"Arco do Cego", "38.736151, -9.142168", "100", "BLACK", "Gorilla (Animals)", u1.getNumOfPost(), "CENTRALIZED");
+		u1.setNumOfPost();
+		Posts p7 = new Posts("Pessoas giras NAO ", "adsadsd", "1213243", "1493283131847", "1545931375100", "GPS",
+				"Arco do Cego", "38.736151, -9.142168", "100", "BLACK", "Student (Jobs),Gorilla (Animals)", u1.getNumOfPost(), "CENTRALIZED");
 		u1.setNumOfPost();
 
 		posts.add(p);
@@ -190,6 +197,8 @@ public class LocMess {
 		posts1.add(p2);
 		posts1.add(p3);
 		posts1.add(p5);
+		posts1.add(p6);
+		posts1.add(p7);
 		LocMess.getUserPosts().put(u, posts);
 		LocMess.getUserPosts().put(u1, posts1);
 

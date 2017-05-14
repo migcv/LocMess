@@ -181,19 +181,20 @@ public class User {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("-----------------" + aux.size());
 			for (int i = 0; i < aux.size(); i++) {
 				String response = null;
 				if (aux.get(i).getDeliveryMode().equals("GPS")) {
 					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
 							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
 							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName() + "," + aux.get(i).isFlag();
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName() + ","
+							+ aux.get(i).isFlag();
 				} else if (aux.get(i).getDeliveryMode().equals("WIFI")) {
 					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
 							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
 							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName() + "," + aux.get(i).isFlag();
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName() + ","
+							+ aux.get(i).isFlag();
 				}
 				try {
 					System.out.println(response);
@@ -222,7 +223,6 @@ public class User {
 				coordinates, radius, restrictionPolicy, restrictions, getNumOfPost(), flag);
 		if (LocMess.getUserPosts().get(this) != null) {
 			LocMess.getUserPosts().get(this).add(p);
-			System.out.println("-----------------ADD" + LocMess.getUserPosts().get(this).size());
 		} else {
 			ArrayList<Posts> aux = new ArrayList<>();
 			aux.add(p);
@@ -236,11 +236,9 @@ public class User {
 		setNumOfPost();
 		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
 				coordinates, radius, restrictionPolicy, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null){
+		if (LocMess.getUserPosts().get(this) != null) {
 			LocMess.getUserPosts().get(this).add(p);
-			System.out.println("-----------------ADD" + LocMess.getUserPosts().get(this).size());
-		}
-		else {
+		} else {
 			ArrayList<Posts> aux = new ArrayList<>();
 			aux.add(p);
 			LocMess.getUserPosts().put(this, aux);
@@ -254,11 +252,9 @@ public class User {
 		Locations l = new Locations(deliveryMode, locationName, ssid);
 		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
 				restrictionPolicy, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null){
+		if (LocMess.getUserPosts().get(this) != null) {
 			LocMess.getUserPosts().get(this).add(p);
-			System.out.println("-----------------ADD" + LocMess.getUserPosts().get(this).size());
-		}
-		else {
+		} else {
 			ArrayList<Posts> aux = new ArrayList<>();
 			aux.add(p);
 			LocMess.getUserPosts().put(this, aux);
@@ -273,11 +269,9 @@ public class User {
 		Locations l = new Locations(deliveryMode, locationName, ssid);
 		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
 				restrictionPolicy, restrictions, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null){
+		if (LocMess.getUserPosts().get(this) != null) {
 			LocMess.getUserPosts().get(this).add(p);
-			System.out.println("-----------------ADD" + LocMess.getUserPosts().get(this).size());
-		}
-		else {
+		} else {
 			ArrayList<Posts> aux = new ArrayList<>();
 			aux.add(p);
 			LocMess.getUserPosts().put(this, aux);
@@ -295,26 +289,39 @@ public class User {
 			}
 		}
 	}
-	
+
 	public void sendDecentralizedPosts(Socket s) {
+		if (LocMess.getUserPosts().get(this) == null) {
+			try {
+				DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF("END");
+				dataOutputStream.flush();
+				System.out.println("END");
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		try {
 			DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
-			
+
 			for (Posts post : LocMess.getUserPosts().get(this)) {
-				if(post.isFlag().equals("DECENTRALIZED")) {
-					String response = "Posts;:;" + post.getId() + ";:;" + username + ";:;" + post.getTitle() + ";:;" + post.getContent()
-					+ ";:;" + post.getContact() + ";:;" + post.getCreationDateTime() + ";:;" + post.getLimitDateTime();
+				if (post.isFlag().equals("DECENTRALIZED")) {
+					String response = "Posts;:;" + post.getId() + ";:;" + username + ";:;" + post.getTitle() + ";:;"
+							+ post.getContent() + ";:;" + post.getContact() + ";:;" + post.getCreationDateTime() + ";:;"
+							+ post.getLimitDateTime();
 					if (post.getDeliveryMode().equals("WIFI")) {
 						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLoc().getLocationName() + ";:;";
-						for(String ssid : post.getLoc().getSSId()) {
+						for (String ssid : post.getLoc().getSSId()) {
 							response += ssid + ",";
 						}
 					} else if (post.getDeliveryMode().equals("GPS")) {
-						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLocationName() + ";:;" 
+						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLocationName() + ";:;"
 								+ post.getLatitude() + "," + post.getLongitude() + "," + post.getRadius();
 					}
 					response += ";:;" + post.getRestrictionPolicy() + ";:;";
-					if(!post.getRestrictionPolicy().equals("EVERYONE")) {
+					if (!post.getRestrictionPolicy().equals("EVERYONE")) {
 						response += post.getRestrictions();
 					}
 					dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -423,20 +430,23 @@ public class User {
 		Set<User> keySet = LocMess.getUserPosts().keySet();
 		DataOutputStream dataOutputStream;
 		for (User key : keySet) {
-			for (int i = 0; i < LocMess.getUserPosts().get(key).size(); i++) {
-				if (!this.equals(key)) {
-					Posts p = LocMess.getUserPosts().get(key).get(i);
+			if (LocMess.getUserPosts().get(key) != null) {
+				for (int i = 0; i < LocMess.getUserPosts().get(key).size(); i++) {
+					if (!this.equals(key)) {
+						Posts p = LocMess.getUserPosts().get(key).get(i);
 
-					if (p.isFlag().equals("CENTRALIZED") && p.getDeliveryMode().equals("GPS") && this.currentLatitude != null
-							&& this.currentLongitude != null) {
-						if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(),
-								p.getLongitude(), p.getRadius())) {
-							postsToSend(p, s, key, p.getDeliveryMode());
+						if (p.isFlag().equals("CENTRALIZED") && p.getDeliveryMode().equals("GPS")
+								&& this.currentLatitude != null && this.currentLongitude != null) {
+							if (verifyPostRange(this.currentLatitude, this.currentLongitude, p.getLatitude(),
+									p.getLongitude(), p.getRadius())) {
+								postsToSend(p, s, key, p.getDeliveryMode());
+							}
 						}
-					}
-					if (p.isFlag().equals("CENTRALIZED")  && p.getDeliveryMode().equals("WIFI") && !this.getCurrentWIFI().isEmpty()) {
-						if (verifyPostWIFI(this.getCurrentWIFI(), p.getLoc().getSSId())) {
-							postsToSend(p, s, key, p.getDeliveryMode());
+						if (p.isFlag().equals("CENTRALIZED") && p.getDeliveryMode().equals("WIFI")
+								&& !this.getCurrentWIFI().isEmpty()) {
+							if (verifyPostWIFI(this.getCurrentWIFI(), p.getLoc().getSSId())) {
+								postsToSend(p, s, key, p.getDeliveryMode());
+							}
 						}
 					}
 				}
@@ -534,7 +544,8 @@ public class User {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else if (p.getRestrictionPolicy().equals("WHITE")) {
+		} else if (p.getRestrictionPolicy().equals("WHITE") && LocMess.getUserRestrictions().get(this) != null) {
+
 			HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
 			Set<String> ures = userRestrictions.keySet();
 			String restrictions = p.getRestrictions();
@@ -573,7 +584,26 @@ public class User {
 					}
 				}
 			}
-		} else if (p.getRestrictionPolicy().equals("BLACK")) {
+		}else if(p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) == null){
+			String response = null;
+			if (type.equals("WIFI")) {
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+						+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+						+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+			} else if (type.equals("GPS")) {
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+						+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+						+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+			}
+			try {
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF(response);
+				dataOutputStream.flush();
+				System.out.println("BLACK: " + response);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else if (p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) != null) {
 			HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
 			Set<String> ures = userRestrictions.keySet();
 			String restrictions = p.getRestrictions();
@@ -586,50 +616,31 @@ public class User {
 						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
 							break;
 						} else {
-							String response = null;
-							if (type.equals("WIFI")) {
-								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-										+ p.getLoc().getLocationName();
-							} else if (type.equals("GPS")) {
-								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
-							}
-							try {
-								dataOutputStream = new DataOutputStream(s.getOutputStream());
-								dataOutputStream.writeUTF(response);
-								dataOutputStream.flush();
-								System.out.println("BLACK: " + response);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+							counter++;
 						}
 					}
-				} else {
+				} else if (!ures.contains(res)) {
 					counter++;
-					if (counter == pres.size()) {
-						String response = null;
-						if (type.equals("WIFI")) {
-							response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-									+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-									+ p.getLoc().getLocationName();
-						} else if (type.equals("GPS")) {
-							response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-									+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-									+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
-						}
-						try {
-							dataOutputStream = new DataOutputStream(s.getOutputStream());
-							dataOutputStream.writeUTF(response);
-							dataOutputStream.flush();
-							System.out.println("BLACK: " + response);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
+				}
+			}
+			if (counter == pres.size()) {
+				String response = null;
+				if (type.equals("WIFI")) {
+					response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+				} else if (type.equals("GPS")) {
+					response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
+							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
+							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+				}
+				try {
+					dataOutputStream = new DataOutputStream(s.getOutputStream());
+					dataOutputStream.writeUTF(response);
+					dataOutputStream.flush();
+					System.out.println("BLACK: " + response);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
