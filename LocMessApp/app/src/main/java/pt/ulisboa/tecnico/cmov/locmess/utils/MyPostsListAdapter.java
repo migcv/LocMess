@@ -87,8 +87,9 @@ public class MyPostsListAdapter extends BaseExpandableListAdapter {
             text_post_deadline.setText("EXPIRED!");
         }
 
-        TextView text_post_location = (TextView) convertView.findViewById(R.id.text_post_location);
-        text_post_location.setText(this.expandableListDetail.get(listPosition).get(7));
+        TextView text_delivery_mode = (TextView) convertView.findViewById(R.id.text_delivery_mode);
+        String delivery_mode = this.expandableListDetail.get(listPosition).get(8);
+        text_delivery_mode.setText(delivery_mode.substring(0, 1) + delivery_mode.substring(1, delivery_mode.length()).toLowerCase());
 
         return convertView;
     }
@@ -130,6 +131,9 @@ public class MyPostsListAdapter extends BaseExpandableListAdapter {
 
         final View convert_view = convertView;
         final View layout = convertView.findViewById(R.id.layout_post);
+
+        TextView text_location = (TextView)convert_view.findViewById(R.id.text_location);
+        text_location.setText(this.expandableListDetail.get(listPosition).get(7));
 
         ViewHolder holder = new ViewHolder(convertView);
 
@@ -176,7 +180,7 @@ public class MyPostsListAdapter extends BaseExpandableListAdapter {
             }
         };
         holder.button.setOnClickListener(clickL);
-        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.text1);
+        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.text_title);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
         ImageView icon_delivery = (ImageView) convertView.findViewById(R.id.icon_delivery);

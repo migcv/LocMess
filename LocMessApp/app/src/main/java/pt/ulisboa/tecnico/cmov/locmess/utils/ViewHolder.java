@@ -14,7 +14,7 @@ public class ViewHolder {
     public TextView text;
     public Button button;
     public ViewHolder(View v) {
-        this.text = (TextView)v.findViewById(R.id.text1);
+        this.text = (TextView)v.findViewById(R.id.text_title);
         this.button = (Button)v.findViewById(R.id.button1);
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class ExpandableListDataPump {
             String[] responseSplitted = response.split(";:;");
 
             while(!responseSplitted[0].equals("END")) {
-                String[] postArguments = responseSplitted[1].split(",");
+                String[] postArguments = Arrays.copyOfRange(responseSplitted, 1, responseSplitted.length);
                 setDataMyPost(postArguments[0], postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);
                 response = dis.readUTF();
                 Log.d("GET_MY_POSTS", response);

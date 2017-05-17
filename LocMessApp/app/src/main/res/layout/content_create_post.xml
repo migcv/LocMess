@@ -29,7 +29,7 @@
             <EditText android:id="@+id/input_tittle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/tittle"
+                android:hint="Post Tittle"
                 android:inputType="textPersonName" />
         </android.support.design.widget.TextInputLayout>
 
@@ -37,15 +37,14 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText android:id="@+id/input_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/content"
+                android:hint="Post Content"
                 android:inputType="textMultiLine"
-                android:lines="8"
-                android:minLines="6"
+                android:lines="6"
+                android:minLines="3"
                 android:gravity="top|left"
                 android:maxLines="10"
                 android:scrollbars="vertical" />
@@ -80,7 +79,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="datetime"
-                android:hint="@string/time"
+                android:hint="When to delete the Post"
                 android:textAlignment="center" />
         </android.support.design.widget.TextInputLayout>
 

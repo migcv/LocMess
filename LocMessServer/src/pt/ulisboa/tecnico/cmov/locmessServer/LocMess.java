@@ -190,9 +190,9 @@ public class LocMess {
 		aux11.add(l11);
 
 		ArrayList<String> ssID = new ArrayList<>();
-		ssid.add("B");
-		ssid.add("C");
-		ssid.add("D");
+		ssID.add("B");
+		ssID.add("C");
+		ssID.add("D");
 		Locations l12 = new Locations("WIFI", "Termite", ssID);
 		aux11.add(l12);
 		LocMess.getUsersLocations().put(u2, aux11);

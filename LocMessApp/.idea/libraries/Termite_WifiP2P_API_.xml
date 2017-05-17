@@ -1,13 +1,8 @@
 <component name="libraryTable">
   <library name="Termite-WifiP2P-API-">
     <CLASSES>
-<<<<<<< HEAD
-      <root url="file://$USER_HOME$/.android/build-cache/3f4d0562009d5cd02affd8d35792793db43d7448/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/3f4d0562009d5cd02affd8d35792793db43d7448/output/jars/classes.jar!/" />
-=======
-      <root url="file://$USER_HOME$/.android/build-cache/a91b29171e4908b79a4898c4bd47424e6566a86a/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/a91b29171e4908b79a4898c4bd47424e6566a86a/output/jars/classes.jar!/" />
->>>>>>> 1089f907d0b09cee92b3d032f0d2fcb30b45e05b
+      <root url="jar://$USER_HOME$/.android/build-cache/0d643ecb4629270f340fd48b40b332056be1f541/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/0d643ecb4629270f340fd48b40b332056be1f541/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

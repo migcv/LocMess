@@ -371,16 +371,16 @@ public class User {
 			for (int i = 0; i < aux.size(); i++) {
 				String response = null;
 				if (aux.get(i).getDeliveryMode().equals("GPS")) {
-					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
-							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName() + ","
+					response = "MYPosts;:;" + aux.get(i).getId() + ";:;" + aux.get(i).getTitle() + ";:;"
+							+ aux.get(i).getContent() + ";:;" + aux.get(i).getContact() + ";:;"
+							+ aux.get(i).getCreationDateTime() + ";:;" + aux.get(i).getLimitDateTime() + ";:;"
+							+ aux.get(i).getDeliveryMode() + ";:;" + aux.get(i).getLocationName() + ";:;"
 							+ aux.get(i).isFlag();
 				} else if (aux.get(i).getDeliveryMode().equals("WIFI")) {
-					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
-							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName() + ","
+					response = "MYPosts;:;" + aux.get(i).getId() + ";:;" + aux.get(i).getTitle() + ";:;"
+							+ aux.get(i).getContent() + ";:;" + aux.get(i).getContact() + ";:;"
+							+ aux.get(i).getCreationDateTime() + ";:;" + aux.get(i).getLimitDateTime() + ";:;"
+							+ aux.get(i).getDeliveryMode() + ";:;" + aux.get(i).getLoc().getLocationName() + ";:;"
 							+ aux.get(i).isFlag();
 				}
 				try {
@@ -527,13 +527,13 @@ public class User {
 		if (p.getRestrictionPolicy().equals("EVERYONE")) {
 			String response = null;
 			if (type.equals("WIFI")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
-						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-						+ p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+				response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+						+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+						+ p.getDeliveryMode() + ";:;" + p.getLoc().getLocationName();
 			} else if (type.equals("GPS")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
-						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-						+ p.getDeliveryMode() + "," + p.getLocationName();
+				response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+						+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+						+ p.getDeliveryMode() + ";:;" + p.getLocationName();
 			}
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -557,14 +557,13 @@ public class User {
 						if (userRestrictions.get(res).contains(postRestrictions.get(res).get(a))) {
 							String response = null;
 							if (type.equals("WIFI")) {
-								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + ","
-										+ p.getLoc().getLocationName();
+								response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+								+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+								+ p.getDeliveryMode() + ";:;" + p.getLoc().getLocationName();
 							} else if (type.equals("GPS")) {
-								response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-										+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-										+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+								response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+								+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+								+ p.getDeliveryMode() + ";:;" + p.getLocationName();
 							}
 							try {
 								dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -586,13 +585,13 @@ public class User {
 		} else if (p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) == null) {
 			String response = null;
 			if (type.equals("WIFI")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
-						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-						+ p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+				response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+				+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+				+ p.getDeliveryMode() + ";:;" + p.getLoc().getLocationName();
 			} else if (type.equals("GPS")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
-						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
-						+ p.getDeliveryMode() + "," + p.getLocationName();
+				response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+				+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+				+ p.getDeliveryMode() + ";:;" + p.getLocationName();
 			}
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -625,13 +624,13 @@ public class User {
 			if (counter == pres.size()) {
 				String response = null;
 				if (type.equals("WIFI")) {
-					response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+					response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+					+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+					+ p.getDeliveryMode() + ";:;" + p.getLoc().getLocationName();
 				} else if (type.equals("GPS")) {
-					response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-							+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-							+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+					response = "Posts;:;" + p.getId() + ";:;" + key.getUsername() + ";:;" + p.getTitle() + ";:;" + p.getContent()
+					+ ";:;" + p.getContact() + ";:;" + p.getCreationDateTime() + ";:;" + p.getLimitDateTime() + ";:;"
+					+ p.getDeliveryMode() + ";:;" + p.getLocationName();
 				}
 				try {
 					dataOutputStream = new DataOutputStream(s.getOutputStream());

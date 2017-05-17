@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.security.Provider;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -242,7 +243,7 @@ public class LocationService extends Service implements LocationListener, SimWif
     }
 
     public void addPost(String str) {
-        String[] postArguments = str.split(";:;")[1].split(",");
+        String[] postArguments = Arrays.copyOfRange(str.split(";:;"), 1, str.split(";:;").length);
         GlobalLocMess global = (GlobalLocMess) getApplicationContext();
         if(global.getPost(postArguments[0] + "" + postArguments[1]) == null) {
             Post newPost = new Post(postArguments[1], postArguments[2], postArguments[3], postArguments[4], postArguments[5], postArguments[6], postArguments[7], postArguments[8]);

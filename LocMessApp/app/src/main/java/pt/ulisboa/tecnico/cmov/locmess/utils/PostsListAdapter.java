@@ -86,14 +86,6 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
             text_post_deadline.setText("EXPIRED!");
         }
 
-        TextView text_location_name = (TextView) convertView.findViewById(R.id.text_location_name);
-        text_location_name.setText(this.expandableListDetail.get(listPosition).get(7));
-
-        /*if(NewPost.GPS.equals(this.expandableListDetail.get(listPosition).get(5))) {
-
-        } else if(NewPost.WIFI_DIRECT.equals(this.expandableListDetail.get(listPosition).get(5))) {
-
-        }*/
         notifyDataSetChanged();
         return convertView;
     }
@@ -127,6 +119,10 @@ public class PostsListAdapter extends BaseExpandableListAdapter {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group, null);
         }
+
+        TextView text_location = (TextView) convertView.findViewById(R.id.text_location);
+        text_location.setText(this.expandableListDetail.get(listPosition).get(7));
+
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);

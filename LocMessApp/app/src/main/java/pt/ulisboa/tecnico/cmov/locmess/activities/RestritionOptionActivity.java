@@ -75,10 +75,20 @@ public class RestritionOptionActivity extends AppCompatActivity {
                 }
                 else if(radioButtonWhite.isChecked()) {
                     NewPost.restrictionPolicy = NewPost.WHITE;
+                    if(whiteRestrictionList.isEmpty()) {
+                        Snackbar.make(view, "No interests added", Snackbar.LENGTH_SHORT)
+                                .setAction("Action", null).show();
+                        return;
+                    }
                     NewPost.restrictionList = whiteRestrictionList;
                 }
                 else if(radioButtonBlack.isChecked()) {
                     NewPost.restrictionPolicy = NewPost.BLACK;
+                    if(blackRestrictionList.isEmpty()) {
+                        Snackbar.make(view, "No interests added", Snackbar.LENGTH_SHORT)
+                                .setAction("Action", null).show();
+                        return;
+                    }
                     NewPost.restrictionList = blackRestrictionList;
                 }
 
