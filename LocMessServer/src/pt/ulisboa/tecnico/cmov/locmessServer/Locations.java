@@ -9,7 +9,7 @@ public class Locations {
 	private ArrayList<String> ssID;
 	private Double latitude;
 	private Double longitude;
-	
+
 	public Locations(String type, String locationName, String coordinates) {
 		this.type = type;
 		this.locationName = locationName;
@@ -17,7 +17,7 @@ public class Locations {
 		this.latitude = Double.parseDouble(latlong[0]);
 		this.longitude = Double.parseDouble(latlong[1]);
 	}
-	
+
 	public Locations(String type, String locationName, ArrayList<String> ssid) {
 		this.type = type;
 		this.locationName = locationName;

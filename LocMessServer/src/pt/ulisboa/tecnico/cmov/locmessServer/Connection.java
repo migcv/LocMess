@@ -131,7 +131,7 @@ public class Connection implements Runnable {
 				response += restriction + " (" + key + ")" + ";:;";
 			}
 		}
-		System.out.println("GetAllRestrictions-RESPONSE: " + response);
+		System.out.println("AllRestrictions: " + response);
 		DataOutputStream dataOutputStream;
 		try {
 			dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -156,12 +156,11 @@ public class Connection implements Runnable {
 				for (int j = 0; j < locations.get(i).getSSId().size(); j++) {
 					ssIDSend = ssIDSend + locations.get(i).getSSId().get(j) + ",";
 				}
-
 				response += response + locations.get(i).getType() + ";:;" + locations.get(i).getLocationName() + ";:;"
 						+ ssIDSend + ";:;";
 			}
 			try {
-				System.out.println(response);
+				System.out.println("AllLocations: "+ response);
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
 				dataOutputStream.writeUTF(response);
 				dataOutputStream.flush();

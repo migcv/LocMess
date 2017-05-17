@@ -8,7 +8,7 @@ public class Login {
 
 	public Login(Socket s, String username, String password) {
 		DataOutputStream dataOutputStream;
-		
+
 		System.out.println("USERNAME: " + username);
 		System.out.println("PASSWORD: " + password);
 		if (LocMess.getUsers().isEmpty() || LocMess.getUsers().get(username) == null) {
@@ -20,7 +20,7 @@ public class Login {
 				e.printStackTrace();
 			}
 		}
-		
+
 		else if (LocMess.getUsers().get(username).getPassword().equals(password)) {
 			Session ss = new Session();
 			String token = ss.addUserToSession(username);

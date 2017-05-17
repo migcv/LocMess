@@ -28,7 +28,6 @@ public class SignUp {
 				dataOutputStream.writeUTF(toSend);
 				dataOutputStream.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -44,7 +43,6 @@ public class SignUp {
 				LocMess.getUserPosts().put(u, null);
 				LocMess.getUserRestrictions().put(u, null);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

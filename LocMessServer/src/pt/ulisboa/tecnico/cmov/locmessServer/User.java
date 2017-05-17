@@ -53,6 +53,22 @@ public class User {
 		return currentGPS;
 	}
 
+	public Double getCurrentLatitude() {
+		return currentLatitude;
+	}
+
+	public void setCurrentLatitude(Double latitude) {
+		this.currentLatitude = latitude;
+	}
+
+	public Double getCurrentLongitude() {
+		return currentLongitude;
+	}
+
+	public void setCurrentLongitude(Double longitude) {
+		this.currentLongitude = longitude;
+	}
+
 	public void setCurrentGPS(String currentGPS) {
 		this.currentGPS = currentGPS;
 		String[] aux = currentGPS.split(", ");
@@ -72,22 +88,6 @@ public class User {
 		}
 		this.currentWIFI = current;
 
-	}
-
-	public Double getCurrentLatitude() {
-		return currentLatitude;
-	}
-
-	public void setCurrentLatitude(Double latitude) {
-		this.currentLatitude = latitude;
-	}
-
-	public Double getCurrentLongitude() {
-		return currentLongitude;
-	}
-
-	public void setCurrentLongitude(Double longitude) {
-		this.currentLongitude = longitude;
 	}
 
 	public void addRestriction(String restriction) {
@@ -169,173 +169,40 @@ public class User {
 		}
 	}
 
-	public void sendUserPosts(Socket s) {
-		ArrayList<Posts> aux = LocMess.getUserPosts().get(this);
-		DataOutputStream dataOutputStream;
-		if (aux == null) {
-			try {
-				dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF("END");
-				dataOutputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			for (int i = 0; i < aux.size(); i++) {
-				String response = null;
-				if (aux.get(i).getDeliveryMode().equals("GPS")) {
-					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
-							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName() + ","
-							+ aux.get(i).isFlag();
-				} else if (aux.get(i).getDeliveryMode().equals("WIFI")) {
-					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
-							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
-							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
-							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName() + ","
-							+ aux.get(i).isFlag();
-				}
-				try {
-					System.out.println(response);
-					dataOutputStream = new DataOutputStream(s.getOutputStream());
-					dataOutputStream.writeUTF(response);
-					dataOutputStream.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
+	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {
+		String[] aux = restrictions.split(",");
+		HashMap<String, ArrayList<String>> newW = new HashMap<>();
+		for (int i = 0; i < aux.length; i++) {
+			if (aux[i].equals(""))
+				;
+
+			else {
+				String key = aux[i].substring(aux[i].indexOf("(") + 1, aux[i].indexOf(")"));
+				String value = aux[i].split("\\(")[0];
+
+				if (newW.containsKey(key)) {
+					newW.get(key).add(value.substring(0, value.length() - 1));
+				} else {
+					ArrayList<String> a = new ArrayList<>();
+					a.add(value.substring(0, value.length() - 1));
+					newW.put(key, a);
 				}
 			}
-			try {
-				dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF("END");
-				dataOutputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
+		}
+		return newW;
+	}
+
+	public ArrayList<String> getSSIDfromLocation(String locationName) {
+		ArrayList<Locations> allLoc = LocMess.getGlobalLocations();
+		ArrayList<String> ssid = new ArrayList<>();
+		for (int i = 0; i < allLoc.size(); i++) {
+			if (allLoc.get(i).getType().equals("WIFI") && allLoc.get(i).getLocationName().equals(locationName)) {
+				ssid = allLoc.get(i).getSSId();
+				return ssid;
 			}
 		}
-	}
+		return null;
 
-	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
-			String restrictions, String flag) {
-		setNumOfPost();
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
-				coordinates, radius, restrictionPolicy, restrictions, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null) {
-			LocMess.getUserPosts().get(this).add(p);
-		} else {
-			ArrayList<Posts> aux = new ArrayList<>();
-			aux.add(p);
-			LocMess.getUserPosts().put(this, aux);
-		}
-	}
-
-	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
-			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
-			String flag) {
-		setNumOfPost();
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
-				coordinates, radius, restrictionPolicy, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null) {
-			LocMess.getUserPosts().get(this).add(p);
-		} else {
-			ArrayList<Posts> aux = new ArrayList<>();
-			aux.add(p);
-			LocMess.getUserPosts().put(this, aux);
-		}
-	}
-
-	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
-			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy, String flag) {
-		setNumOfPost();
-		ArrayList<String> ssid = getSSIDfromLocation(locationName);
-		Locations l = new Locations(deliveryMode, locationName, ssid);
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
-				restrictionPolicy, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null) {
-			LocMess.getUserPosts().get(this).add(p);
-		} else {
-			ArrayList<Posts> aux = new ArrayList<>();
-			aux.add(p);
-			LocMess.getUserPosts().put(this, aux);
-		}
-	}
-
-	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
-			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy,
-			String restrictions, String flag) {
-		setNumOfPost();
-		ArrayList<String> ssid = getSSIDfromLocation(locationName);
-		Locations l = new Locations(deliveryMode, locationName, ssid);
-		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
-				restrictionPolicy, restrictions, getNumOfPost(), flag);
-		if (LocMess.getUserPosts().get(this) != null) {
-			LocMess.getUserPosts().get(this).add(p);
-		} else {
-			ArrayList<Posts> aux = new ArrayList<>();
-			aux.add(p);
-			LocMess.getUserPosts().put(this, aux);
-		}
-	}
-
-	public void removePost(String postID) {
-		int id = Integer.parseInt(postID);
-		ArrayList<Posts> aux = LocMess.getUserPosts().get(this);
-		for (int i = 0; i < aux.size(); i++) {
-			if (aux.get(i).getId() == id) {
-				System.out.println(LocMess.getUserPosts().get(this).get(i).getTitle());
-				LocMess.getUserPosts().get(this).remove(i);
-				break;
-			}
-		}
-	}
-
-	public void sendDecentralizedPosts(Socket s) {
-		if (LocMess.getUserPosts().get(this) == null) {
-			try {
-				DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
-				dataOutputStream.writeUTF("END");
-				dataOutputStream.flush();
-				System.out.println("END");
-				return;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		try {
-			DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
-
-			for (Posts post : LocMess.getUserPosts().get(this)) {
-				if (post.isFlag().equals("DECENTRALIZED")) {
-					String response = "Posts;:;" + post.getId() + ";:;" + username + ";:;" + post.getTitle() + ";:;"
-							+ post.getContent() + ";:;" + post.getContact() + ";:;" + post.getCreationDateTime() + ";:;"
-							+ post.getLimitDateTime();
-					if (post.getDeliveryMode().equals("WIFI")) {
-						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLoc().getLocationName() + ";:;";
-						for (String ssid : post.getLoc().getSSId()) {
-							response += ssid + ",";
-						}
-					} else if (post.getDeliveryMode().equals("GPS")) {
-						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLocationName() + ";:;"
-								+ post.getLatitude() + "," + post.getLongitude() + "," + post.getRadius();
-					}
-					response += ";:;" + post.getRestrictionPolicy() + ";:;";
-					if (!post.getRestrictionPolicy().equals("EVERYONE")) {
-						response += post.getRestrictions();
-					}
-					dataOutputStream = new DataOutputStream(s.getOutputStream());
-					dataOutputStream.writeUTF(response);
-					dataOutputStream.flush();
-					System.out.println(response);
-				}
-			}
-			dataOutputStream.writeUTF("END");
-			dataOutputStream.flush();
-			System.out.println("END");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void sendLocations(Socket s) {
@@ -426,6 +293,162 @@ public class User {
 
 	}
 
+	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
+			String restrictions, String flag) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				coordinates, radius, restrictionPolicy, restrictions, getNumOfPost(), flag);
+		if (LocMess.getUserPosts().get(this) != null) {
+			LocMess.getUserPosts().get(this).add(p);
+		} else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void addPostsGPS(String title, String content, String contact, String creationDateTime, String limitDateTime,
+			String deliveryMode, String locationName, String coordinates, String radius, String restrictionPolicy,
+			String flag) {
+		setNumOfPost();
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, locationName,
+				coordinates, radius, restrictionPolicy, getNumOfPost(), flag);
+		if (LocMess.getUserPosts().get(this) != null) {
+			LocMess.getUserPosts().get(this).add(p);
+		} else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy, String flag) {
+		setNumOfPost();
+		ArrayList<String> ssid = getSSIDfromLocation(locationName);
+		Locations l = new Locations(deliveryMode, locationName, ssid);
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
+				restrictionPolicy, getNumOfPost(), flag);
+		if (LocMess.getUserPosts().get(this) != null) {
+			LocMess.getUserPosts().get(this).add(p);
+		} else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void addPostsWIFI(String title, String content, String contact, String creationDateTime,
+			String limitDateTime, String deliveryMode, String locationName, String restrictionPolicy,
+			String restrictions, String flag) {
+		setNumOfPost();
+		ArrayList<String> ssid = getSSIDfromLocation(locationName);
+		Locations l = new Locations(deliveryMode, locationName, ssid);
+		Posts p = new Posts(title, content, contact, creationDateTime, limitDateTime, deliveryMode, l,
+				restrictionPolicy, restrictions, getNumOfPost(), flag);
+		if (LocMess.getUserPosts().get(this) != null) {
+			LocMess.getUserPosts().get(this).add(p);
+		} else {
+			ArrayList<Posts> aux = new ArrayList<>();
+			aux.add(p);
+			LocMess.getUserPosts().put(this, aux);
+		}
+	}
+
+	public void sendUserPosts(Socket s) {
+		ArrayList<Posts> aux = LocMess.getUserPosts().get(this);
+		DataOutputStream dataOutputStream;
+		if (aux == null) {
+			try {
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF("END");
+				dataOutputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			for (int i = 0; i < aux.size(); i++) {
+				String response = null;
+				if (aux.get(i).getDeliveryMode().equals("GPS")) {
+					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
+							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
+							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLocationName() + ","
+							+ aux.get(i).isFlag();
+				} else if (aux.get(i).getDeliveryMode().equals("WIFI")) {
+					response = "MYPosts;:;" + aux.get(i).getId() + "," + aux.get(i).getTitle() + ","
+							+ aux.get(i).getContent() + "," + aux.get(i).getContact() + ","
+							+ aux.get(i).getCreationDateTime() + "," + aux.get(i).getLimitDateTime() + ","
+							+ aux.get(i).getDeliveryMode() + "," + aux.get(i).getLoc().getLocationName() + ","
+							+ aux.get(i).isFlag();
+				}
+				try {
+					System.out.println(response);
+					dataOutputStream = new DataOutputStream(s.getOutputStream());
+					dataOutputStream.writeUTF(response);
+					dataOutputStream.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF("END");
+				dataOutputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void sendDecentralizedPosts(Socket s) {
+		if (LocMess.getUserPosts().get(this) == null) {
+			try {
+				DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
+				dataOutputStream.writeUTF("END");
+				dataOutputStream.flush();
+				System.out.println("END");
+				return;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			DataOutputStream dataOutputStream = new DataOutputStream(s.getOutputStream());
+
+			for (Posts post : LocMess.getUserPosts().get(this)) {
+				if (post.isFlag().equals("DECENTRALIZED")) {
+					String response = "Posts;:;" + post.getId() + ";:;" + username + ";:;" + post.getTitle() + ";:;"
+							+ post.getContent() + ";:;" + post.getContact() + ";:;" + post.getCreationDateTime() + ";:;"
+							+ post.getLimitDateTime();
+					if (post.getDeliveryMode().equals("WIFI")) {
+						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLoc().getLocationName() + ";:;";
+						for (String ssid : post.getLoc().getSSId()) {
+							response += ssid + ",";
+						}
+					} else if (post.getDeliveryMode().equals("GPS")) {
+						response += ";:;" + post.getDeliveryMode() + ";:;" + post.getLocationName() + ";:;"
+								+ post.getLatitude() + "," + post.getLongitude() + "," + post.getRadius();
+					}
+					response += ";:;" + post.getRestrictionPolicy() + ";:;";
+					if (!post.getRestrictionPolicy().equals("EVERYONE")) {
+						response += post.getRestrictions();
+					}
+					dataOutputStream = new DataOutputStream(s.getOutputStream());
+					dataOutputStream.writeUTF(response);
+					dataOutputStream.flush();
+					System.out.println(response);
+				}
+			}
+			dataOutputStream.writeUTF("END");
+			dataOutputStream.flush();
+			System.out.println("END");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void sendPosts(Socket s) {
 		Set<User> keySet = LocMess.getUserPosts().keySet();
 		DataOutputStream dataOutputStream;
@@ -487,40 +510,16 @@ public class User {
 		return false;
 	}
 
-	public HashMap<String, ArrayList<String>> getRestrictionsFromPost(String restrictions) {
-		String[] aux = restrictions.split(",");
-		HashMap<String, ArrayList<String>> newW = new HashMap<>();
-		for (int i = 0; i < aux.length; i++) {
-			if (aux[i].equals(""))
-				;
-
-			else {
-				String key = aux[i].substring(aux[i].indexOf("(") + 1, aux[i].indexOf(")"));
-				String value = aux[i].split("\\(")[0];
-
-				if (newW.containsKey(key)) {
-					newW.get(key).add(value.substring(0, value.length() - 1));
-				} else {
-					ArrayList<String> a = new ArrayList<>();
-					a.add(value.substring(0, value.length() - 1));
-					newW.put(key, a);
-				}
+	public void removePost(String postID) {
+		int id = Integer.parseInt(postID);
+		ArrayList<Posts> aux = LocMess.getUserPosts().get(this);
+		for (int i = 0; i < aux.size(); i++) {
+			if (aux.get(i).getId() == id) {
+				System.out.println(LocMess.getUserPosts().get(this).get(i).getTitle());
+				LocMess.getUserPosts().get(this).remove(i);
+				break;
 			}
 		}
-		return newW;
-	}
-
-	public ArrayList<String> getSSIDfromLocation(String locationName) {
-		ArrayList<Locations> allLoc = LocMess.getGlobalLocations();
-		ArrayList<String> ssid = new ArrayList<>();
-		for (int i = 0; i < allLoc.size(); i++) {
-			if (allLoc.get(i).getType().equals("WIFI") && allLoc.get(i).getLocationName().equals(locationName)) {
-				ssid = allLoc.get(i).getSSId();
-				return ssid;
-			}
-		}
-		return null;
-
 	}
 
 	public void postsToSend(Posts p, Socket s, User key, String type) {
@@ -584,16 +583,16 @@ public class User {
 					}
 				}
 			}
-		}else if(p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) == null){
+		} else if (p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) == null) {
 			String response = null;
 			if (type.equals("WIFI")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-						+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-						+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLoc().getLocationName();
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
+						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+						+ p.getDeliveryMode() + "," + p.getLoc().getLocationName();
 			} else if (type.equals("GPS")) {
-				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + ","
-						+ p.getContent() + "," + p.getContact() + "," + p.getCreationDateTime() + ","
-						+ p.getLimitDateTime() + "," + p.getDeliveryMode() + "," + p.getLocationName();
+				response = "Posts;:;" + p.getId() + "," + key.getUsername() + "," + p.getTitle() + "," + p.getContent()
+						+ "," + p.getContact() + "," + p.getCreationDateTime() + "," + p.getLimitDateTime() + ","
+						+ p.getDeliveryMode() + "," + p.getLocationName();
 			}
 			try {
 				dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -603,7 +602,7 @@ public class User {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else if (p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) != null) {
+		} else if (p.getRestrictionPolicy().equals("BLACK") && LocMess.getUserRestrictions().get(this) != null) {
 			HashMap<String, ArrayList<String>> userRestrictions = LocMess.getUserRestrictions().get(this);
 			Set<String> ures = userRestrictions.keySet();
 			String restrictions = p.getRestrictions();
