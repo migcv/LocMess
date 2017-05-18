@@ -389,4 +389,10 @@ public class LocationOptionActivity extends AppCompatActivity {
         return false;
     }
 
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
 }
